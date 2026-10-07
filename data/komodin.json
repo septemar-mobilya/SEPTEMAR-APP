@@ -1,9 +1,12 @@
 {
- "title": "Misafir Kabin 202 · Komodin",
+ "title": "Komodin",
  "model": "models/komodin.glb",
  "info": {
+  "Kod": "505-91",
+  "Kabin": "Misafir Kabin 202",
   "Proje": "NB85",
-  "Kabin": "Misafir Kabin 202"
+  "Revizyon": "",
+  "Malzeme": ""
  },
  "parts": {
   "NB85-MİSAFİR KABİN 202 Yatak Komodin Mermer Etrafı Paslanmaz_-1": {
@@ -368,5 +371,21 @@
    }
   ],
   "not": "Komodinlerin yeri"
- }
+ },
+ "dosyalar": [
+  {
+   "ad": "komodin.glb",
+   "tur": "3D Model",
+   "rev": "",
+   "tarih": "",
+   "url": "models/komodin.glb"
+  },
+  {
+   "ad": "plan.jpg",
+   "tur": "Görsel",
+   "rev": "",
+   "tarih": "",
+   "url": "data/plan.jpg"
+  }
+ ]
 }
