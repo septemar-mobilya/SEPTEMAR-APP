@@ -249,12 +249,12 @@
   "505-91 MİSAFİR KABİN 202 KOMODİN_ÇEKMECE_v3_1_KASA_SOL_YAN-7": {
    "ad": "ÇEKMECE v3 1 KASA SOL YAN-7",
    "malzeme": "tanimsiz",
-   "tur": "parca"
+   "tur": "aksesuar"
   },
   "505-91 MİSAFİR KABİN 202 KOMODİN_ÇEKMECE_v3_1_KASA_SAĞ_YAN-7": {
    "ad": "ÇEKMECE v3 1 KASA SAĞ YAN-7",
    "malzeme": "tanimsiz",
-   "tur": "parca"
+   "tur": "aksesuar"
   },
   "505-91 MİSAFİR KABİN 202 KOMODİN_ÇEKMECE_v3_1_KASA_ARKA_BLUM-8": {
    "ad": "ÇEKMECE v3 1 KASA ARKA BLUM-8",
@@ -351,54 +351,22 @@
  },
  "plan": {
   "kabin": "Misafir Kabin 202",
-  "viewBox": "0 0 100 40",
-  "gemi": "M2 8 L70 4 Q98 12 98 20 Q98 28 70 36 L2 32 Z",
-  "konum": {
-   "x": 47,
-   "y": 27
-  },
-  "not": "ÖRNEK PLAN: gerçek yerleşimi data/komodin.json içindeki plan bölümünden veya plan.gorsel ile değiştirin.",
-  "kabinler": [
+  "gorsel": "data/plan.jpg",
+  "viewBox": "0 0 1581 1057",
+  "kutular": [
    {
-    "ad": "Makine Dairesi",
-    "x": 4,
-    "y": 12,
-    "w": 12,
-    "h": 16,
-    "renk": "#d9d9d9"
+    "x": 454,
+    "y": 109,
+    "w": 223,
+    "h": 166
    },
    {
-    "ad": "Salon",
-    "x": 18,
-    "y": 8,
-    "w": 20,
-    "h": 24,
-    "renk": "#fbe3b0"
-   },
-   {
-    "ad": "Misafir Kabin 201",
-    "x": 40,
-    "y": 8,
-    "w": 20,
-    "h": 11,
-    "renk": "#c9def4"
-   },
-   {
-    "ad": "Misafir Kabin 202",
-    "x": 40,
-    "y": 21,
-    "w": 20,
-    "h": 11,
-    "renk": "#c8ead2"
-   },
-   {
-    "ad": "Master Kabin",
-    "x": 62,
-    "y": 8,
-    "w": 30,
-    "h": 24,
-    "renk": "#f4c7d4"
+    "x": 1121,
+    "y": 114,
+    "w": 226,
+    "h": 163
    }
-  ]
+  ],
+  "not": "Komodinlerin yeri"
  }
 }
