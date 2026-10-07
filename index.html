@@ -31,9 +31,10 @@ aside{background:#fff;display:flex;flex-direction:column;min-height:0;min-width:
 #sheet ul{list-style:none;padding:0;margin:8px 0}#sheet li{padding:8px 4px;border-bottom:1px solid #eef0f3;cursor:pointer}i.d{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:8px;vertical-align:middle}
 .pb{height:12px;background:#e3e7ee;border-radius:6px;overflow:hidden}.pb div{height:100%;background:#2e9e5b}.st{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.st button.ok{background:#2e9e5b;color:#fff}
 @keyframes bl{50%{opacity:.2}}.bl{animation:bl 1s infinite}.bl2{animation:bl .7s infinite}.lb{display:flex;gap:8px;text-align:left}.lb img{width:96px;height:96px}.lb small{font-size:8px;color:#555}#grid{grid-template-columns:repeat(auto-fill,minmax(270px,1fr))}
+#rail{overflow-y:auto}#tool{display:none;position:absolute;left:8px;bottom:58px;width:min(340px,calc(100% - 16px));background:#fffe;border-radius:12px;padding:10px;z-index:4;box-shadow:0 2px 14px #0004}#tool .row{display:flex;gap:6px;align-items:center;margin:5px 0}#tool input[type=range]{flex:1;min-width:0;touch-action:none}
 </style></head><body>
 <div id="app"><header><b>SEPTEMAR</b><small id="title">Parça Bulucu</small><button class="p" id="scan">QR Okut</button><button id="lab">QR Etiketleri</button></header>
-<main><nav id="rail"><button id="bList">☰<small>Liste</small></button><button id="bKonum">📍<small>Konum</small></button><button id="bAks">🔩<small>Aksesuar</small></button><button id="bMal">🎨<small>Malzeme</small></button><button id="bUr">🏭<small>Üretim</small></button></nav><div id="view"><div id="sheet"></div><span id="tag">DEMO MODEL</span><div id="bar"><span>Patlat</span><input id="ex" type="range" min="0" max="1" step=".01" value="0"><button id="clr">Sıfırla</button></div></div>
+<main><nav id="rail"><button id="bList">☰<small>Liste</small></button><button id="bKonum">📍<small>Konum</small></button><button id="bAks">🔩<small>Aksesuar</small></button><button id="bMal">🎨<small>Malzeme</small></button><button id="bUr">🏭<small>Üretim</small></button><button id="bKes">✂️<small>Kesit</small></button><button id="bOlc">📏<small>Ölçü</small></button></nav><div id="view"><div id="sheet"></div><div id="tool"></div><span id="tag">DEMO MODEL</span><div id="bar"><span>Patlat</span><input id="ex" type="range" min="0" max="1" step=".01" value="0"><button id="clr">Sıfırla</button></div></div>
 <aside><div id="info"><h3>Parça seçilmedi</h3>Listeden seç veya QR okut.</div><input id="q" placeholder="Parça ara…"><ul id="list"></ul></aside></main></div>
 <div class="ov" id="scanov"><video id="cam" playsinline muted></video><div>QR kodu kameraya göster</div><button id="x1">Kapat</button></div>
 <div class="ov" id="labels"><div class="no"><button class="p" onclick="print()">Yazdır</button> <button id="x2">Kapat</button></div><div id="grid"></div></div>
@@ -52,7 +53,7 @@ scene.add(new THREE.HemisphereLight(0xffffff,0x8892a0,1.2));const dl=new THREE.D
 const ctl=new OrbitControls(cam,ren.domElement);ctl.enableDamping=true;
 const fit=()=>{const v=$('#view');ren.setSize(v.clientWidth,v.clientHeight);cam.aspect=v.clientWidth/v.clientHeight;cam.updateProjectionMatrix()};
 addEventListener('resize',fit);new ResizeObserver(fit).observe($('#view'));
-let data={},parts={},sel=[],F=1,sc=1,paint=false,dur={};try{dur=JSON.parse(localStorage.durum||'{}')}catch{}
+let BB,meas=false,pts=[],data={},parts={},sel=[],F=1,sc=1,paint=false,dur={};try{dur=JSON.parse(localStorage.durum||'{}')}catch{}
 const nm=k=>data.parts?.[k]?.ad||['NB85-MİSAFİR KABİN 202 ','505-91 MİSAFİR KABİN 202 KOMODİN_','NB85-MİSAFİR KABİN YATAK KOMODİN ','Yatak Komodin_','Yatak Komodin'].reduce((a,p)=>a.replace(p,''),k).replace(/_/g,' ').trim();
 
 function demo(){const g=new THREE.Group(),W=(c,m=.6,mt=0)=>new THREE.MeshStandardMaterial({color:c,roughness:m,metalness:mt});
@@ -66,23 +67,25 @@ async function boot(){
  let root;try{root=(await new GLTFLoader().loadAsync(data.model||'models/komodin.glb')).scene}catch(e){root=demo();$('#tag').style.display='block'}
  const model=new THREE.Group();model.add(root);scene.add(model);
  const b=new THREE.Box3().setFromObject(model);const M=Math.max(...b.getSize(new THREE.Vector3()).toArray());F=M<20?1000:1;sc=1/M;model.scale.setScalar(sc);model.updateMatrixWorld(true);
- model.position.sub(new THREE.Box3().setFromObject(model).getCenter(new THREE.Vector3()));model.updateMatrixWorld(true);
+ model.position.sub(new THREE.Box3().setFromObject(model).getCenter(new THREE.Vector3()));model.updateMatrixWorld(true);BB=new THREE.Box3().setFromObject(model);
  root.traverse(o=>{if(!o.isMesh)return;let p=o.parent;const N=x=>x.userData.name||x.name;while(p&&p!==root&&N(p).includes(' - Parça'))p=p.parent;
   const k=(p&&p!==root&&N(p))||N(o)||o.uuid.slice(0,6);(parts[k]??={meshes:[]}).meshes.push(o);
-  o.material=Array.isArray(o.material)?o.material.map(x=>x.clone()):o.material.clone();mats(o).forEach(x=>{x.userData.c0=x.color&&x.color.clone();x.userData.m0=x.map});o.userData.w0=o.getWorldPosition(new THREE.Vector3())});
+  o.material=Array.isArray(o.material)?o.material.map(x=>x.clone()):o.material.clone();mats(o).forEach(x=>{x.userData.c0=x.color&&x.color.clone();x.userData.s0=x.side;x.userData.m0=x.map});o.userData.w0=o.getWorldPosition(new THREE.Vector3())});
  for(const p of Object.values(parts)){const bb=new THREE.Box3();p.meshes.forEach(m=>bb.expandByObject(m));p.dir=bb.getCenter(new THREE.Vector3()).normalize();p.dim=bb.getSize(new THREE.Vector3()).toArray().map(v=>Math.round(v/sc*F)).sort((a,b)=>b-a)}
  $('#title').textContent=data.title||'Komodin · '+Object.keys(parts).length+' parça';
  list();const q=new URLSearchParams(location.search).get('p');if(q)pick(q);
 }
 const AS={parca:['Kesim','Kenar bandı','Montaj','Kalite'],aksesuar:['Tedarik','Takıldı']};
-const T=k=>data.parts?.[k]?.tur||'parca',stg=k=>(data.asamalar||AS)[T(k)],done=k=>dur[k]||0,col=k=>!done(k)?'#b8c0cc':done(k)>=stg(k).length?'#2e9e5b':'#f2a516',save=()=>{try{localStorage.durum=JSON.stringify(dur)}catch{}};
+const ACC=/BLUM|FASTMOUNT_PC|Lutron|SOCKET|Charger|FARŞ|Radyus|C\.RAY|KILAPA|_KASA_/i;let tr={};try{tr=JSON.parse(localStorage.tur||'{}')}catch{}
+const T=k=>tr[k]||data.parts?.[k]?.tur||(ACC.test(k)?'aksesuar':'parca'),stg=k=>(data.asamalar||AS)[T(k)],done=k=>dur[k]||0,col=k=>!done(k)?'#b8c0cc':done(k)>=stg(k).length?'#2e9e5b':'#f2a516',save=()=>{try{localStorage.durum=JSON.stringify(dur)}catch{}};
 function list(f=''){const ul=$('#list');ul.innerHTML='';Object.keys(parts).filter(k=>T(k)=='parca'&&(k+nm(k)).toLowerCase().includes(f.toLowerCase())).forEach(k=>{const li=document.createElement('li');li.innerHTML=`<i class="d" style="background:${col(k)}"></i>${nm(k)}`;if(sel.includes(k))li.className='on';li.onclick=()=>select(k);ul.append(li)})}
 $('#q').oninput=e=>list(e.target.value);
 function pick(t){const ks=Object.keys(parts);const k=ks.find(x=>x===t)||ks.find(x=>x.toLowerCase().includes(t.toLowerCase()));k?select(k):alert('Parça bulunamadı: '+t)}
 function info(){const el=$('#info');if(!sel.length){el.innerHTML='<h3>Parça seçilmedi</h3>Listeden seç veya QR okut.';return}
  if(sel.length>1){el.innerHTML=`<h3>${sel.length} parça seçili</h3>`;return}
  const k=sel[0],e=data.parts?.[k]||{},m=data.malzemeler?.[e.malzeme];
- el.innerHTML=`<h3>${nm(k)}</h3><div><span>Kod</span><b>${k}</b></div><div><span>Tür</span><b>${T(k)=='parca'?'Üretim parçası':'Aksesuar'}</b></div><div><span>Ölçü (kutu)</span><b>${parts[k].dim.join('×')} mm</b></div><div><span>Malzeme</span><b>${m?m.ad:'—'}</b></div>`+(e.not?`<div><span>Not</span><b>${e.not}</b></div>`:'')+`<div class="st">${stg(k).map((t,i)=>`<button data-i="${i}" class="${i<done(k)?'ok':''}">${t}</button>`).join('')}</div>`;
+ el.innerHTML=`<h3>${nm(k)}</h3><div><span>Kod</span><b>${k}</b></div><div><span>Tür</span><b>${T(k)=='parca'?'Üretim parçası':'Aksesuar'}</b></div><div><span>Ölçü (kutu)</span><b>${parts[k].dim.join('×')} mm</b></div><div><span>Malzeme</span><b>${m?m.ad:'—'}</b></div>`+(e.not?`<div><span>Not</span><b>${e.not}</b></div>`:'')+`<div class="st">${stg(k).map((t,i)=>`<button data-i="${i}" class="${i<done(k)?'ok':''}">${t}</button>`).join('')}</div><button id="mv" style="margin-top:8px">${T(k)=='parca'?'Aksesuara taşı':'Üretim parçasına taşı'}</button>`;
+ el.querySelector('#mv').onclick=()=>{tr[k]=T(k)=='parca'?'aksesuar':'parca';try{localStorage.tur=JSON.stringify(tr)}catch{};info();list($('#q').value)};
  el.querySelectorAll('.st button').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;dur[k]=done(k)==i+1?i:i+1;save();info();list($('#q').value)})}
 function select(ks){sel=[].concat(ks||[]).filter(k=>parts[k]);$('#sheet').style.display='none';
  for(const[n,p]of Object.entries(parts))p.meshes.forEach(m=>mats(m).forEach(x=>{const d=sel.length&&!sel.includes(n);x.transparent=!!d;x.opacity=d?.1:1;x.depthWrite=!d;if(x.emissive)x.emissiveIntensity=0;x.needsUpdate=true}));
@@ -107,9 +110,9 @@ function open(h){sh.innerHTML=`<button class="x" id="shx">✕</button>${h}`;sh.s
 const rows=ks=>ks.map(k=>`<li data-k="${k}"><i class="d" style="background:${col(k)}"></i>${nm(k)} <small>${parts[k].dim.join('×')} mm · ${stt(k)}</small></li>`).join('');
 const bind=()=>sh.querySelectorAll('li[data-k]').forEach(li=>li.onclick=()=>select(li.dataset.k));
 $('#bList').onclick=()=>$('main').classList.toggle('closed');
-$('#bKonum').onclick=()=>{const P=data.plan;if(!P)return open('<h3>Konum</h3>Plan tanımlı değil (data/komodin.json → plan).');
- const R=P.kabinler.map(r=>`<rect x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}" fill="${r.renk}" stroke="#667" stroke-width=".3" class="${r.ad==P.kabin?'bl':''}"/><text x="${r.x+r.w/2}" y="${r.y+r.h/2}" font-size="1.8" text-anchor="middle">${r.ad}</text>`).join('');
- open(`<h3>${P.kabin} · komodin konumu</h3><svg viewBox="${P.viewBox||'0 0 100 40'}" style="width:100%">${P.gorsel?`<image href="${P.gorsel}" width="100%" height="100%"/>`:`<path d="${P.gemi}" fill="#f3f6fa" stroke="#334" stroke-width=".5"/>`}${P.gorsel?'':R}<circle cx="${P.konum.x}" cy="${P.konum.y}" r="1.4" fill="#ff5a00" class="bl2"/><circle cx="${P.konum.x}" cy="${P.konum.y}" r="3" fill="none" stroke="#ff5a00" stroke-width=".5" class="bl2"/></svg><p>🟠 Komodin · ${P.not||''}</p>`)};
+$('#bKonum').onclick=()=>{const P=data.plan;if(!P)return open('<h3>Konum</h3>Plan tanımlı değil (data/komodin.json → plan).');const[W,H]=P.viewBox.split(' ').slice(2).map(Number);
+ const B=(P.kutular||[]).map(r=>`<rect x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}" rx="${W/150}" fill="#ff5a00" fill-opacity=".3" stroke="#ff2a00" stroke-width="${W/150}" class="bl2"/>`).join('');
+ open(`<h3>${P.kabin} · komodin konumu</h3><svg viewBox="${P.viewBox}" style="width:100%"><image href="${P.gorsel}" width="${W}" height="${H}"/>${B}</svg><p>🟠 ${P.not||''}</p>`)};
 $('#bAks').onclick=()=>{const ks=Object.keys(parts).filter(k=>T(k)=='aksesuar');open(`<h3>Aksesuarlar (${ks.length})</h3><button id="allA">Hepsini göster</button><ul>${rows(ks)}</ul>`);bind();$('#allA').onclick=()=>select(ks)};
 function doPaint(){const M=data.malzemeler||{};for(const[k,p]of Object.entries(parts))p.meshes.forEach(m=>mats(m).forEach(x=>{if(!x.color)return;x.map=paint?null:x.userData.m0;paint?x.color.set(M[data.parts?.[k]?.malzeme]?.renk||'#cfd4db'):x.color.copy(x.userData.c0);x.needsUpdate=true}))}
 $('#bMal').onclick=()=>{const M=data.malzemeler||{},g={};Object.keys(parts).forEach(k=>(g[data.parts?.[k]?.malzeme]??=[]).push(k));
@@ -117,5 +120,23 @@ $('#bMal').onclick=()=>{const M=data.malzemeler||{},g={};Object.keys(parts).forE
  sh.querySelectorAll('li[data-m]').forEach(li=>li.onclick=()=>select(g[li.dataset.m]||[]));$('#paint').onclick=()=>{paint=!paint;doPaint();$('#paint').textContent=paint?'Gerçek görünüme dön':'Modeli renklendir'}};
 $('#bUr').onclick=()=>{const ks=Object.keys(parts),tot=ks.reduce((a,k)=>a+stg(k).length,0),dn=ks.reduce((a,k)=>a+Math.min(done(k),stg(k).length),0),pc=Math.round(100*dn/tot),fu=ks.filter(k=>done(k)>=stg(k).length).length,pa=ks.filter(k=>done(k)>0&&done(k)<stg(k).length).length;
  open(`<h3>Üretim durumu</h3><div class="pb"><div style="width:${pc}%"></div></div><p><b>%${pc}</b> · ${fu} bitti · ${pa} devam ediyor · ${ks.length-fu-pa} başlamadı</p><small>Aşamayı parça seçip bilgi kutusundan işaretleyin. Durum şimdilik bu cihazda saklanır.</small><ul>${rows(ks)}</ul>`);bind()};
+const tl=$('#tool'),allM=f=>Object.values(parts).forEach(p=>p.meshes.forEach(m=>mats(m).forEach(f)));
+const pl=[0,1,2].map(i=>({p:new THREE.Plane(new THREE.Vector3(),0),on:false,s:1,v:0,i}));let tool=null;
+function applyCut(){const a=pl.filter(q=>q.on);pl.forEach(q=>{q.p.normal.set(0,0,0).setComponent(q.i,q.s);q.p.constant=-q.s*q.v});ren.clippingPlanes=a.map(q=>q.p);allM(x=>{x.side=a.length?THREE.DoubleSide:x.userData.s0;x.needsUpdate=true})}
+const mk=new THREE.Group();scene.add(mk);
+function clrM(){mk.clear();pts=[];$('#mres')&&($('#mres').innerHTML='Modele iki nokta için dokunun.')}
+function addPt(v){if(pts.length>=2)clrM();pts.push(v);const s=new THREE.Mesh(new THREE.SphereGeometry(.007),new THREE.MeshBasicMaterial({color:0xff2a00,depthTest:false}));s.position.copy(v);s.renderOrder=9;mk.add(s);
+ if(pts.length==2){const l=new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:0xff2a00,depthTest:false}));l.renderOrder=9;mk.add(l);const d=pts[1].clone().sub(pts[0]),f=F/sc;
+ $('#mres').innerHTML=`<b style="font-size:20px">${(d.length()*f).toFixed(1)} mm</b><br>ΔX ${(Math.abs(d.x)*f).toFixed(1)} · ΔY ${(Math.abs(d.y)*f).toFixed(1)} · ΔZ ${(Math.abs(d.z)*f).toFixed(1)} mm`}else $('#mres').innerHTML='İkinci noktaya dokunun.'}
+function showTool(t){tool=tool==t?null:t;tl.style.display=tool?'block':'none';meas=tool=='olc';if(!meas)clrM();$('#sheet').style.display='none';if(tool=='kes')cutUI();if(tool=='olc'){tl.innerHTML='<b>📏 Ölçü</b> <button id="mc">Temizle</button><div id="mres"></div>';$('#mc').onclick=clrM;clrM()}}
+function cutUI(){tl.innerHTML='<b>✂️ Kesit</b> <button id="cr">Sıfırla</button>'+pl.map(q=>{const a='XYZ'[q.i],lo=BB.min.getComponent(q.i),hi=BB.max.getComponent(q.i);return`<div class="row"><label><input type="checkbox" data-i="${q.i}" ${q.on?'checked':''}> ${a}</label><input type="range" data-i="${q.i}" min="${lo}" max="${hi}" step="${(hi-lo)/300}" value="${q.v}"><button data-f="${q.i}">⇄</button></div>`}).join('');
+ tl.querySelectorAll('input[type=checkbox]').forEach(c=>c.onchange=()=>{pl[c.dataset.i].on=c.checked;applyCut()});tl.querySelectorAll('input[type=range]').forEach(r=>r.oninput=()=>{const q=pl[r.dataset.i];q.v=+r.value;if(!q.on){q.on=true;tl.querySelector(`input[type=checkbox][data-i="${q.i}"]`).checked=true}applyCut()});
+ tl.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{pl[b.dataset.f].s*=-1;applyCut()});$('#cr').onclick=()=>{pl.forEach(q=>{q.on=false;q.s=1;q.v=(BB.min.getComponent(q.i)+BB.max.getComponent(q.i))/2});applyCut();cutUI()}}
+$('#bKes').onclick=()=>{pl.forEach(q=>{if(!q.v)q.v=(BB.min.getComponent(q.i)+BB.max.getComponent(q.i))/2});showTool('kes')};$('#bOlc').onclick=()=>showTool('olc');
+const rc=new THREE.Raycaster();let dn=null;ren.domElement.addEventListener('pointerdown',e=>dn=[e.clientX,e.clientY]);
+ren.domElement.addEventListener('pointerup',e=>{if(!meas||!dn||Math.hypot(e.clientX-dn[0],e.clientY-dn[1])>6)return;const r=ren.domElement.getBoundingClientRect(),a=pl.filter(q=>q.on);
+ rc.setFromCamera(new THREE.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1),cam);
+ const h=rc.intersectObjects(Object.values(parts).flatMap(p=>p.meshes),false).find(h=>mats(h.object)[0].opacity>.5&&!a.some(q=>q.p.distanceToPoint(h.point)<0));if(h)addPt(h.point)});
+if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js');
 boot();
 </script></body></html>
