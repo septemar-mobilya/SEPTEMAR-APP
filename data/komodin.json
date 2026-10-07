@@ -8,259 +8,397 @@
  "parts": {
   "NB85-MİSAFİR KABİN 202 Yatak Komodin Mermer Etrafı Paslanmaz_-1": {
    "ad": "Mermer Etrafı Paslanmaz -1",
-   "malzeme": ""
+   "malzeme": "paslanmaz",
+   "tur": "parca"
   },
   "NB85-MİSAFİR KABİN 202 Yatak Komodin Mermer Etrafı Paslanmaz_1_-1": {
    "ad": "Mermer Etrafı Paslanmaz 1 -1",
-   "malzeme": ""
+   "malzeme": "paslanmaz",
+   "tur": "parca"
   },
   "NB85-MİSAFİR KABİN 202 Yatak Komodin Mermer Etrafı Paslanmaz_1_-2": {
    "ad": "Mermer Etrafı Paslanmaz 1 -2",
-   "malzeme": ""
+   "malzeme": "paslanmaz",
+   "tur": "parca"
   },
   "NB85-MİSAFİR KABİN 202 Yatak Komodin Mermer Etrafı Paslanmaz_-3": {
    "ad": "Mermer Etrafı Paslanmaz -3",
-   "malzeme": ""
+   "malzeme": "paslanmaz",
+   "tur": "parca"
   },
   "NB85-MİSAFİR KABİN 202 KOMODİN SOCKET_-1": {
    "ad": "KOMODİN SOCKET -1",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "aksesuar"
   },
   "Lutron Sea Touch KEYPAD_86X86_NB85-1": {
    "ad": "Lutron Sea Touch KEYPAD 86X86 NB85-1",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "aksesuar"
   },
   "NB85-MİSAFİR KABİN 202 Misafir Yatak Komodin_Mermer _1_-1": {
    "ad": "Misafir Mermer 1 -1",
-   "malzeme": ""
+   "malzeme": "mermer",
+   "tur": "parca"
   },
   "NB85-MİSAFİR KABİN 202 Misafir Yatak Komodin_Mermer _2_-1": {
    "ad": "Misafir Mermer 2 -1",
-   "malzeme": ""
+   "malzeme": "mermer",
+   "tur": "parca"
   },
   "NB85-MİSAFİR KABİN 202 Misafir Yatak_Panel_Sol Okaliptus Kaplama_1__2-1": {
    "ad": "Misafir Yatak Panel Sol Okaliptus Kaplama 1 2-1",
-   "malzeme": ""
+   "malzeme": "okaliptus",
+   "tur": "parca"
   },
   "NB85-MİSAFİR KABİN 202 Komodin Paslanamaz_1-1": {
    "ad": "Komodin Paslanamaz 1-1",
-   "malzeme": ""
+   "malzeme": "paslanmaz",
+   "tur": "parca"
   },
   "NB85-MİSAFİR KABİN 202 Misafir Yatak_KOMODİN_2__-1": {
    "ad": "Misafir Yatak KOMODİN 2 -1",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "parca"
   },
   "NB85-MİSAFİR KABİN 202 Yatak Komodin_KARKASLI_3_KARKASLI_ALT PANEL__2A_DD__-1": {
    "ad": "KARKASLI 3 KARKASLI ALT PANEL 2A DD -1",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "parca"
   },
   "NB85-MİSAFİR KABİN 202 Yatak Komodin__2A_BAZA_1_SAĞ PANEL__-1": {
    "ad": "2A BAZA 1 SAĞ PANEL -1",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "parca"
   },
   "NB85-MİSAFİR KABİN 202 Yatak Komodin__2A_BAZA_1_ÖN PANEL__-1": {
    "ad": "2A BAZA 1 ÖN PANEL -1",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "parca"
   },
   "NB85-MİSAFİR KABİN 202 Yatak Komodin__2A_BAZA_1_ÖN PANEL_1__-1": {
    "ad": "2A BAZA 1 ÖN PANEL 1 -1",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "parca"
   },
   "NB85-MİSAFİR KABİN 202 Yatak Komodin__2A_BAZA_1_SAĞ PANEL_1__-1": {
    "ad": "2A BAZA 1 SAĞ PANEL 1 -1",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "parca"
   },
   "NB85-MİSAFİR KABİN 202 Yatak Komodin__2A_SOLDUVAR PANELİ TARAFI__-1": {
    "ad": "2A SOLDUVAR PANELİ TARAFI -1",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "parca"
   },
   "NB85-MİSAFİR KABİN 202 Yatak Komodin__2A_SOL_İKİ__-1": {
    "ad": "2A SOL İKİ -1",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "parca"
   },
   "NB85-MİSAFİR KABİN 202 Yatak Komodin__2A_SOL_1213__-1": {
    "ad": "2A SOL 1213 -1",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "parca"
   },
   "NB85-MİSAFİR KABİN 202 Yatak Komodin_DIKME___-1": {
    "ad": "DIKME -1",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "parca"
   },
   "NB85-MİSAFİR KABİN 202 Yatak Komodin_DIKME____-1": {
    "ad": "DIKME -1",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "parca"
   },
   "NB85-MİSAFİR KABİN 202 Yatak Komodin_DIKME___1__-1": {
    "ad": "DIKME 1 -1",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "parca"
   },
   "NB85-MİSAFİR KABİN 202 Yatak Komodin_DIKME___1___-1": {
    "ad": "DIKME 1 -1",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "parca"
   },
   "NB85-MİSAFİR KABİN 202 Yatak Komodin__2A_ON__-1": {
    "ad": "2A ON -1",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "parca"
   },
   "NB85-MİSAFİR KABİN 202 Yatak Komodin_KARKASLI_3_KARKASLI_ALT PANEL__2A__121__-1": {
    "ad": "KARKASLI 3 KARKASLI ALT PANEL 2A 121 -1",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "parca"
   },
   "NB85-MİSAFİR KABİN 202 Yatak Komodin__2A_ON_ARKA _1212__-1": {
    "ad": "2A ON ARKA 1212 -1",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "parca"
   },
   "NB85-MİSAFİR KABİN 202 Yatak Komodin_10.6 _Panel__-1": {
    "ad": "10.6 Panel -1",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "parca"
   },
   "NB85-MİSAFİR KABİN 202 Komodin Paslanamaz_1_2A_ko__-1": {
    "ad": "Komodin Paslanamaz 1 2A ko -1",
-   "malzeme": ""
+   "malzeme": "paslanmaz",
+   "tur": "parca"
   },
   "NB85-MİSAFİR KABİN 202 Yatak Komodin__2A_ON_1__-1": {
    "ad": "2A ON 1 -1",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "parca"
   },
   "NB85-MİSAFİR KABİN 202 Yatak Komodin__2A_ON_1_KARKAS__-1": {
    "ad": "2A ON 1 KARKAS -1",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "parca"
   },
   "NB85-MİSAFİR KABİN 202 Yatak Komodin__2A_ON_1__-3": {
    "ad": "2A ON 1 -3",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "parca"
   },
   "NB85-MİSAFİR KABİN 202 Yatak Komodin__2A_ON_1_ARA MERMER _ALT__-1": {
    "ad": "2A ON 1 ARA MERMER ALT -1",
-   "malzeme": ""
+   "malzeme": "mermer",
+   "tur": "parca"
   },
   "NB85-MİSAFİR KABİN 202 Yatak Komodin__2A_ON_1_ARA MERMER _ALT__-2": {
    "ad": "2A ON 1 ARA MERMER ALT -2",
-   "malzeme": ""
+   "malzeme": "mermer",
+   "tur": "parca"
   },
   "NB85-MİSAFİR KABİN 202 Yatak Komodin_KARKASLI_3_KARKASLI_ALT PANEL__2A_DD_KAPAMA__-1": {
    "ad": "KARKASLI 3 KARKASLI ALT PANEL 2A DD KAPAMA -1",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "parca"
   },
   "NB85-MİSAFİR KABİN 202 Yatak Komodin_KARKASLI_3_KARKASLI_ALT PANEL__2A_DD_KAPAMA_1__-1": {
    "ad": "KARKASLI 3 KARKASLI ALT PANEL 2A DD KAPAMA 1 -1",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "parca"
   },
   "NB85-MİSAFİR KABİN 202 Yatak Komodin__2A_ON_ARKA_YAN DİKME-1": {
    "ad": "2A ON ARKA YAN DİKME-1",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "parca"
   },
   "NB85-MİSAFİR KABİN YATAK KOMODİN Phone Charger-1": {
    "ad": "Phone Charger-1",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "aksesuar"
   },
   "NB85-MİSAFİR KABİN 202 Yatak Komodin__2A_ON_1_ARA MERMER _ALT_2__-1": {
    "ad": "2A ON 1 ARA MERMER ALT 2 -1",
-   "malzeme": ""
+   "malzeme": "mermer",
+   "tur": "parca"
   },
   "NB85-MİSAFİR KABİN 202 Yatak Komodin__2A_ON_1_ARA MERMER _ALT_2__-2": {
    "ad": "2A ON 1 ARA MERMER ALT 2 -2",
-   "malzeme": ""
+   "malzeme": "mermer",
+   "tur": "parca"
   },
   "NB85-MİSAFİR KABİN 202 Yatak Komodin__2A_Karkas ARKLK_1_ÜST PANEL__karkas a-1": {
    "ad": "2A Karkas ARKLK 1 ÜST PANEL karkas a-1",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "parca"
   },
   "NB85-MİSAFİR KABİN 202 Yatak Komodin__2A_Karkas ARKLK_1_ÜST PANEL__karkas a-2": {
    "ad": "2A Karkas ARKLK 1 ÜST PANEL karkas a-2",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "parca"
   },
   "NB85-MİSAFİR KABİN 202 Yatak Komodin__2A_Karkas ARKLK_1_ÜST PANEL__karkas abbb-1": {
    "ad": "2A Karkas ARKLK 1 ÜST PANEL karkas abbb-1",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "parca"
   },
   "505-91 MİSAFİR KABİN 202 KOMODİN_FASTMOUNTLU ARKALIK_1_ARKALIK-1": {
    "ad": "FASTMOUNTLU ARKALIK 1 ARKALIK-1",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "parca"
   },
   "FASTMOUNT_PC-RF1_v2-4": {
    "ad": "FASTMOUNT PC-RF1 v2-4",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "aksesuar"
   },
   "FASTMOUNT_PC-RF1_v2-6": {
    "ad": "FASTMOUNT PC-RF1 v2-6",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "aksesuar"
   },
   "FASTMOUNT_PC-RF1_v2-10": {
    "ad": "FASTMOUNT PC-RF1 v2-10",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "aksesuar"
   },
   "FASTMOUNT_PC-RF1_v2-12": {
    "ad": "FASTMOUNT PC-RF1 v2-12",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "aksesuar"
   },
   "505-91 MİSAFİR KABİN 202 KOMODİN_ÇEKMECE_v3_1_KILAPA 1_BLUM_Frenli_Ray-2": {
    "ad": "ÇEKMECE v3 1 KILAPA 1 BLUM Frenli Ray-2",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "aksesuar"
   },
   "505-91 MİSAFİR KABİN 202 KOMODİN_ÇEKMECE_v3_1_KASA_SOL_YAN-7": {
    "ad": "ÇEKMECE v3 1 KASA SOL YAN-7",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "parca"
   },
   "505-91 MİSAFİR KABİN 202 KOMODİN_ÇEKMECE_v3_1_KASA_SAĞ_YAN-7": {
    "ad": "ÇEKMECE v3 1 KASA SAĞ YAN-7",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "parca"
   },
   "505-91 MİSAFİR KABİN 202 KOMODİN_ÇEKMECE_v3_1_KASA_ARKA_BLUM-8": {
    "ad": "ÇEKMECE v3 1 KASA ARKA BLUM-8",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "aksesuar"
   },
   "505-91 MİSAFİR KABİN 202 KOMODİN_ÇEKMECE_v3_1_KASA_TABAN_BLUM-13": {
    "ad": "ÇEKMECE v3 1 KASA TABAN BLUM-13",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "aksesuar"
   },
   "505-91 MİSAFİR KABİN 202 KOMODİN_ÇEKMECE_v3_1_KASA_ON_BLUM-7": {
    "ad": "ÇEKMECE v3 1 KASA ON BLUM-7",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "aksesuar"
   },
   "C.RAY BLUM TANDEM RAY MANDAL T51.1700.04 SOL_v2-1": {
    "ad": "C.RAY BLUM TANDEM RAY MANDAL T51.1700.04 SOL v2-1",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "aksesuar"
   },
   "C.RAY 350 MM BLUM TANDEM 560H3500B SOL_v2-1": {
    "ad": "C.RAY 350 MM BLUM TANDEM 560H3500B SOL v2-1",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "aksesuar"
   },
   "C.RAY 350 MM BLUM TANDEM 560H3500B SAG_v2-1": {
    "ad": "C.RAY 350 MM BLUM TANDEM 560H3500B SAG v2-1",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "aksesuar"
   },
   "C.RAY BLUM TANDEM RAY MANDAL T51.1700.04 SAG_v2-1": {
    "ad": "C.RAY BLUM TANDEM RAY MANDAL T51.1700.04 SAG v2-1",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "aksesuar"
   },
   "505-91 MİSAFİR KABİN 202 KOMODİN_FASTMOUNTLU ARKALIK_2_ARKALIK-1": {
    "ad": "FASTMOUNTLU ARKALIK 2 ARKALIK-1",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "parca"
   },
   "FASTMOUNT_PC-RF1_v2-4 2": {
    "ad": "FASTMOUNT PC-RF1 v2-4 2",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "aksesuar"
   },
   "FASTMOUNT_PC-RF1_v2-6 2": {
    "ad": "FASTMOUNT PC-RF1 v2-6 2",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "aksesuar"
   },
   "FASTMOUNT_PC-RF1_v2-10 2": {
    "ad": "FASTMOUNT PC-RF1 v2-10 2",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "aksesuar"
   },
   "FASTMOUNT_PC-RF1_v2-12 2": {
    "ad": "FASTMOUNT PC-RF1 v2-12 2",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "aksesuar"
   },
   "Radyus7": {
    "ad": "Radyus7",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "aksesuar"
   },
   "Radyus8": {
    "ad": "Radyus8",
-   "malzeme": ""
+   "malzeme": "tanimsiz",
+   "tur": "aksesuar"
   }
+ },
+ "malzemeler": {
+  "mermer": {
+   "ad": "Mermer",
+   "renk": "#e9e4da",
+   "aciklama": "Parça adında mermer geçenler (kontrol edin)"
+  },
+  "paslanmaz": {
+   "ad": "Paslanmaz çelik",
+   "renk": "#9fb0c0",
+   "aciklama": "Parça adında paslanmaz geçenler"
+  },
+  "okaliptus": {
+   "ad": "Okaliptus kaplama",
+   "renk": "#b9854f",
+   "aciklama": "Parça adında okaliptus geçenler"
+  },
+  "tanimsiz": {
+   "ad": "Belirtilmedi",
+   "renk": "#cfd4db",
+   "aciklama": "Malzemesi henüz girilmemiş"
+  }
+ },
+ "plan": {
+  "kabin": "Misafir Kabin 202",
+  "viewBox": "0 0 100 40",
+  "gemi": "M2 8 L70 4 Q98 12 98 20 Q98 28 70 36 L2 32 Z",
+  "konum": {
+   "x": 47,
+   "y": 27
+  },
+  "not": "ÖRNEK PLAN: gerçek yerleşimi data/komodin.json içindeki plan bölümünden veya plan.gorsel ile değiştirin.",
+  "kabinler": [
+   {
+    "ad": "Makine Dairesi",
+    "x": 4,
+    "y": 12,
+    "w": 12,
+    "h": 16,
+    "renk": "#d9d9d9"
+   },
+   {
+    "ad": "Salon",
+    "x": 18,
+    "y": 8,
+    "w": 20,
+    "h": 24,
+    "renk": "#fbe3b0"
+   },
+   {
+    "ad": "Misafir Kabin 201",
+    "x": 40,
+    "y": 8,
+    "w": 20,
+    "h": 11,
+    "renk": "#c9def4"
+   },
+   {
+    "ad": "Misafir Kabin 202",
+    "x": 40,
+    "y": 21,
+    "w": 20,
+    "h": 11,
+    "renk": "#c8ead2"
+   },
+   {
+    "ad": "Master Kabin",
+    "x": 62,
+    "y": 8,
+    "w": 30,
+    "h": 24,
+    "renk": "#f4c7d4"
+   }
+  ]
  }
 }
