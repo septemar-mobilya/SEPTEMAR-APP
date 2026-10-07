@@ -1,100 +1,192 @@
 <!doctype html><html lang="tr"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Septemar · Parça Bulucu</title>
-<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#0f1b2d">
+<title>Septemar · Parça Bulucu</title><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#0f1b2d">
 <style>
 *{box-sizing:border-box}html,body{height:100%;width:100%;margin:0;position:fixed;inset:0;overflow:hidden;overscroll-behavior:none;font:14px system-ui,sans-serif;color:#1c2430;background:#0f1b2d}
-#app{height:100dvh;width:100%;display:grid;grid-template-rows:52px minmax(0,1fr);padding-top:env(safe-area-inset-top);overflow:hidden}
-header{display:flex;align-items:center;gap:8px;padding:0 10px;color:#fff;min-width:0}
-header b{letter-spacing:.18em;font-size:13px}header small{opacity:.6;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-button{border:0;border-radius:8px;padding:9px 12px;font:inherit;background:#e8ecf2;color:#0f1b2d;cursor:pointer}
-button.p{background:#ff7a1a;color:#fff;font-weight:600}
-main{display:grid;grid-template-columns:56px minmax(0,1fr) 340px;min-height:0;min-width:0;background:#eef0f3;border-radius:14px 14px 0 0;overflow:hidden}
-@media(orientation:portrait){main{grid-template-columns:56px minmax(0,1fr);grid-template-rows:minmax(0,1fr) 42%}aside{grid-column:2!important;grid-row:2!important}}
-@media(max-width:600px){header small{display:none}header b{flex:1}header button{padding:8px 10px;font-size:13px}#bar{left:6px;right:6px;bottom:6px}}
-#view{position:relative;min-height:0;min-width:0;overflow:hidden}#view canvas{display:block;width:100%;height:100%;touch-action:none}
-#bar{position:absolute;left:10px;bottom:10px;right:10px;display:flex;gap:8px;align-items:center;background:#fffc;border-radius:10px;padding:6px 10px}
-#bar input{flex:1;min-width:0;touch-action:none}#bar{touch-action:none}#tag{position:absolute;top:10px;left:10px;background:#ff7a1a;color:#fff;padding:3px 8px;border-radius:6px;font-size:12px;display:none}
-aside{background:#fff;display:flex;flex-direction:column;min-height:0;min-width:0;overflow:hidden;padding:10px 10px calc(10px + env(safe-area-inset-bottom));gap:8px}
-#info{max-height:30%;overflow:auto;background:#f4f6f9;border-radius:10px;padding:10px;min-height:60px}#info h3{margin:0 0 4px}#info div{display:flex;justify-content:space-between;gap:8px;font-size:13px;padding:1px 0}
-#q{padding:9px;border:1px solid #ccd3dd;border-radius:8px;font:inherit}
-#list{overflow:auto;flex:1;margin:0;padding:0;list-style:none}
-#list li{padding:9px 8px;border-bottom:1px solid #eef0f3;cursor:pointer;word-break:break-word}#list li.on{background:#fff1e6;border-left:4px solid #ff7a1a}
-.ov{position:fixed;inset:0;background:#000d;z-index:9;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:#fff}
-#cam{width:min(92vw,520px);border-radius:12px}
-#labels{background:#fff;color:#000;overflow:auto;justify-content:flex-start;padding:12px}#grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;width:100%}
-.lb{border:1px solid #000;padding:6px;text-align:center;font-size:11px;break-inside:avoid;word-break:break-word}.lb img{width:110px;height:110px}
+button{border:0;border-radius:8px;padding:8px 12px;font:inherit;background:#e8ecf2;color:#0f1b2d;cursor:pointer}button.p{background:#ff7a1a;color:#fff;font-weight:600}
+#app{height:100dvh;display:grid;grid-template-columns:200px minmax(0,1fr);padding-top:env(safe-area-inset-top)}
+#nav{display:flex;flex-direction:column;color:#cfd8e6;min-height:0;padding:12px 8px calc(10px + env(safe-area-inset-bottom))}
+#logo{text-align:center;color:#fff;padding:6px 0 14px}#logo b{display:block;letter-spacing:.22em;font-size:17px;font-weight:500}#logo small{font-size:8px;letter-spacing:.3em;opacity:.7}
+#items{flex:1;overflow:auto;display:flex;flex-direction:column;gap:2px}
+#nav button{display:flex;align-items:center;gap:12px;background:none;color:#cfd8e6;text-align:left;padding:11px 12px;border-radius:8px;width:100%}
+#nav #items button.on{background:#1d3a63;color:#fff;box-shadow:inset 3px 0 #4aa3ff}#nav #bk{border:1px solid #3a4b66;margin-top:8px}#nav small.t{font-size:11px;opacity:.7;padding:8px 6px 0}
+#main{display:grid;grid-template-rows:auto minmax(0,1fr);min-width:0;background:#eef1f5;border-radius:14px 0 0 14px;overflow:hidden}
+#hd{padding:10px 16px;background:#fff;border-bottom:1px solid #e1e6ee;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center}
+#bc{font-size:12px;color:#5b6676}#ttl{margin:0;font-size:24px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}#chip{font-size:12px;font-weight:500;background:#eef1f5;border-radius:99px;padding:4px 10px}
+#meta{display:flex;gap:24px;flex-wrap:wrap;font-size:12px;color:#5b6676}#meta b{display:block;color:#1c2430;font-size:14px}#hr{grid-row:1/4;grid-column:2;display:flex;gap:8px;align-items:center}#hth{width:76px;height:60px;border-radius:8px;background:#eef1f5;object-fit:cover}
+#body{position:relative;min-height:0}#pg{height:100%;overflow:auto;padding:12px}
+#v3{height:100%;padding:12px;display:grid;grid-template-columns:minmax(0,1fr);gap:12px}#v3.side{grid-template-columns:minmax(0,1fr) 320px}
+@media(orientation:portrait){#v3.side{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) 40%}}
+.cd{background:#fff;border-radius:12px;padding:12px;box-shadow:0 1px 4px #0001;min-width:0}.cd h4{margin:0 0 8px;font-size:15px}.mu{color:#6b7686}
+.g2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}.col{display:flex;flex-direction:column;gap:12px;min-width:0}.slot{height:min(44vh,360px);border-radius:10px;overflow:hidden}#slot{height:100%;min-height:0}
+@media(max-width:820px){.g2{grid-template-columns:minmax(0,1fr)}}
+.pdf{width:100%;height:60vh;border:0}table{width:100%;border-collapse:collapse;font-size:13px}th{text-align:left;color:#5b6676;font-weight:500}td,th{padding:7px 4px;border-bottom:1px solid #eef1f5}a{color:#1a64d6;text-decoration:none}
+#stage{position:relative;width:100%;height:100%;background:#eef0f3;border-radius:10px;overflow:hidden}#stage canvas{position:absolute;inset:0;touch-action:none}
+#tag{position:absolute;top:8px;left:8px;background:#ff7a1a;color:#fff;padding:3px 8px;border-radius:6px;font-size:12px;display:none}
+#tb{position:absolute;left:0;right:0;bottom:0;background:#2b323c;display:flex;justify-content:space-around;z-index:3}#tb button{background:none;color:#dfe5ee;border-radius:0;padding:6px 2px;flex:1;font-size:10px;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}#tb button.on{background:#3d4858;box-shadow:inset 0 -3px #4aa3ff;color:#fff}
+#pop{display:none;position:absolute;left:8px;bottom:56px;width:min(420px,calc(100% - 16px));background:#fffef;background:#fffffff2;border-radius:12px;padding:10px;z-index:4;box-shadow:0 2px 14px #0005;font-size:13px}#pop .row{display:flex;gap:6px;align-items:center;margin:6px 0;flex-wrap:wrap}#pop input[type=range]{flex:1;min-width:0}#pop input[type=number]{width:80px;padding:6px}#pop button.on{background:#1a64d6;color:#fff}
+.tg{position:absolute;display:none;transform:translate(-50%,-130%);background:#d61f1f;color:#fff;padding:2px 7px;border-radius:6px;font-size:12px;font-weight:600;pointer-events:none;white-space:nowrap;z-index:2}
+aside{background:#fff;border-radius:12px;display:flex;flex-direction:column;min-height:0;padding:10px;gap:8px;overflow:hidden}
+#info{background:#f4f6f9;border-radius:10px;padding:10px;max-height:46%;overflow:auto}#info h3{margin:0 0 4px}#info div{display:flex;justify-content:space-between;gap:8px;font-size:13px;padding:1px 0;word-break:break-word}
+#q{padding:9px;border:1px solid #ccd3dd;border-radius:8px;font:inherit}#list{overflow:auto;flex:1;margin:0;padding:0;list-style:none}#list li{padding:9px 8px;border-bottom:1px solid #eef0f3;cursor:pointer;word-break:break-word}#list li.on{background:#fff1e6;border-left:4px solid #ff7a1a}
+i.d{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:8px;vertical-align:middle}.st{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.st button.ok{background:#2e9e5b;color:#fff}
+.ag{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:10px}.ac{border:1px solid #e1e6ee;border-radius:10px;padding:8px;text-align:center;cursor:pointer;display:flex;flex-direction:column;gap:4px;font-size:12px}.ac img{width:84px;height:84px;margin:0 auto;border-radius:8px;background:#eef0f3}
+.pb{height:12px;background:#e3e7ee;border-radius:6px;overflow:hidden}.pb div{height:100%;background:#2e9e5b}.li{padding:9px 4px;border-bottom:1px solid #eef1f5;cursor:pointer}
+@keyframes bl{50%{opacity:.2}}.bl2{animation:bl .7s infinite}
+.ov{position:fixed;inset:0;background:#000d;z-index:9;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:#fff}#cam{width:min(92vw,520px);border-radius:12px}
+#labels{background:#fff;color:#000;overflow:auto;justify-content:flex-start;padding:12px}#grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:8px;width:100%}
+.lb{border:1px solid #000;padding:6px;font-size:11px;display:flex;gap:8px;break-inside:avoid;word-break:break-word}.lb img{width:96px;height:96px}.lb small{font-size:8px;color:#555}
 @media print{body>*:not(#labels){display:none!important}#labels{position:static;display:block!important}#labels .no{display:none}}
-#rail{grid-column:1;grid-row:1/-1;background:#0f1b2d;display:flex;flex-direction:column;gap:4px;padding:8px 2px}#rail button{background:none;color:#fff;font-size:20px;padding:8px 0;width:100%}#rail small{display:block;font-size:10px;opacity:.85}
-#view{grid-column:2;grid-row:1}aside{grid-column:3;grid-row:1}main.closed{grid-template-columns:56px minmax(0,1fr)}main.closed aside{display:none}
-#sheet{display:none;position:absolute;inset:8px 8px 58px;background:#fff;border-radius:12px;padding:14px;overflow:auto;z-index:5;box-shadow:0 4px 24px #0005}#sheet .x{position:absolute;right:8px;top:8px}#sheet h3{margin:0 40px 8px 0}
-#sheet ul{list-style:none;padding:0;margin:8px 0}#sheet li{padding:8px 4px;border-bottom:1px solid #eef0f3;cursor:pointer}i.d{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:8px;vertical-align:middle}
-.pb{height:12px;background:#e3e7ee;border-radius:6px;overflow:hidden}.pb div{height:100%;background:#2e9e5b}.st{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.st button.ok{background:#2e9e5b;color:#fff}
-@keyframes bl{50%{opacity:.2}}.bl{animation:bl 1s infinite}.bl2{animation:bl .7s infinite}.lb{display:flex;gap:8px;text-align:left}.lb img{width:96px;height:96px}.lb small{font-size:8px;color:#555}#grid{grid-template-columns:repeat(auto-fill,minmax(270px,1fr))}
-#rail{overflow-y:auto}#tool{display:none;position:absolute;left:8px;bottom:58px;width:min(340px,calc(100% - 16px));background:#fffe;border-radius:12px;padding:10px;z-index:4;box-shadow:0 2px 14px #0004}#tool .row{display:flex;gap:6px;align-items:center;margin:5px 0}#tool input[type=range]{flex:1;min-width:0;touch-action:none}
+@media(max-width:820px){#app{grid-template-columns:54px minmax(0,1fr)}#nav button span,#logo b,#logo small,#nav small.t{display:none}#nav button{justify-content:center;padding:11px 0}#logo:before{content:"S";font-size:22px}.slot{height:min(40vh,300px)}}
+@media(max-width:820px),(max-height:520px){#meta{display:none}#hth{display:none}#ttl{font-size:18px}#hd{padding:6px 10px}}
 </style></head><body>
-<div id="app"><header><b>SEPTEMAR</b><small id="title">Parça Bulucu</small><button class="p" id="scan">QR Okut</button><button id="lab">QR Etiketleri</button></header>
-<main><nav id="rail"><button id="bList">☰<small>Liste</small></button><button id="bKonum">📍<small>Konum</small></button><button id="bAks">🔩<small>Aksesuar</small></button><button id="bMal">🎨<small>Malzeme</small></button><button id="bUr">🏭<small>Üretim</small></button><button id="bKes">✂️<small>Kesit</small></button><button id="bOlc">📏<small>Ölçü</small></button></nav><div id="view"><div id="sheet"></div><div id="tool"></div><span id="tag">DEMO MODEL</span><div id="bar"><span>Patlat</span><input id="ex" type="range" min="0" max="1" step=".01" value="0"><button id="clr">Sıfırla</button></div></div>
-<aside><div id="info"><h3>Parça seçilmedi</h3>Listeden seç veya QR okut.</div><input id="q" placeholder="Parça ara…"><ul id="list"></ul></aside></main></div>
+<div id="app"><nav id="nav"><div id="logo"><b>SEPTEMAR</b><small>YACHT INTERIORS</small></div><div id="items"></div><button id="bk">←<span> Geri</span></button><small class="t">Better Spaces At Sea</small></nav>
+<div id="main"><header id="hd"><div id="bc"></div><h1 id="ttl"></h1><div id="meta"></div><div id="hr"><button id="scan" class="p">QR Okut</button><button id="lab">QR Etiketleri</button><img id="hth" alt=""></div></header>
+<div id="body"><div id="pg"></div><div id="v3"><div class="cd" id="slot" style="padding:0"><div id="stage"><span id="tag">DEMO MODEL</span><div class="tg"></div><div class="tg"></div><div class="tg"></div><div id="pop"></div><div id="tb"></div></div></div>
+<aside><div id="info"></div><input id="q" placeholder="Parça ara…"><ul id="list"></ul></aside></div></div></div></div>
 <div class="ov" id="scanov"><video id="cam" playsinline muted></video><div>QR kodu kameraya göster</div><button id="x1">Kapat</button></div>
 <div class="ov" id="labels"><div class="no"><button class="p" onclick="print()">Yazdır</button> <button id="x2">Kapat</button></div><div id="grid"></div></div>
-<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script><script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 <script type="module">
 import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
-const $=s=>document.querySelector(s),mats=m=>[].concat(m.material);
-const scene=new THREE.Scene();scene.background=new THREE.Color(0xeef0f3);
-const cam=new THREE.PerspectiveCamera(40,1,.01,100);cam.position.set(1.2,.8,1.6);
-const ren=new THREE.WebGLRenderer({antialias:true});ren.setPixelRatio(Math.min(devicePixelRatio,2));$('#view').prepend(ren.domElement);
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],mats=m=>[].concat(m.material);
+const IC={home:'M3 11l9-8 9 8M5 10v10h14V10',draw:'M4 4h16v16H4zM4 15l5-5 4 4 3-3 4 4',cube:'M12 2l9 5v10l-9 5-9-5V7zM12 12l9-5M12 12v10M12 12L3 7',list:'M5 4h14v16H5zM9 9h6M9 13h6M9 17h4',gear:'M12 2v4M12 18v4M2 12h4M18 12h4M5 5l3 3M16 16l3 3M19 5l-3 3M8 16l-3 3M12 9a3 3 0 100 6 3 3 0 000-6',pal:'M12 3a9 9 0 100 18c1.5 0 2-1 1.5-2s0-2 1.5-2h2a3 3 0 003-3c0-6-4-11-8-11zM7.5 11h.01M10 7h.01M15 7h.01',pin:'M12 21s-7-6-7-11a7 7 0 0114 0c0 5-7 11-7 11zM12 7.5a2.5 2.5 0 100 5 2.5 2.5 0 000-5',fac:'M3 21V10l6 4v-4l6 4V6h6v15z',clip:'M7 4h10v17H7zM10 3h4v3h-4zM9 11h6M9 15h6',shield:'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6zM8.5 12l2.5 2.5L16 9.5',box:'M3 8l9-5 9 5v8l-9 5-9-5zM3 8l9 5 9-5M12 13v8',truck:'M3 6h11v10H3zM14 9h4l3 3v4h-7z',doc:'M6 3h9l4 4v14H6zM14 3v5h5',rot:'M21 12a9 9 0 11-3-6.7M21 4v5h-5',pan:'M12 3v18M3 12h18M12 3l-3 3M12 3l3 3M12 21l-3-3M12 21l3-3M3 12l3-3M3 12l3 3M21 12l-3-3M21 12l-3 3',zoom:'M11 4a7 7 0 100 14 7 7 0 000-14zM21 21l-5-5M11 8v6M8 11h6',cut:'M5 5h14v14H5zM2 12h20',rule:'M3 15L15 3l6 6L9 21zM8 10l2 2M11 7l2 2M5 13l2 2',tree:'M4 5h4M10 5h10M7 12h4M13 12h7M7 19h4M13 19h7M4 5v14M4 12h3M4 19h3'};
+const svg=(d,s=22)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="${d}"/></svg>`;
+const NAV=[['ov','Genel Bakış','home'],['tr','Teknik Resim','draw'],['3d','3D Model','cube'],['pl','Parça Listesi','list'],['ak','Aksesuar Listesi','gear'],['ml','Malzeme Lejantı','pal'],['ko','Kabin Konumu','pin'],['ur','Üretim Bilgisi','fac'],['mt','Montaj Talimatı','clip'],['kk','Kalite Kontrol','shield'],['pk','Paketleme','box'],['sv','Sevkiyat','truck'],['dk','İlgili Dokümanlar','doc']];
+$('#items').innerHTML=NAV.map(([v,t,i])=>`<button data-v="${v}" title="${t}">${svg(IC[i])}<span>${t}</span></button>`).join('');
+$('#tb').innerHTML=[['rot','Döndür','rot'],['pan','Kaydır','pan'],['fit','Yakınlaştır','zoom'],['view','Görünüm','cube'],['cut','Kesit','cut'],['olc','Ölçü','rule'],['tree','Parça Ağacı','tree']].map(([t,l,i])=>`<button data-t="${t}">${svg(IC[i],20)}${l}</button>`).join('');
+const stage=$('#stage'),scene=new THREE.Scene();scene.background=new THREE.Color(0xeef0f3);
+const cam=new THREE.PerspectiveCamera(40,1,.001,100);cam.position.set(1.2,.8,1.6);
+const ren=new THREE.WebGLRenderer({antialias:true,stencil:true});ren.localClippingEnabled=true;ren.setPixelRatio(Math.min(devicePixelRatio,2));stage.prepend(ren.domElement);
 scene.add(new THREE.HemisphereLight(0xffffff,0x8892a0,1.2));const dl=new THREE.DirectionalLight(0xffffff,1.6);dl.position.set(2,3,2);scene.add(dl);
 const ctl=new OrbitControls(cam,ren.domElement);ctl.enableDamping=true;
-const fit=()=>{const v=$('#view');ren.setSize(v.clientWidth,v.clientHeight);cam.aspect=v.clientWidth/v.clientHeight;cam.updateProjectionMatrix()};
-addEventListener('resize',fit);new ResizeObserver(fit).observe($('#view'));
-let BB,meas=false,pts=[],data={},parts={},sel=[],F=1,sc=1,paint=false,dur={};try{dur=JSON.parse(localStorage.durum||'{}')}catch{}
+const fitSz=()=>{const w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)return;ren.setSize(w,h);cam.aspect=w/h;cam.updateProjectionMatrix()};new ResizeObserver(fitSz).observe(stage);
+let data={},parts={},sel=[],F=1,sc=1,BB=new THREE.Box3(),paint=false,dur={},allMeshes=[],cur='',mode='rot',tool=null,meas=false,pts=[],exv=0,TH={};try{dur=JSON.parse(localStorage.durum||'{}')}catch{}
+const gz=new THREE.Group();scene.add(gz);
 const nm=k=>data.parts?.[k]?.ad||['NB85-MİSAFİR KABİN 202 ','505-91 MİSAFİR KABİN 202 KOMODİN_','NB85-MİSAFİR KABİN YATAK KOMODİN ','Yatak Komodin_','Yatak Komodin'].reduce((a,p)=>a.replace(p,''),k).replace(/_/g,' ').trim();
-
+const ACC=/BLUM|FASTMOUNT_PC|Lutron|SOCKET|Charger|FARŞ|Radyus|C\.RAY|KILAPA|_KASA_/i;let tr={};try{tr=JSON.parse(localStorage.tur||'{}')}catch{}
+const T=k=>tr[k]||data.parts?.[k]?.tur||(ACC.test(k)?'aksesuar':'parca');
+const AS={parca:['Kesim','Kenar bandı','Montaj','Kalite'],aksesuar:['Tedarik','Takıldı']};
+const stg=k=>(data.asamalar||AS)[T(k)],done=k=>dur[k]||0,col=k=>!done(k)?'#b8c0cc':done(k)>=stg(k).length?'#2e9e5b':'#f2a516',save=()=>{try{localStorage.durum=JSON.stringify(dur)}catch{}},stt=k=>done(k)?stg(k)[done(k)-1]:'Başlamadı';
 function demo(){const g=new THREE.Group(),W=(c,m=.6,mt=0)=>new THREE.MeshStandardMaterial({color:c,roughness:m,metalness:mt});
- [['01_Sol Yan',[.018,.5,.4],[-.241,0,0],0],['02_Sağ Yan',[.018,.5,.4],[.241,0,0],0],['03_Üst Panel',[.5,.018,.4],[0,.241,0],0],['04_Alt Panel',[.5,.018,.4],[0,-.241,0],0],
- ['05_Arka Panel',[.464,.464,.008],[0,0,-.196],0],['06_Çekmece Kasa Üst',[.42,.15,.34],[0,.12,.02],1],['07_Çekmece Kasa Alt',[.42,.15,.34],[0,-.1,.02],1],
- ['08_Çekmece Ön Üst',[.46,.2,.02],[0,.12,.2],0],['09_Çekmece Ön Alt',[.46,.2,.02],[0,-.1,.2],0],['10_Kulp Üst',[.1,.012,.012],[0,.12,.222],2],['11_Kulp Alt',[.1,.012,.012],[0,-.1,.222],2]]
- .forEach(([n,s,p,t])=>{const p0=new THREE.Group();p0.name='KOMODIN-'+n;const m=new THREE.Mesh(new THREE.BoxGeometry(...s),W([0xb08a5a,0x9aa0a6,0xcfd3d8][t],.6,t==2?.8:0));m.position.set(...p);p0.add(m);g.add(p0)});return g}
-
+ [['01_Sol Yan',[.018,.5,.4],[-.241,0,0],0],['02_Sağ Yan',[.018,.5,.4],[.241,0,0],0],['03_Üst Panel',[.5,.018,.4],[0,.241,0],0],['04_Alt Panel',[.5,.018,.4],[0,-.241,0],0],['05_Arka Panel',[.464,.464,.008],[0,0,-.196],0],['08_Çekmece Ön Üst',[.46,.2,.02],[0,.12,.2],0],['09_Çekmece Ön Alt',[.46,.2,.02],[0,-.1,.2],0]].forEach(([n,s,p])=>{const g0=new THREE.Group();g0.name='KOMODIN-'+n;const m=new THREE.Mesh(new THREE.BoxGeometry(...s),W(0xb08a5a));m.position.set(...p);g0.add(m);g.add(g0)});return g}
 async function boot(){
  try{data=await(await fetch('data/komodin.json')).json()}catch{}
  let root;try{root=(await new GLTFLoader().loadAsync(data.model||'models/komodin.glb')).scene}catch(e){root=demo();$('#tag').style.display='block'}
  const model=new THREE.Group();model.add(root);scene.add(model);
- const b=new THREE.Box3().setFromObject(model);const M=Math.max(...b.getSize(new THREE.Vector3()).toArray());F=M<20?1000:1;sc=1/M;model.scale.setScalar(sc);model.updateMatrixWorld(true);
+ const b=new THREE.Box3().setFromObject(model),M=Math.max(...b.getSize(new THREE.Vector3()).toArray());F=M<20?1000:1;sc=1/M;model.scale.setScalar(sc);model.updateMatrixWorld(true);
  model.position.sub(new THREE.Box3().setFromObject(model).getCenter(new THREE.Vector3()));model.updateMatrixWorld(true);BB=new THREE.Box3().setFromObject(model);
  root.traverse(o=>{if(!o.isMesh)return;let p=o.parent;const N=x=>x.userData.name||x.name;while(p&&p!==root&&N(p).includes(' - Parça'))p=p.parent;
-  const k=(p&&p!==root&&N(p))||N(o)||o.uuid.slice(0,6);(parts[k]??={meshes:[]}).meshes.push(o);
-  o.material=Array.isArray(o.material)?o.material.map(x=>x.clone()):o.material.clone();mats(o).forEach(x=>{x.userData.c0=x.color&&x.color.clone();x.userData.s0=x.side;x.userData.m0=x.map});o.userData.w0=o.getWorldPosition(new THREE.Vector3())});
+  const k=(p&&p!==root&&N(p))||N(o)||o.uuid.slice(0,6);(parts[k]??={meshes:[]}).meshes.push(o);allMeshes.push(o);o.userData.k=k;
+  o.material=Array.isArray(o.material)?o.material.map(x=>x.clone()):o.material.clone();mats(o).forEach(x=>{x.userData.c0=x.color&&x.color.clone();x.userData.m0=x.map});o.userData.w0=o.getWorldPosition(new THREE.Vector3())});
  for(const p of Object.values(parts)){const bb=new THREE.Box3();p.meshes.forEach(m=>bb.expandByObject(m));p.dir=bb.getCenter(new THREE.Vector3()).normalize();p.dim=bb.getSize(new THREE.Vector3()).toArray().map(v=>Math.round(v/sc*F)).sort((a,b)=>b-a)}
- $('#title').textContent=data.title||'Komodin · '+Object.keys(parts).length+' parça';
- list();const q=new URLSearchParams(location.search).get('p');if(q)pick(q);
+ init();
 }
-const AS={parca:['Kesim','Kenar bandı','Montaj','Kalite'],aksesuar:['Tedarik','Takıldı']};
-const ACC=/BLUM|FASTMOUNT_PC|Lutron|SOCKET|Charger|FARŞ|Radyus|C\.RAY|KILAPA|_KASA_/i;let tr={};try{tr=JSON.parse(localStorage.tur||'{}')}catch{}
-const T=k=>tr[k]||data.parts?.[k]?.tur||(ACC.test(k)?'aksesuar':'parca'),stg=k=>(data.asamalar||AS)[T(k)],done=k=>dur[k]||0,col=k=>!done(k)?'#b8c0cc':done(k)>=stg(k).length?'#2e9e5b':'#f2a516',save=()=>{try{localStorage.durum=JSON.stringify(dur)}catch{}};
+function snap(ms,n=112){const bb=new THREE.Box3();ms.forEach(m=>bb.expandByObject(m));const c=bb.getCenter(new THREE.Vector3()),r=bb.getSize(new THREE.Vector3()).length()||.1;
+ const rt=new THREE.WebGLRenderTarget(n,n);rt.texture.colorSpace=THREE.SRGBColorSpace;const tc=new THREE.PerspectiveCamera(35,1,r/100,r*20);tc.position.copy(c).add(new THREE.Vector3(.8,.6,1).normalize().multiplyScalar(r*1.7));tc.lookAt(c);
+ const vis=allMeshes.map(m=>m.visible),set=new Set(ms);allMeshes.forEach(m=>m.visible=set.has(m));gz.visible=false;const old=ren.getRenderTarget();
+ ren.setRenderTarget(rt);ren.render(scene,tc);const buf=new Uint8Array(n*n*4);ren.readRenderTargetPixels(rt,0,0,n,n,buf);ren.setRenderTarget(old);
+ allMeshes.forEach((m,i)=>m.visible=vis[i]);gz.visible=true;rt.dispose();
+ const cv=document.createElement('canvas');cv.width=cv.height=n;const x=cv.getContext('2d'),im=x.createImageData(n,n);for(let y=0;y<n;y++)im.data.set(buf.subarray((n-1-y)*n*4,(n-y)*n*4),y*n*4);x.putImageData(im,0,0);return cv.toDataURL()}
+const thumb=k=>TH[k]??=snap(parts[k].meshes);
 function list(f=''){const ul=$('#list');ul.innerHTML='';Object.keys(parts).filter(k=>T(k)=='parca'&&(k+nm(k)).toLowerCase().includes(f.toLowerCase())).forEach(k=>{const li=document.createElement('li');li.innerHTML=`<i class="d" style="background:${col(k)}"></i>${nm(k)}`;if(sel.includes(k))li.className='on';li.onclick=()=>select(k);ul.append(li)})}
 $('#q').oninput=e=>list(e.target.value);
-function pick(t){const ks=Object.keys(parts);const k=ks.find(x=>x===t)||ks.find(x=>x.toLowerCase().includes(t.toLowerCase()));k?select(k):alert('Parça bulunamadı: '+t)}
 function info(){const el=$('#info');if(!sel.length){el.innerHTML='<h3>Parça seçilmedi</h3>Listeden seç veya QR okut.';return}
  if(sel.length>1){el.innerHTML=`<h3>${sel.length} parça seçili</h3>`;return}
  const k=sel[0],e=data.parts?.[k]||{},m=data.malzemeler?.[e.malzeme];
  el.innerHTML=`<h3>${nm(k)}</h3><div><span>Kod</span><b>${k}</b></div><div><span>Tür</span><b>${T(k)=='parca'?'Üretim parçası':'Aksesuar'}</b></div><div><span>Ölçü (kutu)</span><b>${parts[k].dim.join('×')} mm</b></div><div><span>Malzeme</span><b>${m?m.ad:'—'}</b></div>`+(e.not?`<div><span>Not</span><b>${e.not}</b></div>`:'')+`<div class="st">${stg(k).map((t,i)=>`<button data-i="${i}" class="${i<done(k)?'ok':''}">${t}</button>`).join('')}</div><button id="mv" style="margin-top:8px">${T(k)=='parca'?'Aksesuara taşı':'Üretim parçasına taşı'}</button>`;
  el.querySelector('#mv').onclick=()=>{tr[k]=T(k)=='parca'?'aksesuar':'parca';try{localStorage.tur=JSON.stringify(tr)}catch{};info();list($('#q').value)};
  el.querySelectorAll('.st button').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;dur[k]=done(k)==i+1?i:i+1;save();info();list($('#q').value)})}
-function select(ks){sel=[].concat(ks||[]).filter(k=>parts[k]);$('#sheet').style.display='none';
+function focus(ks){const bb=new THREE.Box3();(ks.length?ks.flatMap(k=>parts[k].meshes):allMeshes).forEach(m=>bb.expandByObject(m));const c=bb.getCenter(new THREE.Vector3()),s=bb.getSize(new THREE.Vector3()).length();const d=cam.position.clone().sub(ctl.target).normalize();ctl.target.copy(c);cam.position.copy(c).addScaledVector(d,ks.length?Math.max(s*2.5,.5):1.9)}
+function select(ks){sel=[].concat(ks||[]).filter(k=>parts[k]);
  for(const[n,p]of Object.entries(parts))p.meshes.forEach(m=>mats(m).forEach(x=>{const d=sel.length&&!sel.includes(n);x.transparent=!!d;x.opacity=d?.1:1;x.depthWrite=!d;if(x.emissive)x.emissiveIntensity=0;x.needsUpdate=true}));
- if(sel.length){const bb=new THREE.Box3();sel.forEach(k=>parts[k].meshes.forEach(m=>bb.expandByObject(m)));const c=bb.getCenter(new THREE.Vector3()),s=bb.getSize(new THREE.Vector3()).length();const d=cam.position.clone().sub(ctl.target).normalize();ctl.target.copy(c);cam.position.copy(c).addScaledVector(d,Math.max(s*2.5,.7))}
- info();list($('#q').value)}
-$('#clr').onclick=()=>{select(null);$('#ex').value=0;explode(0)};
-function explode(v){for(const p of Object.values(parts))p.meshes.forEach(m=>{const w=m.userData.w0.clone().addScaledVector(p.dir,v*.5);m.position.copy(m.parent.worldToLocal(w))})}
-$('#ex').oninput=e=>explode(+e.target.value);
-const clock=new THREE.Clock();(function loop(){requestAnimationFrame(loop);if(sel.length){const e=.5+.5*Math.sin(clock.getElapsedTime()*6);sel.forEach(k=>parts[k].meshes.forEach(m=>mats(m).forEach(x=>{if(x.emissive){x.emissive.setHex(0xff5a00);x.emissiveIntensity=.15+e*1.6}})))}ctl.update();ren.render(scene,cam)})();
+ if(cur!='3d'&&cur!='pl')go('3d',{side:true});if(sel.length)focus(sel);info();list($('#q').value)}
+function pick(t){const ks=Object.keys(parts),k=ks.find(x=>x===t)||ks.find(x=>x.toLowerCase().includes(t.toLowerCase()));k?select(k):alert('Parça bulunamadı: '+t)}
+function explode(v){exv=v;for(const p of Object.values(parts))p.meshes.forEach(m=>{m.position.copy(m.parent.worldToLocal(m.userData.w0.clone().addScaledVector(p.dir,v*.5)))})}
+const clock=new THREE.Clock(),tags=[],tgEl=$$('.tg');
+(function loop(){requestAnimationFrame(loop);if(sel.length){const e=.5+.5*Math.sin(clock.getElapsedTime()*6);sel.forEach(k=>parts[k].meshes.forEach(m=>mats(m).forEach(x=>{if(x.emissive){x.emissive.setHex(0xff5a00);x.emissiveIntensity=.15+e*1.6}})))}
+ ctl.update();ren.render(scene,cam);const W=stage.clientWidth,H=stage.clientHeight;tgEl.forEach((el,i)=>{const t=tags[i];if(!t){el.style.display='none';return}const p=t.v.clone().project(cam);el.style.display=p.z<1?'block':'none';el.textContent=t.s;el.style.left=(p.x*.5+.5)*W+'px';el.style.top=(-p.y*.5+.5)*H+'px'})})();
+
+/* ---- kesit (eDrawings tarzı: düzlem + tutamaç + dolu kesit yüzü) ---- */
+const AXN=['Sağ','Üst','Ön'],pl=[0,1,2].map(i=>{const q={i,on:false,s:1,v:0,p:new THREE.Plane(new THREE.Vector3(),0)};
+ q.cap=new THREE.Mesh(new THREE.PlaneGeometry(4,4),new THREE.MeshStandardMaterial({color:0xe3b07a,roughness:.8,side:THREE.DoubleSide,stencilWrite:true,stencilRef:0,stencilFunc:THREE.NotEqualStencilFunc,stencilFail:THREE.ReplaceStencilOp,stencilZFail:THREE.ReplaceStencilOp,stencilZPass:THREE.ReplaceStencilOp}));
+ q.quad=new THREE.Mesh(new THREE.PlaneGeometry(1.3,1.3),new THREE.MeshBasicMaterial({color:0x2a7fff,opacity:.14,transparent:true,depthWrite:false,side:THREE.DoubleSide}));
+ [q.cap,q.quad].forEach(o=>{if(i==0)o.rotation.y=Math.PI/2;if(i==1)o.rotation.x=-Math.PI/2;o.visible=false;gz.add(o)});q.cap.renderOrder=i+1.1;q.cap.onAfterRender=r=>r.clearStencil();return q});
+let ap=2;const hd3=new THREE.Mesh(new THREE.SphereGeometry(.035),new THREE.MeshBasicMaterial({color:0x1e88e5,depthTest:false}));hd3.renderOrder=30;hd3.visible=false;gz.add(hd3);
+function mkStencil(q){q.sg=allMeshes.map(m=>{const g=new THREE.Group();[[THREE.BackSide,THREE.IncrementWrapStencilOp],[THREE.FrontSide,THREE.DecrementWrapStencilOp]].forEach(([side,op])=>{const s=new THREE.Mesh(m.geometry,new THREE.MeshBasicMaterial({depthWrite:false,depthTest:false,colorWrite:false,stencilWrite:true,stencilFunc:THREE.AlwaysStencilFunc,side,clippingPlanes:[q.p],stencilFail:op,stencilZFail:op,stencilZPass:op}));s.renderOrder=1+q.i;g.add(s)});m.add(g);return g})}
+function applyCut(){const a=pl.filter(q=>q.on);
+ pl.forEach(q=>{q.p.normal.set(0,0,0).setComponent(q.i,q.s);q.p.constant=-q.s*q.v;if(q.on&&!q.sg)mkStencil(q);q.sg?.forEach(g=>g.visible=q.on);q.cap.visible=q.quad.visible=q.on;
+  q.cap.material.clippingPlanes=a.filter(o=>o!==q).map(o=>o.p);q.cap.material.needsUpdate=true;q.cap.position.set(0,0,0).setComponent(q.i,q.v);q.quad.position.copy(q.cap.position)});
+ allMeshes.forEach(m=>mats(m).forEach(x=>{x.clippingPlanes=a.length?a.map(q=>q.p):null;x.needsUpdate=true}));
+ const q=pl[ap];hd3.visible=!!q.on&&tool=='cut';if(q.on)hd3.position.copy(BB.getCenter(new THREE.Vector3())).setComponent(q.i,q.v)}
+const mid=i=>(BB.min.getComponent(i)+BB.max.getComponent(i))/2;
+/* ---- ölçü: yüzey boyama + A/B etiketleri ---- */
+const fm=[];
+function faceReg(m,fi){const g=m.geometry,P=g.attributes.position,I=g.index,vi=(t,j)=>I?I.getX(3*t+j):3*t+j,V=i=>new THREE.Vector3().fromBufferAttribute(P,i);let A=g.userData.adj;
+ if(!A){const n=(I?I.count:P.count)/3,mp=new Map(),ns=[],ks=[];for(let t=0;t<n;t++){const a=V(vi(t,0)),b=V(vi(t,1)),c=V(vi(t,2));ns.push(b.clone().sub(a).cross(c.clone().sub(a)).normalize());ks.push([0,1,2].map(j=>{const v=V(vi(t,j));return Math.round(v.x*1e4)+','+Math.round(v.y*1e4)+','+Math.round(v.z*1e4)}));ks[t].forEach(k=>(mp.get(k)||mp.set(k,[]).get(k)).push(t))}A=g.userData.adj={n,mp,ns,ks}}
+ g.computeBoundingBox();const tol=g.boundingBox.getSize(new THREE.Vector3()).length()*2e-4,n0=A.ns[fi],v0=V(vi(fi,0)),seen=new Set([fi]),st=[fi];
+ while(st.length){const t=st.pop();A.ks[t].forEach(k=>A.mp.get(k).forEach(u=>{if(seen.has(u))return;if(A.ns[u].dot(n0)>.9995&&Math.abs(n0.dot(V(vi(u,0)).sub(v0)))<tol){seen.add(u);st.push(u)}}))}
+ const arr=[];seen.forEach(t=>[0,1,2].forEach(j=>{const v=V(vi(t,j));arr.push(v.x,v.y,v.z)}));const gg=new THREE.BufferGeometry();gg.setAttribute('position',new THREE.Float32BufferAttribute(arr,3));
+ const me=new THREE.Mesh(gg,new THREE.MeshBasicMaterial({color:0xff1a1a,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:-4,polygonOffsetUnits:-4}));m.add(me);fm.push(me);return n0}
+function clrM(){fm.splice(0).forEach(f=>f.parent?.remove(f));gz.children.filter(c=>c.userData.mk).forEach(c=>gz.remove(c));pts=[];tags.length=0;const r=$('#mres');if(r)r.innerHTML='Modelde ölçmek istediğiniz <b>1. yüzeye</b> dokunun.'}
+function addPt(h){if(pts.length>=2)clrM();const m=h.object,n=faceReg(m,h.faceIndex).transformDirection(m.matrixWorld);pts.push({v:h.point.clone(),n,k:m.userData.k});
+ const s=new THREE.Mesh(new THREE.SphereGeometry(.008),new THREE.MeshBasicMaterial({color:0xff1a1a,depthTest:false}));s.position.copy(h.point);s.renderOrder=40;s.userData.mk=1;gz.add(s);tags.push({v:h.point.clone(),s:pts.length==1?'A':'B'});
+ if(pts.length==1){$('#mres').innerHTML='<b>A:</b> '+nm(pts[0].k)+'<br>Şimdi <b>2. yüzeye</b> dokunun.';return}
+ const[A,B]=pts,d=B.v.clone().sub(A.v),f=F/sc,l=new THREE.Line(new THREE.BufferGeometry().setFromPoints([A.v,B.v]),new THREE.LineBasicMaterial({color:0xff1a1a,depthTest:false}));l.renderOrder=40;l.userData.mk=1;gz.add(l);
+ tags.push({v:A.v.clone().add(B.v).multiplyScalar(.5),s:(d.length()*f).toFixed(1)+' mm'});
+ const par=Math.abs(A.n.dot(B.n))>.999?`<br>Yüzeyler arası dik mesafe: <b>${(Math.abs(A.n.dot(d))*f).toFixed(1)} mm</b>`:'';
+ $('#mres').innerHTML=`<b>A:</b> ${nm(A.k)}<br><b>B:</b> ${nm(B.k)}<br><span style="font-size:20px;font-weight:700;color:#d61f1f">${(d.length()*f).toFixed(1)} mm</span> (A→B)<br>ΔX ${(Math.abs(d.x)*f).toFixed(1)} · ΔY ${(Math.abs(d.y)*f).toFixed(1)} · ΔZ ${(Math.abs(d.z)*f).toFixed(1)} mm${par}`}
+/* ---- araç çubuğu ---- */
+function resetTools(){tool=null;meas=false;$('#pop').style.display='none';clrM();pl.forEach(q=>q.on=false);applyCut();hl()}
+function hl(){$$('#tb [data-t]').forEach(b=>{const t=b.dataset.t;b.classList.toggle('on',t==tool||t==mode||(t=='tree'&&$('#v3').classList.contains('side')&&cur!='ov'))})}
+function setMode(m){mode=m;ctl.mouseButtons.LEFT=m=='pan'?THREE.MOUSE.PAN:THREE.MOUSE.ROTATE;ctl.touches.ONE=m=='pan'?THREE.TOUCH.PAN:THREE.TOUCH.ROTATE;hl()}
+function popUI(){const p=$('#pop'),q=pl[ap];p.style.display=tool?'block':'none';
+ if(tool=='view'){p.innerHTML=`<b>Görünüm</b><div class="row">${[['f','Ön'],['t','Üst'],['r','Sağ'],['i','İzometrik']].map(([k,l])=>`<button data-vw="${k}">${l}</button>`).join('')}</div><div class="row">Patlat <input id="ex" type="range" min="0" max="1" step=".01" value="${exv}"></div><div class="row"><button id="clr">Seçimi temizle</button></div>`;
+  p.querySelectorAll('[data-vw]').forEach(b=>b.onclick=()=>{const d=Math.max(cam.position.distanceTo(ctl.target),1),v={f:[0,0,1],t:[0,.001,1e-3],r:[1,0,0],i:[.6,.45,.8]}[b.dataset.vw];if(b.dataset.vw=='t')v.splice(0,3,0,1,.001);ctl.target.set(0,0,0);cam.position.set(...v).normalize().multiplyScalar(d)});
+  $('#ex').oninput=e=>explode(+e.target.value);$('#clr').onclick=()=>select(null)}
+ if(tool=='cut'){p.innerHTML=`<b>Kesit düzlemi</b><div class="row">${[2,1,0].map(i=>`<button data-pi="${i}" class="${pl[i].on?'on':''}">${AXN[i]}</button>`).join('')}</div>`+(q.on?`<div class="row">Mesafe <button id="cm">−</button><input id="cv" type="number" value="${Math.round((q.v-BB.min.getComponent(q.i))/sc*F)}"> mm <button id="cp">+</button><button id="cf">⇄ Ters çevir</button></div><small>Mavi noktayı sürükleyerek de kesebilirsiniz.</small>`:'<small>Bir düzlem seçin: Ön, Üst veya Sağ. Birden fazlası birlikte açılabilir.</small>')+'<div class="row"><button id="cx">Kesiti kapat</button></div>';
+  p.querySelectorAll('[data-pi]').forEach(b=>b.onclick=()=>{const i=+b.dataset.pi,z=pl[i];if(ap==i&&z.on)z.on=false;else{z.on=true;ap=i;if(!z.v)z.v=mid(i)}applyCut();popUI()});
+  if(q.on){const st=d=>{q.v=Math.min(BB.max.getComponent(q.i),Math.max(BB.min.getComponent(q.i),q.v+d*sc/F));applyCut();popUI()};$('#cm').onclick=()=>st(-10);$('#cp').onclick=()=>st(10);$('#cf').onclick=()=>{q.s*=-1;applyCut()};$('#cv').onchange=e=>{q.v=BB.min.getComponent(q.i)+(+e.target.value)*sc/F;applyCut()}}
+  $('#cx').onclick=()=>{pl.forEach(z=>z.on=false);applyCut();popUI()}}
+ if(tool=='olc'){p.innerHTML='<b>Ölçü</b> <button id="mc">Temizle</button><div id="mres"></div>';$('#mc').onclick=clrM;clrM()}}
+$$('#tb [data-t]').forEach(b=>b.onclick=()=>{const t=b.dataset.t;if(t=='rot'||t=='pan')return setMode(t);if(t=='fit')return focus(sel);
+ if(t=='tree'){if(cur=='ov')return go('pl');$('#v3').classList.toggle('side');return hl()}
+ const was=tool;resetTools();if(was!=t){tool=t;meas=t=='olc';pl.forEach(z=>{if(!z.v)z.v=mid(z.i)});popUI();hl();applyCut()}});
+const rc=new THREE.Raycaster();let dn=null,drag=false;const ray=e=>{const r=ren.domElement.getBoundingClientRect();rc.setFromCamera(new THREE.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1),cam)};
+ren.domElement.addEventListener('pointerdown',e=>{dn=[e.clientX,e.clientY];if(tool=='cut'&&hd3.visible){ray(e);if(rc.intersectObject(hd3).length){drag=true;ctl.enabled=false}}},true);
+addEventListener('pointermove',e=>{if(!drag)return;ray(e);const q=pl[ap],d1=new THREE.Vector3().setComponent(q.i,1),d2=rc.ray.direction,w0=hd3.position.clone().sub(rc.ray.origin),b=d1.dot(d2),den=1-b*b;if(den<1e-6)return;
+ const s=(b*d2.dot(w0)-d1.dot(w0))/den;q.v=Math.min(BB.max.getComponent(q.i),Math.max(BB.min.getComponent(q.i),q.v+s));applyCut();const c=$('#cv');if(c)c.value=Math.round((q.v-BB.min.getComponent(q.i))/sc*F)});
+addEventListener('pointerup',e=>{if(drag){drag=false;ctl.enabled=true;return}if(!meas||!dn||e.target!==ren.domElement||Math.hypot(e.clientX-dn[0],e.clientY-dn[1])>6)return;ray(e);
+ const h=rc.intersectObjects(allMeshes,false).find(h=>mats(h.object)[0].opacity>.5&&h.object.visible);if(h)addPt(h)});
+/* ---- sayfalar ---- */
+const card=(t,b)=>`<div class="cd"><h4>${t}</h4>${b}</div>`,pdfU=()=>data.pdf||(data.dosyalar||[]).find(f=>/pdf/i.test((f.tur||'')+f.url))?.url;
+const table=()=>(data.dosyalar||[]).length?`<table><tr><th>Ad</th><th>Tür</th><th>Rev.</th><th>Tarih</th><th>İndir</th></tr>${data.dosyalar.map(f=>`<tr><td>${f.ad}</td><td>${f.tur||''}</td><td>${f.rev||''}</td><td>${f.tarih||''}</td><td><a href="${f.url}" download>⬇</a></td></tr>`).join('')}</table>`:'<p class="mu">Dosya tanımlı değil.</p>';
+const tecr=()=>pdfU()?`<iframe class="pdf" src="${pdfU()}"></iframe>`:'<p class="mu">Teknik resim PDF\'i yüklenmemiş. PDF dosyasını depodaki data klasörüne koyup komodin.json içinde "pdf" alanına yolunu yazın.</p>';
+const soon=t=>()=>card(t,'<p class="mu">Bu bölüm henüz hazır değil.</p>');
+function accGroups(){const g={};Object.keys(parts).filter(k=>T(k)=='aksesuar').forEach(k=>{const n=nm(k).replace(/-\d+(?: \d+)?$/,'').replace(/^([A-Za-zçğıöşüÇĞİÖŞÜ]+)\d$/,'$1').trim();(g[n]??=[]).push(k)});return g}
+const rows=ks=>ks.map(k=>`<div class="li" data-k="${k}"><i class="d" style="background:${col(k)}"></i>${nm(k)} <small>${parts[k].dim.join('×')} mm · ${stt(k)}</small></div>`).join('');
+const PG={ov:()=>`<div class="g2">${card('Teknik Resim (PDF)',tecr())}<div class="col">${card('3D Model','<div id="ovs" class="slot"></div>')}${card('İlgili Dosyalar',table())}</div></div>`,tr:()=>card('Teknik Resim (PDF)',tecr()),dk:()=>card('İlgili Dokümanlar',table()),mt:soon('Montaj Talimatı'),kk:soon('Kalite Kontrol'),pk:soon('Paketleme'),sv:soon('Sevkiyat'),
+ ak:()=>{const e=Object.entries(accGroups()),tot=e.reduce((a,[,v])=>a+v.length,0);return card('Aksesuar Listesi',`<p>Toplam <b>${tot}</b> adet · <b>${e.length}</b> çeşit &nbsp;<button id="allA">Hepsini modelde göster</button></p><div class="ag">${e.map(([n,v],i)=>`<div class="ac" data-g="${i}"><img src="${thumb(v[0])}"><b>${n}</b><span>Adet: ${v.length}</span></div>`).join('')}</div>`)},
+ ml:()=>{const M=data.malzemeler||{},g={};Object.keys(parts).forEach(k=>(g[data.parts?.[k]?.malzeme]??=[]).push(k));return card('Malzeme Lejantı',`<button id="paint">${paint?'Gerçek görünüme dön':'Modeli renklendir'}</button>${Object.entries(M).map(([id,m])=>`<div class="li" data-m="${id}"><i class="d" style="background:${m.renk}"></i><b>${m.ad}</b> · ${(g[id]||[]).length} parça<br><small>${m.aciklama||''}</small></div>`).join('')}`)},
+ ko:()=>{const P=data.plan;if(!P)return card('Kabin Konumu','<p class="mu">Plan tanımlı değil.</p>');const[W,H]=P.viewBox.split(' ').slice(2).map(Number);return card(P.kabin+' · komodin konumu',`<svg viewBox="${P.viewBox}" style="width:100%;max-height:70vh"><image href="${P.gorsel}" width="${W}" height="${H}"/>${(P.kutular||[]).map(r=>`<rect x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}" rx="${W/150}" fill="#ff5a00" fill-opacity=".3" stroke="#ff2a00" stroke-width="${W/150}" class="bl2"/>`).join('')}</svg><p>🟠 ${P.not||''}</p>`)},
+ ur:()=>{const ks=Object.keys(parts),tot=ks.reduce((a,k)=>a+stg(k).length,0),dn=ks.reduce((a,k)=>a+Math.min(done(k),stg(k).length),0),pc=Math.round(100*dn/tot),fu=ks.filter(k=>done(k)>=stg(k).length).length,pa=ks.filter(k=>done(k)>0&&done(k)<stg(k).length).length;
+  return card('Üretim Bilgisi',`<div class="pb"><div style="width:${pc}%"></div></div><p><b>%${pc}</b> tamamlandı · ${fu} bitti · ${pa} devam ediyor · ${ks.length-fu-pa} başlamadı</p>${Object.entries(data.uretim||{}).map(([a,v])=>`<div>${a}: <b>${v}</b></div>`).join('')}<small class="mu">Aşamayı parça seçip bilgi kutusundan işaretleyin. Durum şimdilik bu cihazda saklanır.</small>${rows(ks)}`)}};
+const PB={ak:()=>{const e=Object.values(accGroups());$$('.ac').forEach(c=>c.onclick=()=>select(e[c.dataset.g]));$('#allA').onclick=()=>select(e.flat())},
+ ml:()=>{const g={};Object.keys(parts).forEach(k=>(g[data.parts?.[k]?.malzeme]??=[]).push(k));$$('[data-m]').forEach(li=>li.onclick=()=>select(g[li.dataset.m]||[]));$('#paint').onclick=()=>{paint=!paint;const M=data.malzemeler||{};for(const[k,p]of Object.entries(parts))p.meshes.forEach(m=>mats(m).forEach(x=>{if(!x.color)return;x.map=paint?null:x.userData.m0;paint?x.color.set(M[data.parts?.[k]?.malzeme]?.renk||'#cfd4db'):x.color.copy(x.userData.c0);x.needsUpdate=true}));$('#paint').textContent=paint?'Gerçek görünüme dön':'Modeli renklendir'}},
+ ur:()=>$$('#pg .li').forEach(li=>li.onclick=()=>select(li.dataset.k))};
+function go(n,o={}){resetTools();cur=n;$$('#items [data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v==n));const d3=n=='3d'||n=='pl';$('#slot').appendChild(stage);
+ $('#v3').style.display=d3?'grid':'none';$('#pg').style.display=d3?'none':'block';$('#v3').classList.toggle('side',n=='pl'||!!o.side);
+ if(!d3){$('#pg').innerHTML=PG[n]();$('#pg').scrollTop=0;PB[n]?.();if(n=='ov')$('#ovs').appendChild(stage)}
+ info();list($('#q').value);hl();setTimeout(fitSz,0)}
+$$('#items [data-v]').forEach(b=>b.onclick=()=>go(b.dataset.v));$('#bk').onclick=()=>go('ov');
+function init(){const I=data.info||{},tot=Object.keys(parts).length,s=Object.keys(parts).some(k=>done(k)>0);
+ $('#bc').textContent=[I.Proje,I.Kabin,data.title].filter(Boolean).join('  ›  ');$('#ttl').innerHTML=`${data.title||'Komodin'} <span id="chip"><i class="d" style="background:${s?'#2e9e5b':'#b8c0cc'};margin:0 6px 0 0"></i>${s?'Üretimde':'Başlamadı'}</span>`;
+ $('#meta').innerHTML=['Kod','Kabin','Proje','Revizyon','Malzeme'].map(k=>`<div>${k}<b>${I[k]||'—'}</b></div>`).join('');$('#hth').src=snap(allMeshes,120);
+ go('ov');const q=new URLSearchParams(location.search).get('p');if(q)pick(q)}
+/* ---- QR ---- */
 let stream=null;
 async function scan(){$('#scanov').style.display='flex';const v=$('#cam');
  try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});v.srcObject=stream;await v.play()}catch{alert('Kamera açılamadı (HTTPS ve izin gerekli).');return stop()}
@@ -105,38 +197,6 @@ function stop(){stream?.getTracks().forEach(t=>t.stop());stream=null;$('#scanov'
 $('#scan').onclick=scan;$('#x1').onclick=stop;
 $('#lab').onclick=()=>{$('#grid').innerHTML=Object.keys(parts).map(k=>{const e=data.parts?.[k]||{},m=data.malzemeler?.[e.malzeme],q=qrcode(0,'M');q.addData(location.origin+location.pathname+'?p='+encodeURIComponent(k));q.make();return`<div class="lb">${q.createImgTag(3,1)}<div><b>${nm(k)}</b><br>${data.info?.Kabin||''}<br>${T(k)=='parca'?'Parça':'Aksesuar'} · ${parts[k].dim.join('×')} mm<br>Malzeme: ${m?m.ad:'—'}<br><small>${k}</small></div></div>`}).join('');$('#labels').style.display='flex'};
 $('#x2').onclick=()=>$('#labels').style.display='none';
-const sh=$('#sheet'),stt=k=>done(k)?stg(k)[done(k)-1]:'Başlamadı';
-function open(h){sh.innerHTML=`<button class="x" id="shx">✕</button>${h}`;sh.style.display='block';$('#shx').onclick=()=>sh.style.display='none'}
-const rows=ks=>ks.map(k=>`<li data-k="${k}"><i class="d" style="background:${col(k)}"></i>${nm(k)} <small>${parts[k].dim.join('×')} mm · ${stt(k)}</small></li>`).join('');
-const bind=()=>sh.querySelectorAll('li[data-k]').forEach(li=>li.onclick=()=>select(li.dataset.k));
-$('#bList').onclick=()=>$('main').classList.toggle('closed');
-$('#bKonum').onclick=()=>{const P=data.plan;if(!P)return open('<h3>Konum</h3>Plan tanımlı değil (data/komodin.json → plan).');const[W,H]=P.viewBox.split(' ').slice(2).map(Number);
- const B=(P.kutular||[]).map(r=>`<rect x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}" rx="${W/150}" fill="#ff5a00" fill-opacity=".3" stroke="#ff2a00" stroke-width="${W/150}" class="bl2"/>`).join('');
- open(`<h3>${P.kabin} · komodin konumu</h3><svg viewBox="${P.viewBox}" style="width:100%"><image href="${P.gorsel}" width="${W}" height="${H}"/>${B}</svg><p>🟠 ${P.not||''}</p>`)};
-$('#bAks').onclick=()=>{const ks=Object.keys(parts).filter(k=>T(k)=='aksesuar');open(`<h3>Aksesuarlar (${ks.length})</h3><button id="allA">Hepsini göster</button><ul>${rows(ks)}</ul>`);bind();$('#allA').onclick=()=>select(ks)};
-function doPaint(){const M=data.malzemeler||{};for(const[k,p]of Object.entries(parts))p.meshes.forEach(m=>mats(m).forEach(x=>{if(!x.color)return;x.map=paint?null:x.userData.m0;paint?x.color.set(M[data.parts?.[k]?.malzeme]?.renk||'#cfd4db'):x.color.copy(x.userData.c0);x.needsUpdate=true}))}
-$('#bMal').onclick=()=>{const M=data.malzemeler||{},g={};Object.keys(parts).forEach(k=>(g[data.parts?.[k]?.malzeme]??=[]).push(k));
- open(`<h3>Malzeme lejantı</h3><button id="paint">${paint?'Gerçek görünüme dön':'Modeli renklendir'}</button><ul>${Object.entries(M).map(([id,m])=>`<li data-m="${id}"><i class="d" style="background:${m.renk}"></i><b>${m.ad}</b> · ${(g[id]||[]).length} parça<br><small>${m.aciklama||''}</small></li>`).join('')}</ul>`);
- sh.querySelectorAll('li[data-m]').forEach(li=>li.onclick=()=>select(g[li.dataset.m]||[]));$('#paint').onclick=()=>{paint=!paint;doPaint();$('#paint').textContent=paint?'Gerçek görünüme dön':'Modeli renklendir'}};
-$('#bUr').onclick=()=>{const ks=Object.keys(parts),tot=ks.reduce((a,k)=>a+stg(k).length,0),dn=ks.reduce((a,k)=>a+Math.min(done(k),stg(k).length),0),pc=Math.round(100*dn/tot),fu=ks.filter(k=>done(k)>=stg(k).length).length,pa=ks.filter(k=>done(k)>0&&done(k)<stg(k).length).length;
- open(`<h3>Üretim durumu</h3><div class="pb"><div style="width:${pc}%"></div></div><p><b>%${pc}</b> · ${fu} bitti · ${pa} devam ediyor · ${ks.length-fu-pa} başlamadı</p><small>Aşamayı parça seçip bilgi kutusundan işaretleyin. Durum şimdilik bu cihazda saklanır.</small><ul>${rows(ks)}</ul>`);bind()};
-const tl=$('#tool'),allM=f=>Object.values(parts).forEach(p=>p.meshes.forEach(m=>mats(m).forEach(f)));
-const pl=[0,1,2].map(i=>({p:new THREE.Plane(new THREE.Vector3(),0),on:false,s:1,v:0,i}));let tool=null;
-function applyCut(){const a=pl.filter(q=>q.on);pl.forEach(q=>{q.p.normal.set(0,0,0).setComponent(q.i,q.s);q.p.constant=-q.s*q.v});ren.clippingPlanes=a.map(q=>q.p);allM(x=>{x.side=a.length?THREE.DoubleSide:x.userData.s0;x.needsUpdate=true})}
-const mk=new THREE.Group();scene.add(mk);
-function clrM(){mk.clear();pts=[];$('#mres')&&($('#mres').innerHTML='Modele iki nokta için dokunun.')}
-function addPt(v){if(pts.length>=2)clrM();pts.push(v);const s=new THREE.Mesh(new THREE.SphereGeometry(.007),new THREE.MeshBasicMaterial({color:0xff2a00,depthTest:false}));s.position.copy(v);s.renderOrder=9;mk.add(s);
- if(pts.length==2){const l=new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:0xff2a00,depthTest:false}));l.renderOrder=9;mk.add(l);const d=pts[1].clone().sub(pts[0]),f=F/sc;
- $('#mres').innerHTML=`<b style="font-size:20px">${(d.length()*f).toFixed(1)} mm</b><br>ΔX ${(Math.abs(d.x)*f).toFixed(1)} · ΔY ${(Math.abs(d.y)*f).toFixed(1)} · ΔZ ${(Math.abs(d.z)*f).toFixed(1)} mm`}else $('#mres').innerHTML='İkinci noktaya dokunun.'}
-function showTool(t){tool=tool==t?null:t;tl.style.display=tool?'block':'none';meas=tool=='olc';if(!meas)clrM();$('#sheet').style.display='none';if(tool=='kes')cutUI();if(tool=='olc'){tl.innerHTML='<b>📏 Ölçü</b> <button id="mc">Temizle</button><div id="mres"></div>';$('#mc').onclick=clrM;clrM()}}
-function cutUI(){tl.innerHTML='<b>✂️ Kesit</b> <button id="cr">Sıfırla</button>'+pl.map(q=>{const a='XYZ'[q.i],lo=BB.min.getComponent(q.i),hi=BB.max.getComponent(q.i);return`<div class="row"><label><input type="checkbox" data-i="${q.i}" ${q.on?'checked':''}> ${a}</label><input type="range" data-i="${q.i}" min="${lo}" max="${hi}" step="${(hi-lo)/300}" value="${q.v}"><button data-f="${q.i}">⇄</button></div>`}).join('');
- tl.querySelectorAll('input[type=checkbox]').forEach(c=>c.onchange=()=>{pl[c.dataset.i].on=c.checked;applyCut()});tl.querySelectorAll('input[type=range]').forEach(r=>r.oninput=()=>{const q=pl[r.dataset.i];q.v=+r.value;if(!q.on){q.on=true;tl.querySelector(`input[type=checkbox][data-i="${q.i}"]`).checked=true}applyCut()});
- tl.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{pl[b.dataset.f].s*=-1;applyCut()});$('#cr').onclick=()=>{pl.forEach(q=>{q.on=false;q.s=1;q.v=(BB.min.getComponent(q.i)+BB.max.getComponent(q.i))/2});applyCut();cutUI()}}
-$('#bKes').onclick=()=>{pl.forEach(q=>{if(!q.v)q.v=(BB.min.getComponent(q.i)+BB.max.getComponent(q.i))/2});showTool('kes')};$('#bOlc').onclick=()=>showTool('olc');
-const rc=new THREE.Raycaster();let dn=null;ren.domElement.addEventListener('pointerdown',e=>dn=[e.clientX,e.clientY]);
-ren.domElement.addEventListener('pointerup',e=>{if(!meas||!dn||Math.hypot(e.clientX-dn[0],e.clientY-dn[1])>6)return;const r=ren.domElement.getBoundingClientRect(),a=pl.filter(q=>q.on);
- rc.setFromCamera(new THREE.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1),cam);
- const h=rc.intersectObjects(Object.values(parts).flatMap(p=>p.meshes),false).find(h=>mats(h.object)[0].opacity>.5&&!a.some(q=>q.p.distanceToPoint(h.point)<0));if(h)addPt(h.point)});
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js');
 boot();
 </script></body></html>
