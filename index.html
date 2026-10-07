@@ -1,0 +1,96 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Septemar · Parça Bulucu</title>
+<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#0f1b2d">
+<style>
+*{box-sizing:border-box}html,body{height:100%;margin:0;font:14px system-ui,sans-serif;color:#1c2430;background:#0f1b2d}
+#app{height:100%;display:grid;grid-template-rows:52px 1fr;padding-top:env(safe-area-inset-top)}
+header{display:flex;align-items:center;gap:10px;padding:0 12px;color:#fff}
+header b{letter-spacing:.18em;font-size:13px}header small{opacity:.6;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+button{border:0;border-radius:8px;padding:9px 12px;font:inherit;background:#e8ecf2;color:#0f1b2d;cursor:pointer}
+button.p{background:#ff7a1a;color:#fff;font-weight:600}
+main{display:grid;grid-template-columns:1fr 340px;min-height:0;background:#eef0f3;border-radius:14px 14px 0 0;overflow:hidden}
+@media(orientation:portrait){main{grid-template-columns:1fr;grid-template-rows:1fr 45%}}
+#view{position:relative;min-height:0}#view canvas{display:block;width:100%;height:100%}
+#bar{position:absolute;left:10px;bottom:10px;right:10px;display:flex;gap:8px;align-items:center;background:#fffc;border-radius:10px;padding:6px 10px}
+#bar input{flex:1}#tag{position:absolute;top:10px;left:10px;background:#ff7a1a;color:#fff;padding:3px 8px;border-radius:6px;font-size:12px;display:none}
+aside{background:#fff;display:flex;flex-direction:column;min-height:0;padding:10px;gap:8px}
+#info{background:#f4f6f9;border-radius:10px;padding:10px;min-height:60px}#info h3{margin:0 0 4px}#info div{display:flex;justify-content:space-between;gap:8px;font-size:13px;padding:1px 0}
+#q{padding:9px;border:1px solid #ccd3dd;border-radius:8px;font:inherit}
+#list{overflow:auto;flex:1;margin:0;padding:0;list-style:none}
+#list li{padding:9px 8px;border-bottom:1px solid #eef0f3;cursor:pointer;word-break:break-word}#list li.on{background:#fff1e6;border-left:4px solid #ff7a1a}
+.ov{position:fixed;inset:0;background:#000d;z-index:9;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:#fff}
+#cam{width:min(92vw,520px);border-radius:12px}
+#labels{background:#fff;color:#000;overflow:auto;justify-content:flex-start;padding:12px}#grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;width:100%}
+.lb{border:1px solid #000;padding:6px;text-align:center;font-size:11px;break-inside:avoid;word-break:break-word}.lb img{width:110px;height:110px}
+@media print{body>*:not(#labels){display:none!important}#labels{position:static;display:block!important}#labels .no{display:none}}
+</style></head><body>
+<div id="app"><header><b>SEPTEMAR</b><small id="title">Parça Bulucu</small><button class="p" id="scan">QR Okut</button><button id="lab">QR Etiketleri</button></header>
+<main><div id="view"><span id="tag">DEMO MODEL</span><div id="bar"><span>Patlat</span><input id="ex" type="range" min="0" max="1" step=".01" value="0"><button id="clr">Sıfırla</button></div></div>
+<aside><div id="info"><h3>Parça seçilmedi</h3>Listeden seç veya QR okut.</div><input id="q" placeholder="Parça ara…"><ul id="list"></ul></aside></main></div>
+<div class="ov" id="scanov"><video id="cam" playsinline muted></video><div>QR kodu kameraya göster</div><button id="x1">Kapat</button></div>
+<div class="ov" id="labels"><div class="no"><button class="p" onclick="print()">Yazdır</button> <button id="x2">Kapat</button></div><div id="grid"></div></div>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+const $=s=>document.querySelector(s),mats=m=>[].concat(m.material);
+const scene=new THREE.Scene();scene.background=new THREE.Color(0xeef0f3);
+const cam=new THREE.PerspectiveCamera(40,1,.01,100);cam.position.set(1.2,.8,1.6);
+const ren=new THREE.WebGLRenderer({antialias:true});ren.setPixelRatio(Math.min(devicePixelRatio,2));$('#view').prepend(ren.domElement);
+scene.add(new THREE.HemisphereLight(0xffffff,0x8892a0,1.2));const dl=new THREE.DirectionalLight(0xffffff,1.6);dl.position.set(2,3,2);scene.add(dl);
+const ctl=new OrbitControls(cam,ren.domElement);ctl.enableDamping=true;
+const fit=()=>{const v=$('#view');ren.setSize(v.clientWidth,v.clientHeight);cam.aspect=v.clientWidth/v.clientHeight;cam.updateProjectionMatrix()};
+addEventListener('resize',fit);new ResizeObserver(fit).observe($('#view'));
+let data={},parts={},sel=null;
+const nm=k=>data.parts?.[k]?.ad||['NB85-MİSAFİR KABİN 202 ','505-91 MİSAFİR KABİN 202 KOMODİN_','NB85-MİSAFİR KABİN YATAK KOMODİN ','Yatak Komodin_','Yatak Komodin'].reduce((a,p)=>a.replace(p,''),k).replace(/_/g,' ').trim();
+
+function demo(){const g=new THREE.Group(),W=(c,m=.6,mt=0)=>new THREE.MeshStandardMaterial({color:c,roughness:m,metalness:mt});
+ [['01_Sol Yan',[.018,.5,.4],[-.241,0,0],0],['02_Sağ Yan',[.018,.5,.4],[.241,0,0],0],['03_Üst Panel',[.5,.018,.4],[0,.241,0],0],['04_Alt Panel',[.5,.018,.4],[0,-.241,0],0],
+ ['05_Arka Panel',[.464,.464,.008],[0,0,-.196],0],['06_Çekmece Kasa Üst',[.42,.15,.34],[0,.12,.02],1],['07_Çekmece Kasa Alt',[.42,.15,.34],[0,-.1,.02],1],
+ ['08_Çekmece Ön Üst',[.46,.2,.02],[0,.12,.2],0],['09_Çekmece Ön Alt',[.46,.2,.02],[0,-.1,.2],0],['10_Kulp Üst',[.1,.012,.012],[0,.12,.222],2],['11_Kulp Alt',[.1,.012,.012],[0,-.1,.222],2]]
+ .forEach(([n,s,p,t])=>{const p0=new THREE.Group();p0.name='KOMODIN-'+n;const m=new THREE.Mesh(new THREE.BoxGeometry(...s),W([0xb08a5a,0x9aa0a6,0xcfd3d8][t],.6,t==2?.8:0));m.position.set(...p);p0.add(m);g.add(p0)});return g}
+
+async function boot(){
+ try{data=await(await fetch('data/komodin.json')).json()}catch{}
+ let root;try{root=(await new GLTFLoader().loadAsync(data.model||'models/komodin.glb')).scene}catch(e){root=demo();$('#tag').style.display='block'}
+ const model=new THREE.Group();model.add(root);scene.add(model);
+ const b=new THREE.Box3().setFromObject(model);model.scale.setScalar(1/Math.max(...b.getSize(new THREE.Vector3()).toArray()));model.updateMatrixWorld(true);
+ model.position.sub(new THREE.Box3().setFromObject(model).getCenter(new THREE.Vector3()));model.updateMatrixWorld(true);
+ root.traverse(o=>{if(!o.isMesh)return;let p=o.parent;const N=x=>x.userData.name||x.name;while(p&&p!==root&&N(p).includes(' - Parça'))p=p.parent;
+  const k=(p&&p!==root&&N(p))||N(o)||o.uuid.slice(0,6);(parts[k]??={meshes:[]}).meshes.push(o);
+  o.material=Array.isArray(o.material)?o.material.map(x=>x.clone()):o.material.clone();o.userData.w0=o.getWorldPosition(new THREE.Vector3())});
+ for(const p of Object.values(parts)){const bb=new THREE.Box3();p.meshes.forEach(m=>bb.expandByObject(m));p.dir=bb.getCenter(new THREE.Vector3()).normalize()}
+ $('#title').textContent=data.title||'Komodin · '+Object.keys(parts).length+' parça';
+ list();const q=new URLSearchParams(location.search).get('p');if(q)pick(q);
+}
+function list(f=''){const ul=$('#list');ul.innerHTML='';Object.keys(parts).filter(k=>(k+nm(k)).toLowerCase().includes(f.toLowerCase())).forEach(k=>{const li=document.createElement('li');li.textContent=nm(k);li.dataset.k=k;if(k===sel)li.className='on';li.onclick=()=>select(k);ul.append(li)})}
+$('#q').oninput=e=>list(e.target.value);
+function pick(t){const ks=Object.keys(parts);const k=ks.find(x=>x===t)||ks.find(x=>x.toLowerCase().includes(t.toLowerCase()));k?select(k):alert('Parça bulunamadı: '+t)}
+function select(k){sel=k;
+ for(const[n,p]of Object.entries(parts))p.meshes.forEach(m=>mats(m).forEach(x=>{const d=k&&n!==k;x.transparent=!!d;x.opacity=d?.1:1;x.depthWrite=!d;if(x.emissive)x.emissiveIntensity=0;x.needsUpdate=true}));
+ if(k){const bb=new THREE.Box3();parts[k].meshes.forEach(m=>bb.expandByObject(m));const c=bb.getCenter(new THREE.Vector3()),s=bb.getSize(new THREE.Vector3()).length();
+  const d=cam.position.clone().sub(ctl.target).normalize();ctl.target.copy(c);cam.position.copy(c).addScaledVector(d,Math.max(s*2.5,.7))}
+ const e=data.parts?.[k]||{};$('#info').innerHTML=k?`<h3>${nm(k)}</h3>`+`<div><span>Kod</span><b>${k}</b></div>`+Object.entries(e).filter(([a,v])=>a!='ad'&&v).map(([a,v])=>`<div><span>${a}</span><b>${v}</b></div>`).join(''):'<h3>Parça seçilmedi</h3>';
+ list($('#q').value)}
+$('#clr').onclick=()=>{select(null);$('#ex').value=0;explode(0)};
+function explode(v){for(const p of Object.values(parts))p.meshes.forEach(m=>{const w=m.userData.w0.clone().addScaledVector(p.dir,v*.5);m.position.copy(m.parent.worldToLocal(w))})}
+$('#ex').oninput=e=>explode(+e.target.value);
+const clock=new THREE.Clock();(function loop(){requestAnimationFrame(loop);if(sel&&parts[sel]){const e=.5+.5*Math.sin(clock.getElapsedTime()*6);parts[sel].meshes.forEach(m=>mats(m).forEach(x=>{if(x.emissive){x.emissive.setHex(0xff5a00);x.emissiveIntensity=.15+e*1.6}}))}ctl.update();ren.render(scene,cam)})();
+
+let stream=null;
+async function scan(){$('#scanov').style.display='flex';const v=$('#cam');
+ try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});v.srcObject=stream;await v.play()}catch{alert('Kamera açılamadı (HTTPS ve izin gerekli).');return stop()}
+ const c=document.createElement('canvas'),x=c.getContext('2d',{willReadFrequently:true});
+ const t=setInterval(()=>{if(!stream){clearInterval(t);return}if(v.videoWidth){c.width=v.videoWidth;c.height=v.videoHeight;x.drawImage(v,0,0);const r=jsQR(x.getImageData(0,0,c.width,c.height).data,c.width,c.height);
+  if(r){clearInterval(t);stop();let s=r.data;try{s=new URL(s).searchParams.get('p')||s}catch{}pick(s)}}},200)}
+function stop(){stream?.getTracks().forEach(t=>t.stop());stream=null;$('#scanov').style.display='none'}
+$('#scan').onclick=scan;$('#x1').onclick=stop;
+$('#lab').onclick=()=>{$('#grid').innerHTML=Object.keys(parts).map(k=>{const q=qrcode(0,'M');q.addData(location.origin+location.pathname+'?p='+encodeURIComponent(k));q.make();return`<div class="lb">${q.createImgTag(4,2)}<br>${k}</div>`}).join('');$('#labels').style.display='flex'};
+$('#x2').onclick=()=>$('#labels').style.display='none';
+if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js');
+boot();
+</script></body></html>
