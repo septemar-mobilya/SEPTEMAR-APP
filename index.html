@@ -9,8 +9,8 @@ header{display:flex;align-items:center;gap:8px;padding:0 10px;color:#fff;min-wid
 header b{letter-spacing:.18em;font-size:13px}header small{opacity:.6;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 button{border:0;border-radius:8px;padding:9px 12px;font:inherit;background:#e8ecf2;color:#0f1b2d;cursor:pointer}
 button.p{background:#ff7a1a;color:#fff;font-weight:600}
-main{display:grid;grid-template-columns:minmax(0,1fr) 340px;min-height:0;min-width:0;background:#eef0f3;border-radius:14px 14px 0 0;overflow:hidden}
-@media(orientation:portrait){main{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) 42%}}
+main{display:grid;grid-template-columns:56px minmax(0,1fr) 340px;min-height:0;min-width:0;background:#eef0f3;border-radius:14px 14px 0 0;overflow:hidden}
+@media(orientation:portrait){main{grid-template-columns:56px minmax(0,1fr);grid-template-rows:minmax(0,1fr) 42%}aside{grid-column:2!important;grid-row:2!important}}
 @media(max-width:600px){header small{display:none}header b{flex:1}header button{padding:8px 10px;font-size:13px}#bar{left:6px;right:6px;bottom:6px}}
 #view{position:relative;min-height:0;min-width:0;overflow:hidden}#view canvas{display:block;width:100%;height:100%;touch-action:none}
 #bar{position:absolute;left:10px;bottom:10px;right:10px;display:flex;gap:8px;align-items:center;background:#fffc;border-radius:10px;padding:6px 10px}
@@ -25,9 +25,15 @@ aside{background:#fff;display:flex;flex-direction:column;min-height:0;min-width:
 #labels{background:#fff;color:#000;overflow:auto;justify-content:flex-start;padding:12px}#grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;width:100%}
 .lb{border:1px solid #000;padding:6px;text-align:center;font-size:11px;break-inside:avoid;word-break:break-word}.lb img{width:110px;height:110px}
 @media print{body>*:not(#labels){display:none!important}#labels{position:static;display:block!important}#labels .no{display:none}}
+#rail{grid-column:1;grid-row:1/-1;background:#0f1b2d;display:flex;flex-direction:column;gap:4px;padding:8px 2px}#rail button{background:none;color:#fff;font-size:20px;padding:8px 0;width:100%}#rail small{display:block;font-size:10px;opacity:.85}
+#view{grid-column:2;grid-row:1}aside{grid-column:3;grid-row:1}main.closed{grid-template-columns:56px minmax(0,1fr)}main.closed aside{display:none}
+#sheet{display:none;position:absolute;inset:8px 8px 58px;background:#fff;border-radius:12px;padding:14px;overflow:auto;z-index:5;box-shadow:0 4px 24px #0005}#sheet .x{position:absolute;right:8px;top:8px}#sheet h3{margin:0 40px 8px 0}
+#sheet ul{list-style:none;padding:0;margin:8px 0}#sheet li{padding:8px 4px;border-bottom:1px solid #eef0f3;cursor:pointer}i.d{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:8px;vertical-align:middle}
+.pb{height:12px;background:#e3e7ee;border-radius:6px;overflow:hidden}.pb div{height:100%;background:#2e9e5b}.st{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.st button.ok{background:#2e9e5b;color:#fff}
+@keyframes bl{50%{opacity:.2}}.bl{animation:bl 1s infinite}.bl2{animation:bl .7s infinite}.lb{display:flex;gap:8px;text-align:left}.lb img{width:96px;height:96px}.lb small{font-size:8px;color:#555}#grid{grid-template-columns:repeat(auto-fill,minmax(270px,1fr))}
 </style></head><body>
 <div id="app"><header><b>SEPTEMAR</b><small id="title">Parça Bulucu</small><button class="p" id="scan">QR Okut</button><button id="lab">QR Etiketleri</button></header>
-<main><div id="view"><span id="tag">DEMO MODEL</span><div id="bar"><span>Patlat</span><input id="ex" type="range" min="0" max="1" step=".01" value="0"><button id="clr">Sıfırla</button></div></div>
+<main><nav id="rail"><button id="bList">☰<small>Liste</small></button><button id="bKonum">📍<small>Konum</small></button><button id="bAks">🔩<small>Aksesuar</small></button><button id="bMal">🎨<small>Malzeme</small></button><button id="bUr">🏭<small>Üretim</small></button></nav><div id="view"><div id="sheet"></div><span id="tag">DEMO MODEL</span><div id="bar"><span>Patlat</span><input id="ex" type="range" min="0" max="1" step=".01" value="0"><button id="clr">Sıfırla</button></div></div>
 <aside><div id="info"><h3>Parça seçilmedi</h3>Listeden seç veya QR okut.</div><input id="q" placeholder="Parça ara…"><ul id="list"></ul></aside></main></div>
 <div class="ov" id="scanov"><video id="cam" playsinline muted></video><div>QR kodu kameraya göster</div><button id="x1">Kapat</button></div>
 <div class="ov" id="labels"><div class="no"><button class="p" onclick="print()">Yazdır</button> <button id="x2">Kapat</button></div><div id="grid"></div></div>
@@ -46,7 +52,7 @@ scene.add(new THREE.HemisphereLight(0xffffff,0x8892a0,1.2));const dl=new THREE.D
 const ctl=new OrbitControls(cam,ren.domElement);ctl.enableDamping=true;
 const fit=()=>{const v=$('#view');ren.setSize(v.clientWidth,v.clientHeight);cam.aspect=v.clientWidth/v.clientHeight;cam.updateProjectionMatrix()};
 addEventListener('resize',fit);new ResizeObserver(fit).observe($('#view'));
-let data={},parts={},sel=null;
+let data={},parts={},sel=[],F=1,sc=1,paint=false,dur={};try{dur=JSON.parse(localStorage.durum||'{}')}catch{}
 const nm=k=>data.parts?.[k]?.ad||['NB85-MİSAFİR KABİN 202 ','505-91 MİSAFİR KABİN 202 KOMODİN_','NB85-MİSAFİR KABİN YATAK KOMODİN ','Yatak Komodin_','Yatak Komodin'].reduce((a,p)=>a.replace(p,''),k).replace(/_/g,' ').trim();
 
 function demo(){const g=new THREE.Group(),W=(c,m=.6,mt=0)=>new THREE.MeshStandardMaterial({color:c,roughness:m,metalness:mt});
@@ -59,29 +65,33 @@ async function boot(){
  try{data=await(await fetch('data/komodin.json')).json()}catch{}
  let root;try{root=(await new GLTFLoader().loadAsync(data.model||'models/komodin.glb')).scene}catch(e){root=demo();$('#tag').style.display='block'}
  const model=new THREE.Group();model.add(root);scene.add(model);
- const b=new THREE.Box3().setFromObject(model);model.scale.setScalar(1/Math.max(...b.getSize(new THREE.Vector3()).toArray()));model.updateMatrixWorld(true);
+ const b=new THREE.Box3().setFromObject(model);const M=Math.max(...b.getSize(new THREE.Vector3()).toArray());F=M<20?1000:1;sc=1/M;model.scale.setScalar(sc);model.updateMatrixWorld(true);
  model.position.sub(new THREE.Box3().setFromObject(model).getCenter(new THREE.Vector3()));model.updateMatrixWorld(true);
  root.traverse(o=>{if(!o.isMesh)return;let p=o.parent;const N=x=>x.userData.name||x.name;while(p&&p!==root&&N(p).includes(' - Parça'))p=p.parent;
   const k=(p&&p!==root&&N(p))||N(o)||o.uuid.slice(0,6);(parts[k]??={meshes:[]}).meshes.push(o);
-  o.material=Array.isArray(o.material)?o.material.map(x=>x.clone()):o.material.clone();o.userData.w0=o.getWorldPosition(new THREE.Vector3())});
- for(const p of Object.values(parts)){const bb=new THREE.Box3();p.meshes.forEach(m=>bb.expandByObject(m));p.dir=bb.getCenter(new THREE.Vector3()).normalize()}
+  o.material=Array.isArray(o.material)?o.material.map(x=>x.clone()):o.material.clone();mats(o).forEach(x=>{x.userData.c0=x.color&&x.color.clone();x.userData.m0=x.map});o.userData.w0=o.getWorldPosition(new THREE.Vector3())});
+ for(const p of Object.values(parts)){const bb=new THREE.Box3();p.meshes.forEach(m=>bb.expandByObject(m));p.dir=bb.getCenter(new THREE.Vector3()).normalize();p.dim=bb.getSize(new THREE.Vector3()).toArray().map(v=>Math.round(v/sc*F)).sort((a,b)=>b-a)}
  $('#title').textContent=data.title||'Komodin · '+Object.keys(parts).length+' parça';
  list();const q=new URLSearchParams(location.search).get('p');if(q)pick(q);
 }
-function list(f=''){const ul=$('#list');ul.innerHTML='';Object.keys(parts).filter(k=>(k+nm(k)).toLowerCase().includes(f.toLowerCase())).forEach(k=>{const li=document.createElement('li');li.textContent=nm(k);li.dataset.k=k;if(k===sel)li.className='on';li.onclick=()=>select(k);ul.append(li)})}
+const AS={parca:['Kesim','Kenar bandı','Montaj','Kalite'],aksesuar:['Tedarik','Takıldı']};
+const T=k=>data.parts?.[k]?.tur||'parca',stg=k=>(data.asamalar||AS)[T(k)],done=k=>dur[k]||0,col=k=>!done(k)?'#b8c0cc':done(k)>=stg(k).length?'#2e9e5b':'#f2a516',save=()=>{try{localStorage.durum=JSON.stringify(dur)}catch{}};
+function list(f=''){const ul=$('#list');ul.innerHTML='';Object.keys(parts).filter(k=>T(k)=='parca'&&(k+nm(k)).toLowerCase().includes(f.toLowerCase())).forEach(k=>{const li=document.createElement('li');li.innerHTML=`<i class="d" style="background:${col(k)}"></i>${nm(k)}`;if(sel.includes(k))li.className='on';li.onclick=()=>select(k);ul.append(li)})}
 $('#q').oninput=e=>list(e.target.value);
 function pick(t){const ks=Object.keys(parts);const k=ks.find(x=>x===t)||ks.find(x=>x.toLowerCase().includes(t.toLowerCase()));k?select(k):alert('Parça bulunamadı: '+t)}
-function select(k){sel=k;
- for(const[n,p]of Object.entries(parts))p.meshes.forEach(m=>mats(m).forEach(x=>{const d=k&&n!==k;x.transparent=!!d;x.opacity=d?.1:1;x.depthWrite=!d;if(x.emissive)x.emissiveIntensity=0;x.needsUpdate=true}));
- if(k){const bb=new THREE.Box3();parts[k].meshes.forEach(m=>bb.expandByObject(m));const c=bb.getCenter(new THREE.Vector3()),s=bb.getSize(new THREE.Vector3()).length();
-  const d=cam.position.clone().sub(ctl.target).normalize();ctl.target.copy(c);cam.position.copy(c).addScaledVector(d,Math.max(s*2.5,.7))}
- const e=data.parts?.[k]||{};$('#info').innerHTML=k?`<h3>${nm(k)}</h3>`+`<div><span>Kod</span><b>${k}</b></div>`+Object.entries(e).filter(([a,v])=>a!='ad'&&v).map(([a,v])=>`<div><span>${a}</span><b>${v}</b></div>`).join(''):'<h3>Parça seçilmedi</h3>';
- list($('#q').value)}
+function info(){const el=$('#info');if(!sel.length){el.innerHTML='<h3>Parça seçilmedi</h3>Listeden seç veya QR okut.';return}
+ if(sel.length>1){el.innerHTML=`<h3>${sel.length} parça seçili</h3>`;return}
+ const k=sel[0],e=data.parts?.[k]||{},m=data.malzemeler?.[e.malzeme];
+ el.innerHTML=`<h3>${nm(k)}</h3><div><span>Kod</span><b>${k}</b></div><div><span>Tür</span><b>${T(k)=='parca'?'Üretim parçası':'Aksesuar'}</b></div><div><span>Ölçü (kutu)</span><b>${parts[k].dim.join('×')} mm</b></div><div><span>Malzeme</span><b>${m?m.ad:'—'}</b></div>`+(e.not?`<div><span>Not</span><b>${e.not}</b></div>`:'')+`<div class="st">${stg(k).map((t,i)=>`<button data-i="${i}" class="${i<done(k)?'ok':''}">${t}</button>`).join('')}</div>`;
+ el.querySelectorAll('.st button').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;dur[k]=done(k)==i+1?i:i+1;save();info();list($('#q').value)})}
+function select(ks){sel=[].concat(ks||[]).filter(k=>parts[k]);$('#sheet').style.display='none';
+ for(const[n,p]of Object.entries(parts))p.meshes.forEach(m=>mats(m).forEach(x=>{const d=sel.length&&!sel.includes(n);x.transparent=!!d;x.opacity=d?.1:1;x.depthWrite=!d;if(x.emissive)x.emissiveIntensity=0;x.needsUpdate=true}));
+ if(sel.length){const bb=new THREE.Box3();sel.forEach(k=>parts[k].meshes.forEach(m=>bb.expandByObject(m)));const c=bb.getCenter(new THREE.Vector3()),s=bb.getSize(new THREE.Vector3()).length();const d=cam.position.clone().sub(ctl.target).normalize();ctl.target.copy(c);cam.position.copy(c).addScaledVector(d,Math.max(s*2.5,.7))}
+ info();list($('#q').value)}
 $('#clr').onclick=()=>{select(null);$('#ex').value=0;explode(0)};
 function explode(v){for(const p of Object.values(parts))p.meshes.forEach(m=>{const w=m.userData.w0.clone().addScaledVector(p.dir,v*.5);m.position.copy(m.parent.worldToLocal(w))})}
 $('#ex').oninput=e=>explode(+e.target.value);
-const clock=new THREE.Clock();(function loop(){requestAnimationFrame(loop);if(sel&&parts[sel]){const e=.5+.5*Math.sin(clock.getElapsedTime()*6);parts[sel].meshes.forEach(m=>mats(m).forEach(x=>{if(x.emissive){x.emissive.setHex(0xff5a00);x.emissiveIntensity=.15+e*1.6}}))}ctl.update();ren.render(scene,cam)})();
-
+const clock=new THREE.Clock();(function loop(){requestAnimationFrame(loop);if(sel.length){const e=.5+.5*Math.sin(clock.getElapsedTime()*6);sel.forEach(k=>parts[k].meshes.forEach(m=>mats(m).forEach(x=>{if(x.emissive){x.emissive.setHex(0xff5a00);x.emissiveIntensity=.15+e*1.6}})))}ctl.update();ren.render(scene,cam)})();
 let stream=null;
 async function scan(){$('#scanov').style.display='flex';const v=$('#cam');
  try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});v.srcObject=stream;await v.play()}catch{alert('Kamera açılamadı (HTTPS ve izin gerekli).');return stop()}
@@ -90,8 +100,22 @@ async function scan(){$('#scanov').style.display='flex';const v=$('#cam');
   if(r){clearInterval(t);stop();let s=r.data;try{s=new URL(s).searchParams.get('p')||s}catch{}pick(s)}}},200)}
 function stop(){stream?.getTracks().forEach(t=>t.stop());stream=null;$('#scanov').style.display='none'}
 $('#scan').onclick=scan;$('#x1').onclick=stop;
-$('#lab').onclick=()=>{$('#grid').innerHTML=Object.keys(parts).map(k=>{const q=qrcode(0,'M');q.addData(location.origin+location.pathname+'?p='+encodeURIComponent(k));q.make();return`<div class="lb">${q.createImgTag(4,2)}<br>${k}</div>`}).join('');$('#labels').style.display='flex'};
+$('#lab').onclick=()=>{$('#grid').innerHTML=Object.keys(parts).map(k=>{const e=data.parts?.[k]||{},m=data.malzemeler?.[e.malzeme],q=qrcode(0,'M');q.addData(location.origin+location.pathname+'?p='+encodeURIComponent(k));q.make();return`<div class="lb">${q.createImgTag(3,1)}<div><b>${nm(k)}</b><br>${data.info?.Kabin||''}<br>${T(k)=='parca'?'Parça':'Aksesuar'} · ${parts[k].dim.join('×')} mm<br>Malzeme: ${m?m.ad:'—'}<br><small>${k}</small></div></div>`}).join('');$('#labels').style.display='flex'};
 $('#x2').onclick=()=>$('#labels').style.display='none';
-if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js');
+const sh=$('#sheet'),stt=k=>done(k)?stg(k)[done(k)-1]:'Başlamadı';
+function open(h){sh.innerHTML=`<button class="x" id="shx">✕</button>${h}`;sh.style.display='block';$('#shx').onclick=()=>sh.style.display='none'}
+const rows=ks=>ks.map(k=>`<li data-k="${k}"><i class="d" style="background:${col(k)}"></i>${nm(k)} <small>${parts[k].dim.join('×')} mm · ${stt(k)}</small></li>`).join('');
+const bind=()=>sh.querySelectorAll('li[data-k]').forEach(li=>li.onclick=()=>select(li.dataset.k));
+$('#bList').onclick=()=>$('main').classList.toggle('closed');
+$('#bKonum').onclick=()=>{const P=data.plan;if(!P)return open('<h3>Konum</h3>Plan tanımlı değil (data/komodin.json → plan).');
+ const R=P.kabinler.map(r=>`<rect x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}" fill="${r.renk}" stroke="#667" stroke-width=".3" class="${r.ad==P.kabin?'bl':''}"/><text x="${r.x+r.w/2}" y="${r.y+r.h/2}" font-size="1.8" text-anchor="middle">${r.ad}</text>`).join('');
+ open(`<h3>${P.kabin} · komodin konumu</h3><svg viewBox="${P.viewBox||'0 0 100 40'}" style="width:100%">${P.gorsel?`<image href="${P.gorsel}" width="100%" height="100%"/>`:`<path d="${P.gemi}" fill="#f3f6fa" stroke="#334" stroke-width=".5"/>`}${P.gorsel?'':R}<circle cx="${P.konum.x}" cy="${P.konum.y}" r="1.4" fill="#ff5a00" class="bl2"/><circle cx="${P.konum.x}" cy="${P.konum.y}" r="3" fill="none" stroke="#ff5a00" stroke-width=".5" class="bl2"/></svg><p>🟠 Komodin · ${P.not||''}</p>`)};
+$('#bAks').onclick=()=>{const ks=Object.keys(parts).filter(k=>T(k)=='aksesuar');open(`<h3>Aksesuarlar (${ks.length})</h3><button id="allA">Hepsini göster</button><ul>${rows(ks)}</ul>`);bind();$('#allA').onclick=()=>select(ks)};
+function doPaint(){const M=data.malzemeler||{};for(const[k,p]of Object.entries(parts))p.meshes.forEach(m=>mats(m).forEach(x=>{if(!x.color)return;x.map=paint?null:x.userData.m0;paint?x.color.set(M[data.parts?.[k]?.malzeme]?.renk||'#cfd4db'):x.color.copy(x.userData.c0);x.needsUpdate=true}))}
+$('#bMal').onclick=()=>{const M=data.malzemeler||{},g={};Object.keys(parts).forEach(k=>(g[data.parts?.[k]?.malzeme]??=[]).push(k));
+ open(`<h3>Malzeme lejantı</h3><button id="paint">${paint?'Gerçek görünüme dön':'Modeli renklendir'}</button><ul>${Object.entries(M).map(([id,m])=>`<li data-m="${id}"><i class="d" style="background:${m.renk}"></i><b>${m.ad}</b> · ${(g[id]||[]).length} parça<br><small>${m.aciklama||''}</small></li>`).join('')}</ul>`);
+ sh.querySelectorAll('li[data-m]').forEach(li=>li.onclick=()=>select(g[li.dataset.m]||[]));$('#paint').onclick=()=>{paint=!paint;doPaint();$('#paint').textContent=paint?'Gerçek görünüme dön':'Modeli renklendir'}};
+$('#bUr').onclick=()=>{const ks=Object.keys(parts),tot=ks.reduce((a,k)=>a+stg(k).length,0),dn=ks.reduce((a,k)=>a+Math.min(done(k),stg(k).length),0),pc=Math.round(100*dn/tot),fu=ks.filter(k=>done(k)>=stg(k).length).length,pa=ks.filter(k=>done(k)>0&&done(k)<stg(k).length).length;
+ open(`<h3>Üretim durumu</h3><div class="pb"><div style="width:${pc}%"></div></div><p><b>%${pc}</b> · ${fu} bitti · ${pa} devam ediyor · ${ks.length-fu-pa} başlamadı</p><small>Aşamayı parça seçip bilgi kutusundan işaretleyin. Durum şimdilik bu cihazda saklanır.</small><ul>${rows(ks)}</ul>`);bind()};
 boot();
 </script></body></html>
