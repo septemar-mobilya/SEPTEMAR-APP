@@ -416,5 +416,12 @@
   "DÖŞEME PAYI NUMUYE GÖRE DÜŞÜLECEKTİR.",
   "ÇEKMECELERE GRABER KİLİT YERİNE MIKTANIS BAĞLANACAKTIR.",
   "KABLOSUZ ŞARJ CİHAZINA ULAŞIM İÇİN KOMODİN İÇLERİNE MÜDAHALE KAPAKLARI KONULACAKTIR."
+ ],
+ "yetkililer": [
+  {
+   "ad": "Test Yetkili (SİLİNECEK)",
+   "s": "tst1",
+   "h": "598acdaff5723bf2fcf56d70120becfcdae07f10e63876b8e624eee6a0c7e6c2"
+  }
  ]
 }
