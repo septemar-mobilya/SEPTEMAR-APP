@@ -1,0 +1,8 @@
+<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Yetkili ekle</title>
+<body style="font:16px system-ui;max-width:560px;margin:20px auto;padding:0 12px"><h2>Yetkili ekle</h2>
+<p>Ad Soyad ve şifreyi yazın. Çıkan satırı <b>data/komodin.json</b> içindeki <code>"yetkililer"</code> listesine ekleyin. Şifre bu sayfadan dışarı gönderilmez, JSON'a şifrenin kendisi değil özeti yazılır.</p>
+<input id="ad" placeholder="Ad Soyad" style="width:100%;padding:10px;margin:4px 0"><input id="p" type="password" placeholder="Şifre" style="width:100%;padding:10px;margin:4px 0">
+<label><input type="checkbox" name="r" value="kk" checked> Kalite Kontrol</label> <label><input type="checkbox" name="r" value="pk" checked> Paketleme</label> <label><input type="checkbox" name="r" value="sv" checked> Sevkiyat</label><br><br>
+<button id="g" style="padding:10px 16px">Satırı üret</button><textarea id="o" rows="5" style="width:100%;margin-top:10px"></textarea>
+<script>const sha=async t=>[...new Uint8Array(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(t)))].map(b=>b.toString(16).padStart(2,"0")).join("");
+g.onclick=async()=>{if(!ad.value||!p.value)return;const s=[...crypto.getRandomValues(new Uint8Array(6))].map(b=>b.toString(16).padStart(2,"0")).join("");const r=[...document.querySelectorAll("input[name=r]:checked")].map(x=>x.value);o.value=JSON.stringify({ad:ad.value,s,h:await sha(s+":"+p.value),roller:r})+","}</script>
