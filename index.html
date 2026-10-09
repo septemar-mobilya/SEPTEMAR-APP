@@ -298,12 +298,19 @@ function makeDetail(cx,cy,r,o={}){const q=pl[ap].on?pl[ap]:pl.find(z=>z.on);if(!
  const bestIv=(f,m,lim)=>{let best=null;for(const[a,b]of scanAt(f,m)){const lo=Math.max(a,-lim),hi=Math.min(b,lim);if(hi-lo>0&&(!best||hi-lo>best[1]-best[0]))best=[lo,hi]}return best?(best[0]+best[1])/2:-lim*.75};
  const G='#555',ag=(x,y,dx,dy)=>{const L=fs*.85,Wd=fs*.27,bx=x-dx*L,by=y-dy*L;return`<path d="M${x} ${y}L${bx-dy*Wd} ${by+dx*Wd}L${bx+dy*Wd} ${by-dx*Wd}Z" fill="${K}"/>`},gl=(x1,y1,x2,y2)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${G}" stroke-width=".6"/>`,
   TT=(x,y,t,rot)=>`<text x="${x}" y="${y}" ${rot?`transform="rotate(-90 ${x} ${y})"`:''} text-anchor="middle" dominant-baseline="middle" font-size="${fs*1.05}" fill="#111" stroke="#fff" stroke-width="3" paint-order="stroke" font-weight="600">${t}</text>`;
- const hch=(cs,vc)=>{let o='';for(let i=0;i<cs.length-1;i++){const ca=cs[i].c,cb=cs[i+1].c,v=bestIv(0,(ca+cb)/2,rmm*.8),y=Y(v),a=X(ca),b=X(cb),inn=b-a>=fs*3.4,e=fs*1.1;
-   o+=gl(a,y-e,a,y+e)+gl(b,y-e,b,y+e)+gl(a,y,b,y)+ag(a,y,inn?-1:1,0)+ag(b,y,inn?1:-1,0);if(!inn)o+=gl(a-fs*1.2,y,a,y)+gl(b,y,b+fs*1.2,y);
-   o+=TT((a+b)/2,y-fs*.75,nf(cb-ca))}return o};
- const vch=(cs,uc)=>{let o='';for(let i=0;i<cs.length-1;i++){const ca=cs[i].c,cb=cs[i+1].c,u=bestIv(1,(ca+cb)/2,rmm*.8),x=X(u),a=Y(ca),b=Y(cb),inn=a-b>=fs*3.4,e=fs*1.1;
-   o+=gl(x-e,a,x+e,a)+gl(x-e,b,x+e,b)+gl(x,a,x,b)+ag(x,a,0,inn?1:-1)+ag(x,b,0,inn?-1:1);if(!inn)o+=gl(x,a,x,a+fs*1.2)+gl(x,b-fs*1.2,x,b);
-   o+=TT(x-fs*.75,(a+b)/2,nf(cb-ca),1)}return o};
+ const dzPL=[],dzov=(r,q)=>r[0]<q[2]&&r[2]>q[0]&&r[1]<q[3]&&r[3]>q[1];
+ const dzplace=(f,m,mk)=>{const lim=rmm*.8,c=[];for(const[a0,b0]of scanAt(f,m)){const lo=Math.max(a0,-lim),hi=Math.min(b0,lim);if(hi-lo>.5)for(const t of[.5,.25,.75,.12,.88,.38,.62])c.push([hi-lo,(lo+hi)/2+(t-.5)*(hi-lo)*.9,t==.5?0:1])}
+  c.sort((x,y)=>x[2]-y[2]||y[0]-x[0]);if(!c.length)c.push([0,-lim*.75,0]);let best=null,bo=1e9;for(const[,p]of c){const r=mk(p),k=dzPL.filter(q=>dzov(r,q)).length;if(k<bo){bo=k;best=[p,r];if(!k)break}}dzPL.push(best[1]);return best[0]};
+ const dzGR='#555',dzag=(x,y,dx,dy)=>{const L=fs*.85,Wd=fs*.27,bx=x-dx*L,by=y-dy*L;return`<path d="M${x} ${y}L${bx-dy*Wd} ${by+dx*Wd}L${bx+dy*Wd} ${by-dx*Wd}Z" fill="${K}"/>`},dzgl=(x1,y1,x2,y2)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${dzGR}" stroke-width=".6"/>`,
+  dzTT=(x,y,t,rot)=>`<text x="${x}" y="${y}" ${rot?`transform="rotate(-90 ${x} ${y})"`:''} text-anchor="middle" dominant-baseline="middle" font-size="${fs*1.05}" fill="#111" stroke="#fff" stroke-width="3" paint-order="stroke" font-weight="600">${t}</text>`;
+ const hch=(cs,vc)=>{let o='';for(let i=0;i<cs.length-1;i++){const ca=cs[i].c,cb=cs[i+1].c,a=X(ca),b=X(cb),inn=b-a>=fs*3.4,e=fs*1.1,t=nf(cb-ca),tw=t.length*fs*.65,w=Math.max(b-a+(inn?0:fs*2.4),tw),mx=(a+b)/2,
+   v=dzplace(0,(ca+cb)/2,p=>{const y=Y(p);return[mx-w/2-fs*.4,y-fs*1.9,mx+w/2+fs*.4,y+fs*1.2]}),y=Y(v);
+   o+=dzgl(a,y-e,a,y+e)+dzgl(b,y-e,b,y+e)+dzgl(a,y,b,y)+dzag(a,y,inn?-1:1,0)+dzag(b,y,inn?1:-1,0);if(!inn)o+=dzgl(a-fs*1.2,y,a,y)+dzgl(b,y,b+fs*1.2,y);
+   o+=dzTT(mx,y-fs*.75,t)}return o};
+ const vch=(cs,uc)=>{let o='';for(let i=0;i<cs.length-1;i++){const ca=cs[i].c,cb=cs[i+1].c,a=Y(ca),b=Y(cb),inn=a-b>=fs*3.4,e=fs*1.1,t=nf(cb-ca),tw=t.length*fs*.65,h=Math.max(a-b+(inn?0:fs*2.4),tw),my=(a+b)/2,
+   u=dzplace(1,(ca+cb)/2,p=>{const x=X(p);return[x-fs*1.9,my-h/2-fs*.4,x+fs*1.2,my+h/2+fs*.4]}),x=X(u);
+   o+=dzgl(x-e,a,x+e,a)+dzgl(x-e,b,x+e,b)+dzgl(x,a,x,b)+dzag(x,a,0,inn?1:-1)+dzag(x,b,0,inn?-1:1);if(!inn)o+=dzgl(x,a,x,a+fs*1.2)+dzgl(x,b-fs*1.2,x,b);
+   o+=dzTT(x-fs*.75,my,t,1)}return o};
  const dimOut=()=>{const xl=cx0-wmm*ks,xr=cx0+wmm*ks,yt=cy0-hmm*ks,yb=cy0+hmm*ks;let E='',Ln='',Tx='';const seen=new Set(),ln=(x1,y1,x2,y2,w,o)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${K}" stroke-width="${w}"${o?` stroke-opacity="${o}"`:''}/>`,dot=(x,y)=>`<circle cx="${x}" cy="${y}" r="1.7" fill="${K}"/>`,
    lane=(sd,k)=>+(sd=='B'?yb+fs*1.6+k*LH:sd=='T'?yt-fs*1.6-k*LH:sd=='L'?xl-fs*1.6-k*LH:xr+fs*1.6+k*LH).toFixed(1);
   for(const sd of ['B','T','L','R']){const H=sd=='B'||sd=='T';LY[sd].ds.forEach(d=>{const ly=lane(sd,d.k),sg=(sd=='B'||sd=='R')?1:-1;
