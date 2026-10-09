@@ -303,14 +303,20 @@ function makeDetail(cx,cy,r,o={}){const q=pl[ap].on?pl[ap]:pl.find(z=>z.on);if(!
   c.sort((x,y)=>x[2]-y[2]||y[0]-x[0]);if(!c.length)c.push([0,-lim*.75,0]);let best=null,bo=1e9;for(const[,p]of c){const r=mk(p),k=dzPL.filter(q=>dzov(r,q)).length;if(k<bo){bo=k;best=[p,r];if(!k)break}}dzPL.push(best[1]);return best[0]};
  const dzGR='#555',dzag=(x,y,dx,dy)=>{const L=fs*.85,Wd=fs*.27,bx=x-dx*L,by=y-dy*L;return`<path d="M${x} ${y}L${bx-dy*Wd} ${by+dx*Wd}L${bx+dy*Wd} ${by-dx*Wd}Z" fill="${K}"/>`},dzgl=(x1,y1,x2,y2)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${dzGR}" stroke-width=".6"/>`,
   dzTT=(x,y,t,rot)=>`<text x="${x}" y="${y}" ${rot?`transform="rotate(-90 ${x} ${y})"`:''} text-anchor="middle" dominant-baseline="middle" font-size="${fs*1.05}" fill="#111" stroke="#fff" stroke-width="3" paint-order="stroke" font-weight="600">${t}</text>`;
- const hch=(cs,vc)=>{let o='';for(let i=0;i<cs.length-1;i++){const ca=cs[i].c,cb=cs[i+1].c,a=X(ca),b=X(cb),inn=b-a>=fs*3.4,e=fs*1.1,t=nf(cb-ca),tw=t.length*fs*.65,w=Math.max(b-a+(inn?0:fs*2.4),tw),mx=(a+b)/2,
-   v=dzplace(0,(ca+cb)/2,p=>{const y=Y(p);return[mx-w/2-fs*.4,y-fs*1.9,mx+w/2+fs*.4,y+fs*1.2]}),y=Y(v);
-   o+=dzgl(a,y-e,a,y+e)+dzgl(b,y-e,b,y+e)+dzgl(a,y,b,y)+dzag(a,y,inn?-1:1,0)+dzag(b,y,inn?1:-1,0);if(!inn)o+=dzgl(a-fs*1.2,y,a,y)+dzgl(b,y,b+fs*1.2,y);
-   o+=dzTT(mx,y-fs*.75,t)}return o};
- const vch=(cs,uc)=>{let o='';for(let i=0;i<cs.length-1;i++){const ca=cs[i].c,cb=cs[i+1].c,a=Y(ca),b=Y(cb),inn=a-b>=fs*3.4,e=fs*1.1,t=nf(cb-ca),tw=t.length*fs*.65,h=Math.max(a-b+(inn?0:fs*2.4),tw),my=(a+b)/2,
-   u=dzplace(1,(ca+cb)/2,p=>{const x=X(p);return[x-fs*1.9,my-h/2-fs*.4,x+fs*1.2,my+h/2+fs*.4]}),x=X(u);
-   o+=dzgl(x-e,a,x+e,a)+dzgl(x-e,b,x+e,b)+dzgl(x,a,x,b)+dzag(x,a,0,inn?1:-1)+dzag(x,b,0,inn?-1:1);if(!inn)o+=dzgl(x,a,x,a+fs*1.2)+dzgl(x,b-fs*1.2,x,b);
-   o+=dzTT(x-fs*.75,my,t,1)}return o};
+ const scanP=(P,f,c0)=>{const g=1-f,out=[];for(const Lp of P.loops){const cr=[];for(let i=0;i<Lp.length;i++){const p=Lp[i],q=Lp[(i+1)%Lp.length];if((p[f]<=c0&&q[f]>c0)||(q[f]<=c0&&p[f]>c0))cr.push(p[g]+(c0-p[f])/(q[f]-p[f])*(q[g]-p[g]))}cr.sort((x,y)=>x-y);for(let i=0;i+1<cr.length;i+=2)out.push([cr[i],cr[i+1]])}return out};
+ const dzdv=(u,v0,v1)=>{const x=X(u),a=Y(v0),b=Y(v1),inn=a-b>=fs*3.4,e=fs*1.1,t=nf(v1-v0);let o=dzgl(x-e,a,x+e,a)+dzgl(x-e,b,x+e,b)+dzgl(x,a,x,b)+dzag(x,a,0,inn?1:-1)+dzag(x,b,0,inn?-1:1);if(!inn)o+=dzgl(x,a,x,a+fs*1.2)+dzgl(x,b-fs*1.2,x,b);return o+dzTT(x-fs*.8,(a+b)/2,t,1)};
+ const dzdh=(v,u0,u1)=>{const y=Y(v),a=X(u0),b=X(u1),inn=b-a>=fs*3.4,e=fs*1.1,t=nf(u1-u0);let o=dzgl(a,y-e,a,y+e)+dzgl(b,y-e,b,y+e)+dzgl(a,y,b,y)+dzag(a,y,inn?-1:1,0)+dzag(b,y,inn?1:-1,0);if(!inn)o+=dzgl(a-fs*1.2,y,a,y)+dzgl(b,y,b+fs*1.2,y);return o+dzTT((a+b)/2,y-fs*.8,t)};
+ const hch=()=>{const lim=rmm*.85,fr=[.5,.3,.7,.18,.82,.4,.6],todo=[];let o='';
+  const items=polys.map(P=>{const u0=Math.max(P.bb[0],-lim),u1=Math.min(P.bb[1],lim),v0=Math.max(P.bb[2],-lim),v1=Math.min(P.bb[3],lim);return{P,u0,u1,v0,v1,A:(u1-u0)*(v1-v0)}}).filter(r=>r.u1-r.u0>.8&&r.v1-r.v0>.8).sort((x,y)=>y.A-x.A).slice(0,14);
+  for(const r of items){const vert=(r.v1-r.v0)<=(r.u1-r.u0)*1.0001,f=vert?0:1,c0a=vert?r.u0:r.v0,c0b=vert?r.u1:r.v1;let best=null,bo=1e9;
+   for(const t of fr){const c=c0a+(c0b-c0a)*t,iv=scanP(r.P,f,c).map(([a,b])=>[Math.max(a,-lim),Math.min(b,lim)]).filter(([a,b])=>b-a>.8).sort((x,y)=>(y[1]-y[0])-(x[1]-x[0]))[0];if(!iv)continue;
+    const L=nf(iv[1]-iv[0]),tw=L.length*fs*.65,mid=(iv[0]+iv[1])/2,rect=vert?[X(c)-fs*1.9,Math.min(Y(iv[0]),Y(iv[1]))-fs*.6-Math.max(0,(tw-Math.abs(Y(iv[0])-Y(iv[1])))/2),X(c)+fs*1.2,Math.max(Y(iv[0]),Y(iv[1]))+fs*.6+Math.max(0,(tw-Math.abs(Y(iv[0])-Y(iv[1])))/2)]:[Math.min(X(iv[0]),X(iv[1]))-fs*.6-Math.max(0,(tw-Math.abs(X(iv[0])-X(iv[1])))/2),Y(c)-fs*1.9,Math.max(X(iv[0]),X(iv[1]))+fs*.6+Math.max(0,(tw-Math.abs(X(iv[0])-X(iv[1])))/2),Y(c)+fs*1.2],k=dzPL.filter(q=>dzov(rect,q)).length;
+    if(k<bo){bo=k;best={c,iv,rect};if(!k)break}}
+   if(best){dzPL.push(best.rect);o+=vert?dzdv(best.c,best.iv[0],best.iv[1]):dzdh(best.c,best.iv[0],best.iv[1])}}
+  /* parçalar arası büyük boşluklar */
+  [[1,HE,0],[0,VE,1]].forEach(([f,E,vert])=>{collect(f,E).filter(g=>g.vd&&g.a>-lim&&g.b<lim&&g.b-g.a>=Math.max(8,rmm*.1)).slice(0,2).forEach(g=>{const c=(g.mn+g.mx)/2;if(Math.abs(c)>lim)return;const rect=vert?[X(c)-fs*1.9,Math.min(Y(g.a),Y(g.b))-fs*.6,X(c)+fs*1.2,Math.max(Y(g.a),Y(g.b))+fs*.6]:[Math.min(X(g.a),X(g.b))-fs*.6,Y(c)-fs*1.9,Math.max(X(g.a),X(g.b))+fs*.6,Y(c)+fs*1.2];if(dzPL.some(q=>dzov(rect,q)))return;dzPL.push(rect);o+=vert?dzdv(c,g.a,g.b):dzdh(c,g.a,g.b)})});
+  return o};
+ const vch=()=>'';
  const dimOut=()=>{const xl=cx0-wmm*ks,xr=cx0+wmm*ks,yt=cy0-hmm*ks,yb=cy0+hmm*ks;let E='',Ln='',Tx='';const seen=new Set(),ln=(x1,y1,x2,y2,w,o)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${K}" stroke-width="${w}"${o?` stroke-opacity="${o}"`:''}/>`,dot=(x,y)=>`<circle cx="${x}" cy="${y}" r="1.7" fill="${K}"/>`,
    lane=(sd,k)=>+(sd=='B'?yb+fs*1.6+k*LH:sd=='T'?yt-fs*1.6-k*LH:sd=='L'?xl-fs*1.6-k*LH:xr+fs*1.6+k*LH).toFixed(1);
   for(const sd of ['B','T','L','R']){const H=sd=='B'||sd=='T';LY[sd].ds.forEach(d=>{const ly=lane(sd,d.k),sg=(sd=='B'||sd=='R')?1:-1;
