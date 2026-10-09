@@ -429,5 +429,8 @@
    "s": "tst2",
    "h": "167b8f8074a0d5c1b4e7b896dea74d0f5adc764d03857bdc4ffb1b3b6a439534"
   }
- ]
+ ],
+ "kabinRenkleri": {
+  "Misafir Kabin 202": "#2b2fa0"
+ }
 }
