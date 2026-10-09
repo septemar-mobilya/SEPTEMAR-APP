@@ -265,7 +265,7 @@ function makeDetail(cx,cy,r,o={}){const q=pl[ap].on?pl[ap]:pl.find(z=>z.on);if(!
  const clus=A=>{A.sort((a,b)=>a.c-b.c);const o=[];A.forEach(e=>{const l=o[o.length-1];if(l&&Math.abs(e.c-l.c)<.06){l.s+=e.hi-e.lo;l.lo=Math.min(l.lo,e.lo);l.hi=Math.max(l.hi,e.hi)}else o.push({c:e.c,lo:e.lo,hi:e.hi,s:e.hi-e.lo})});return o},
   pick=(C,lim)=>C.filter(c=>c.s>=Math.max(1.5,rmm*.06)&&Math.abs(c.c)<lim*(o.full?1.03:.88)).sort((a,b)=>b.s-a.s).slice(0,o.full?14:8).sort((a,b)=>a.c-b.c),CU=pick(clus(VE),wmm),CV=pick(clus(HE),hmm);
  let ML=0,MT=0,MR=0,MB=0,cx0=0,cy0=0;
- const n=DET.length?Math.max(...DET.map(z=>z.n))+1:1,nice=[.02,.05,.1,.2,.25,.5,1,2,4,5,10,20,50],sw=o.full?(o.scale||detScale||.1):(o.scale||detScale),kz=sw&&(o.full||2*rmm*3.78*sw>=260)?sw:(nice.find(k=>2*rmm*3.78*k>=450)||50),ks=3.78*kz,full=!!o.full,Wp=2*wmm*ks,Hp=2*hmm*ks,fs=Math.max(full?10.5:12,Math.max(Wp,Hp)*(full?.03:.034)),Rs=rmm*ks,D=2*Rs,X=u=>+(cx0+u*ks).toFixed(1),Y=v=>+(cy0-v*ks).toFixed(1),hsz=Math.max(full?5:6,Math.max(Wp,Hp)/2*.045),
+ const n=DET.length?Math.max(...DET.map(z=>z.n))+1:1,nice=[.02,.05,.1,.2,.25,.5,1,2,4,5,10,20,50],sw=o.full?(o.scale||detScale||.1):(o.scale||detScale),kz=sw&&(o.full||2*rmm*3.78*sw>=260)?sw:(nice.find(k=>2*rmm*3.78*k>=450)||50),ks=3.78*kz,full=!!o.full,Wp=2*wmm*ks,Hp=2*hmm*ks,fs=Math.max(full?10.5:8.5,Math.max(Wp,Hp)*(full?.03:.021)),Rs=rmm*ks,D=2*Rs,X=u=>+(cx0+u*ks).toFixed(1),Y=v=>+(cy0-v*ks).toFixed(1),hsz=Math.max(full?5:6,Math.max(Wp,Hp)/2*.045),
   nf=x=>(+x.toFixed(1)).toString().replace('.',','),K='#0a2a6b';
  /*DIMS-START*/
  const gu0=Math.min(...polys.map(P=>P.bb[0])),gu1=Math.max(...polys.map(P=>P.bb[1])),gv0=Math.min(...polys.map(P=>P.bb[2])),gv1=Math.max(...polys.map(P=>P.bb[3])),LH=fs*2.1;
@@ -295,12 +295,13 @@ function makeDetail(cx,cy,r,o={}){const q=pl[ap].on?pl[ap]:pl.find(z=>z.on);if(!
   return`<text x="${X(cu)}" y="${Y(cv)}" text-anchor="middle" dominant-baseline="middle" font-size="${fs*1.15}" font-weight="700" fill="#d61f1f" stroke="#fff" stroke-width="3" paint-order="stroke">${m.kod}</text>`}).join('');
  const T=(x,y,t,rot)=>`<text x="${x}" y="${y}" ${rot?`transform="rotate(-90 ${x} ${y})"`:''} text-anchor="middle" font-size="${fs}" fill="${K}" stroke="#fff" stroke-width="3.5" paint-order="stroke" font-weight="600">${t}</text>`,
   ar_=(x,y,dx,dy)=>{const L=fs*.8,Wd=fs*.28,bx=x-dx*L,by=y-dy*L;return`<path d="M${x} ${y}L${bx-dy*Wd} ${by+dx*Wd}L${bx+dy*Wd} ${by-dx*Wd}Z" fill="${K}"/>`};
- const hch=(cs,vc)=>{if(cs.length<2)return'';const y=Y(vc);let o=`<line x1="${X(cs[0].c)}" y1="${y}" x2="${X(cs[cs.length-1].c)}" y2="${y}" stroke="${K}" stroke-width="1.4"/>`;
-  cs.forEach(c=>{o+=`<line x1="${X(c.c)}" y1="${Math.min(Y(c.lo),y-2)}" x2="${X(c.c)}" y2="${y+fs*.5}" stroke="${K}" stroke-width=".9"/>`});
-  for(let i=0;i<cs.length-1;i++){const a=X(cs[i].c),b=X(cs[i+1].c),w=b-a,inn=w>=fs*3;o+=ar_(a,y,inn?-1:1,0)+ar_(b,y,inn?1:-1,0)+T((a+b)/2,y-4-(inn?0:(i%2)*fs*1.1),nf(cs[i+1].c-cs[i].c))}return o};
- const vch=(cs,uc)=>{if(cs.length<2)return'';const x=X(uc);let o=`<line x1="${x}" y1="${Y(cs[0].c)}" x2="${x}" y2="${Y(cs[cs.length-1].c)}" stroke="${K}" stroke-width="1.4"/>`;
-  cs.forEach(c=>{o+=`<line x1="${Math.max(X(c.lo),x+2)}" y1="${Y(c.c)}" x2="${x-fs*.5}" y2="${Y(c.c)}" stroke="${K}" stroke-width=".9"/>`});
-  for(let i=0;i<cs.length-1;i++){const a=Y(cs[i].c),b=Y(cs[i+1].c),w=a-b,inn=w>=fs*3;o+=ar_(x,a,0,inn?1:-1)+ar_(x,b,0,inn?-1:1)+T(x-4-(inn?0:(i%2)*fs*1.1),(a+b)/2,nf(cs[i+1].c-cs[i].c),1)}return o};
+ const bestIv=(f,m,lim)=>{let best=null;for(const[a,b]of scanAt(f,m)){const lo=Math.max(a,-lim),hi=Math.min(b,lim);if(hi-lo>0&&(!best||hi-lo>best[1]-best[0]))best=[lo,hi]}return best?(best[0]+best[1])/2:-lim*.75};
+ const hch=(cs,vc)=>{let o='';for(let i=0;i<cs.length-1;i++){const ca=cs[i].c,cb=cs[i+1].c,v=bestIv(0,(ca+cb)/2,rmm*.8),y=Y(v),a=X(ca),b=X(cb),inn=b-a>=fs*3.2;
+   o+=`<line x1="${a}" y1="${y}" x2="${b}" y2="${y}" stroke="${K}" stroke-width=".7"/>`+ar_(a,y,inn?-1:1,0)+ar_(b,y,inn?1:-1,0);if(!inn)o+=`<line x1="${a-fs}" y1="${y}" x2="${a}" y2="${y}" stroke="${K}" stroke-width=".7"/><line x1="${b}" y1="${y}" x2="${b+fs}" y2="${y}" stroke="${K}" stroke-width=".7"/>`;
+   o+=T((a+b)/2,y-2.5,nf(cb-ca))}return o};
+ const vch=(cs,uc)=>{let o='';for(let i=0;i<cs.length-1;i++){const ca=cs[i].c,cb=cs[i+1].c,u=bestIv(1,(ca+cb)/2,rmm*.8),x=X(u),a=Y(ca),b=Y(cb),inn=a-b>=fs*3.2;
+   o+=`<line x1="${x}" y1="${a}" x2="${x}" y2="${b}" stroke="${K}" stroke-width=".7"/>`+ar_(x,a,0,inn?1:-1)+ar_(x,b,0,inn?-1:1);if(!inn)o+=`<line x1="${x}" y1="${a}" x2="${x}" y2="${a+fs}" stroke="${K}" stroke-width=".7"/><line x1="${x}" y1="${b-fs}" x2="${x}" y2="${b}" stroke="${K}" stroke-width=".7"/>`;
+   o+=T(x-2.5,(a+b)/2,nf(cb-ca),1)}return o};
  const dimOut=()=>{const xl=cx0-wmm*ks,xr=cx0+wmm*ks,yt=cy0-hmm*ks,yb=cy0+hmm*ks;let E='',Ln='',Tx='';const seen=new Set(),ln=(x1,y1,x2,y2,w,o)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${K}" stroke-width="${w}"${o?` stroke-opacity="${o}"`:''}/>`,dot=(x,y)=>`<circle cx="${x}" cy="${y}" r="1.7" fill="${K}"/>`,
    lane=(sd,k)=>+(sd=='B'?yb+fs*1.6+k*LH:sd=='T'?yt-fs*1.6-k*LH:sd=='L'?xl-fs*1.6-k*LH:xr+fs*1.6+k*LH).toFixed(1);
   for(const sd of ['B','T','L','R']){const H=sd=='B'||sd=='T';LY[sd].ds.forEach(d=>{const ly=lane(sd,d.k),sg=(sd=='B'||sd=='R')?1:-1;
