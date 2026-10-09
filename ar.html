@@ -1,0 +1,9 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Septemar · AR</title>
+<script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
+<style>html,body{margin:0;height:100%;font-family:system-ui,sans-serif;background:#0f1b2d;color:#fff}model-viewer{width:100%;height:100%;--poster-color:#0f1b2d}
+#ar{position:absolute;left:50%;transform:translateX(-50%);bottom:28px;background:#ff7a1a;color:#fff;border:0;border-radius:99px;padding:16px 26px;font-size:18px;font-weight:700}
+#t{position:absolute;top:12px;left:14px;font-size:13px;letter-spacing:.25em;opacity:.85;z-index:2}#m{position:absolute;left:12px;right:12px;bottom:90px;text-align:center;font-size:14px;color:#ffd9b8}</style></head>
+<body><div id="t">SEPTEMAR · AR</div>
+<model-viewer id="mv" src="models/komodin.glb" alt="Komodin" ar ar-modes="scene-viewer webxr quick-look" ar-scale="fixed" ar-placement="floor" camera-controls auto-rotate shadow-intensity="1" environment-image="neutral" exposure="1.1">
+<button slot="ar-button" id="ar">📱 Gerçek ortamda aç (AR)</button></model-viewer><div id="m"></div>
+<script>const mv=document.getElementById('mv');mv.addEventListener('load',()=>{setTimeout(()=>{if(!mv.canActivateAR)document.getElementById('m').textContent='Bu cihaz veya tarayıcı AR desteklemiyor. Android\'de Chrome, iPhone\'da Safari ile açın.'},800)})</script></body></html>
