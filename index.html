@@ -267,14 +267,28 @@ function makeDetail(cx,cy,r,o={}){const q=pl[ap].on?pl[ap]:pl.find(z=>z.on);if(!
  let ML=0,MT=0,MR=0,MB=0,cx0=0,cy0=0;
  const n=DET.length?Math.max(...DET.map(z=>z.n))+1:1,nice=[.02,.05,.1,.2,.25,.5,1,2,4,5,10,20,50],sw=o.full?(o.scale||detScale||.1):(o.scale||detScale),kz=sw&&(o.full||2*rmm*3.78*sw>=260)?sw:(nice.find(k=>2*rmm*3.78*k>=450)||50),ks=3.78*kz,full=!!o.full,Wp=2*wmm*ks,Hp=2*hmm*ks,fs=Math.max(full?10.5:12,Math.max(Wp,Hp)*(full?.03:.034)),Rs=rmm*ks,D=2*Rs,X=u=>+(cx0+u*ks).toFixed(1),Y=v=>+(cy0-v*ks).toFixed(1),hsz=Math.max(full?5:6,Math.max(Wp,Hp)/2*.045),
   nf=x=>(+x.toFixed(1)).toString().replace('.',','),K='#0a2a6b';
+ /*DIMS-START*/
  const gu0=Math.min(...polys.map(P=>P.bb[0])),gu1=Math.max(...polys.map(P=>P.bb[1])),gv0=Math.min(...polys.map(P=>P.bb[2])),gv1=Math.max(...polys.map(P=>P.bb[3])),LH=fs*2.1;
- /* ölçüler birbirine girmesin: her ölçü kendi şeridine (lane) konur, yazı genişliği hesaba katılır */
- const layOut=(cs,tot,ax)=>{const ds=[],add=(a,b)=>{const v=b.c-a.c;if(v<.5)return;const t=nf(v),tw=t.length*fs*.6+fs*.9,p1=ax?a.c*ks:-a.c*ks,p2=ax?b.c*ks:-b.c*ks,pa=Math.min(p1,p2),pb=Math.max(p1,p2),mid=(pa+pb)/2,inn=pb-pa>=Math.max(tw,fs*2.6),e0=Math.min(inn?pa:pa-fs*1.3,mid-tw/2)-4,e1=Math.max(inn?pb:pb+fs*1.3,mid+tw/2)+4;ds.push({a,b,t,inn,e0,e1,k:0})};
-  for(let i=0;i<cs.length-1;i++)add(cs[i],cs[i+1]);if(tot)add(tot[0],tot[1]);
+ const scanSet=E=>{const vs=E.map(e=>e.c).sort((x,y)=>x-y),g=[];vs.forEach(v=>{if(!g.length||v-g[g.length-1]>.25)g.push(v)});const m=[];for(let i=0;i<g.length-1;i++)if(g[i+1]-g[i]>=.3)m.push((g[i]+g[i+1])/2);return m};
+ const scanAt=(f,c0)=>{const g=1-f,out=[];for(const P of polys){if(c0<P.bb[f*2]||c0>P.bb[f*2+1])continue;for(const Lp of P.loops){const cr=[];for(let i=0;i<Lp.length;i++){const p=Lp[i],q=Lp[(i+1)%Lp.length];if((p[f]<=c0&&q[f]>c0)||(q[f]<=c0&&p[f]>c0))cr.push(p[g]+(c0-p[f])/(q[f]-p[f])*(q[g]-p[g]))}cr.sort((x,y)=>x-y);for(let i=0;i+1<cr.length;i+=2)out.push([cr[i],cr[i+1]])}}return out.sort((x,y)=>x[0]-y[0])};
+ const collect=(f,E)=>{const M=new Map();scanSet(E).forEach(c0=>{const iv=scanAt(f,c0);if(!iv.length)return;
+   const add=(a,b,vd)=>{const len=b-a;if(len<(vd?1:1.5))return;const key=vd+'|'+Math.round(a*2)+'|'+Math.round(b*2);let r=M.get(key);if(!r){r={a,b,vd,cs:[]};M.set(key,r)}r.cs.push(c0)};
+   iv.forEach(([a,b])=>add(a,b,0));let cur=iv[0][1];for(let i=1;i<iv.length;i++){const[a,b]=iv[i];if(a-cur>=1)add(cur,a,1);cur=Math.max(cur,b)}});
+  return[...M.values()].map(r=>({a:r.a,b:r.b,vd:r.vd,mn:Math.min(...r.cs),mx:Math.max(...r.cs),sc:r.cs.length+(r.vd?3:0)})).sort((x,y)=>y.sc-x.sc).slice(0,16)};
+ const layGen=(ds,ax)=>{ds.forEach(d=>{d.t=nf(d.b-d.a);const tw=d.t.length*fs*.6+fs*.9,p1=ax?d.a*ks:-d.a*ks,p2=ax?d.b*ks:-d.b*ks,pa=Math.min(p1,p2),pb=Math.max(p1,p2),mid=(pa+pb)/2;d.inn=pb-pa>=Math.max(tw,fs*2.6);d.e0=Math.min(d.inn?pa:pa-fs*1.3,mid-tw/2)-4;d.e1=Math.max(d.inn?pb:pb+fs*1.3,mid+tw/2)+4;d.k=0});
   const L=[];[...ds].sort((x,y)=>(x.e1-x.e0)-(y.e1-y.e0)).forEach(d=>{let k=L.findIndex(l=>l.every(e=>d.e1<e[0]||d.e0>e[1]));if(k<0){k=L.length;L.push([])}L[k].push([d.e0,d.e1]);d.k=k});return{ds,n:L.length}};
- let LYH={ds:[],n:0},LYV={ds:[],n:0};
- if(full){LYH=layOut(CU,gu1>gu0?[{c:gu0,lo:gv0},{c:gu1,lo:gv0}]:null,1);LYV=layOut(CV,gv1>gv0?[{c:gv0,lo:gu0},{c:gv1,lo:gu0}]:null,0);ML=fs*1.8+LYV.n*LH;MT=fs*1.5;MR=fs*1.5;MB=fs*1.8+LYH.n*LH}
+ const S={L:[],R:[],T:[],B:[]};
+ collect(0,VE).forEach(r=>{const left=(r.mn-gu0)<=(gu1-r.mx);S[left?'L':'R'].push({...r,perp:left?r.mn:r.mx})});
+ collect(1,HE).forEach(r=>{const top=(gv1-r.mx)<=(r.mn-gv0);S[top?'T':'B'].push({...r,perp:top?r.mx:r.mn})});
+ const bal=(A,B,pa,pb)=>{while(A.length-B.length>1){const d=A.pop();d.perp=pb(d);B.push(d)}while(B.length-A.length>1){const d=B.pop();d.perp=pa(d);A.push(d)}};
+ bal(S.L,S.R,d=>d.mn,d=>d.mx);bal(S.T,S.B,d=>d.mx,d=>d.mn);
+ const LY={L:layGen(S.L,0),R:layGen(S.R,0),T:layGen(S.T,1),B:layGen(S.B,1)};
+ const addTot=(s,a,b,perp)=>{const y=LY[s];y.ds.push({a,b,perp,t:nf(b-a),inn:true,k:y.n,tot:1});y.n++};
+ if(full){if(gu1>gu0)addTot(LY.T.n<=LY.B.n?'T':'B',gu0,gu1,0);if(gv1>gv0)addTot(LY.L.n<=LY.R.n?'L':'R',gv0,gv1,0);
+  LY.T.ds.forEach(d=>{if(d.tot)d.perp=gv1});LY.B.ds.forEach(d=>{if(d.tot)d.perp=gv0});LY.L.ds.forEach(d=>{if(d.tot)d.perp=gu0});LY.R.ds.forEach(d=>{if(d.tot)d.perp=gu1});
+  const mH=Math.max(LY.L.n,LY.R.n),mV=Math.max(LY.T.n,LY.B.n);ML=MR=fs*1.8+mH*LH;MT=MB=fs*1.8+mV*LH}
  cx0=ML+Wp/2;cy0=MT+Hp/2;
+/*DIMS-END*/
  const hp=(id,a)=>`<pattern id="${id}_${n}" width="${hsz}" height="${hsz}" patternUnits="userSpaceOnUse" patternTransform="rotate(${a})"><rect width="${hsz}" height="${hsz}" fill="#f4f4f4"/><line x1="0" y1="0" x2="0" y2="${hsz}" stroke="#333" stroke-width="1.1"/></pattern>`;
  const paths=polys.map(P=>`<path d="${P.loops.map(L=>'M'+L.map(p=>X(p[0])+' '+Y(p[1])).join('L')+'Z').join('')}" fill="url(#h${P.i%2}_${n})" fill-rule="evenodd" stroke="#111" stroke-width="1.8" stroke-linejoin="round"/>`).join('');
  const labs=polys.map(P=>{const m=data.malzemeler?.[data.parts?.[P.k]?.malzeme];if(!m||!m.kod)return'';const[u0,u1,v0,v1]=P.bb,cu=(Math.max(u0,-wmm)+Math.min(u1,wmm))/2,cv=(Math.max(v0,-hmm)+Math.min(v1,hmm))/2,mnD=Math.min(u1-u0,v1-v0);if(full?mnD*ks<fs*1.3:(Math.hypot(cu,cv)>rmm*.8||mnD<4))return'';
@@ -287,12 +301,13 @@ function makeDetail(cx,cy,r,o={}){const q=pl[ap].on?pl[ap]:pl.find(z=>z.on);if(!
  const vch=(cs,uc)=>{if(cs.length<2)return'';const x=X(uc);let o=`<line x1="${x}" y1="${Y(cs[0].c)}" x2="${x}" y2="${Y(cs[cs.length-1].c)}" stroke="${K}" stroke-width="1.4"/>`;
   cs.forEach(c=>{o+=`<line x1="${Math.max(X(c.lo),x+2)}" y1="${Y(c.c)}" x2="${x-fs*.5}" y2="${Y(c.c)}" stroke="${K}" stroke-width=".9"/>`});
   for(let i=0;i<cs.length-1;i++){const a=Y(cs[i].c),b=Y(cs[i+1].c),w=a-b,inn=w>=fs*3;o+=ar_(x,a,0,inn?1:-1)+ar_(x,b,0,inn?-1:1)+T(x-4-(inn?0:(i%2)*fs*1.1),(a+b)/2,nf(cs[i+1].c-cs[i].c),1)}return o};
- const dimOut=()=>{const xl=cx0-wmm*ks,yb=cy0+hmm*ks;let E='',Ln='',Tx='';const lyY=k=>+(yb+fs*1.6+k*LH).toFixed(1),lyX=k=>+(xl-fs*1.6-k*LH).toFixed(1),ln=(x1,y1,x2,y2,w)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${K}" stroke-width="${w}"/>`;
-  const ext=(ly,H)=>{const m=new Map();ly.ds.forEach(d=>[d.a,d.b].forEach(p=>{const key=p.c.toFixed(2),e=m.get(key);if(!e)m.set(key,{p,k:d.k});else e.k=Math.max(e.k,d.k)}));
-   m.forEach(({p,k})=>{if(H){const x=X(p.c);E+=ln(x,Math.min(Y(p.lo),yb),x,lyY(k)+fs*.45,.6)}else{const y=Y(p.c);E+=ln(Math.max(X(p.lo),xl),y,lyX(k)-fs*.45,y,.6)}})};
-  ext(LYH,1);ext(LYV,0);
-  LYH.ds.forEach(d=>{const y=lyY(d.k),a=X(d.a.c),b=X(d.b.c);Ln+=ln(a,y,b,y,1.1);if(d.inn)Ln+=ar_(a,y,-1,0)+ar_(b,y,1,0);else Ln+=ln(a-fs*1.3,y,a,y,1.1)+ln(b,y,b+fs*1.3,y,1.1)+ar_(a,y,1,0)+ar_(b,y,-1,0);Tx+=T((a+b)/2,y-4,d.t)});
-  LYV.ds.forEach(d=>{const x=lyX(d.k),a=Y(d.a.c),b=Y(d.b.c);Ln+=ln(x,a,x,b,1.1);if(d.inn)Ln+=ar_(x,a,0,1)+ar_(x,b,0,-1);else Ln+=ln(x,a,x,a+fs*1.3,1.1)+ln(x,b-fs*1.3,x,b,1.1)+ar_(x,a,0,-1)+ar_(x,b,0,1);Tx+=T(x-4,(a+b)/2,d.t,1)});
+ const dimOut=()=>{const xl=cx0-wmm*ks,xr=cx0+wmm*ks,yt=cy0-hmm*ks,yb=cy0+hmm*ks;let E='',Ln='',Tx='';const seen=new Set(),ln=(x1,y1,x2,y2,w,o)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${K}" stroke-width="${w}"${o?` stroke-opacity="${o}"`:''}/>`,dot=(x,y)=>`<circle cx="${x}" cy="${y}" r="1.7" fill="${K}"/>`,
+   lane=(sd,k)=>+(sd=='B'?yb+fs*1.6+k*LH:sd=='T'?yt-fs*1.6-k*LH:sd=='L'?xl-fs*1.6-k*LH:xr+fs*1.6+k*LH).toFixed(1);
+  for(const sd of ['B','T','L','R']){const H=sd=='B'||sd=='T';LY[sd].ds.forEach(d=>{const ly=lane(sd,d.k),sg=(sd=='B'||sd=='R')?1:-1;
+   if(H){const a=X(d.a),b=X(d.b),pv=Y(d.perp);[a,b].forEach(x=>{const key=sd+x+'_'+d.k;if(!seen.has(key)){seen.add(key);E+=ln(x,pv,x,ly+sg*fs*.45,.6,.8)+dot(x,pv)}});
+    Ln+=ln(a,ly,b,ly,1.1);if(d.inn)Ln+=ar_(a,ly,-1,0)+ar_(b,ly,1,0);else Ln+=ln(a-fs*1.3,ly,a,ly,1.1)+ln(b,ly,b+fs*1.3,ly,1.1)+ar_(a,ly,1,0)+ar_(b,ly,-1,0);Tx+=T((a+b)/2,ly-4,d.t)}
+   else{const a=Y(d.a),b=Y(d.b),pu=X(d.perp);[a,b].forEach(y=>{const key=sd+y+'_'+d.k;if(!seen.has(key)){seen.add(key);E+=ln(pu,y,ly+sg*fs*.45,y,.6,.8)+dot(pu,y)}});
+    Ln+=ln(ly,a,ly,b,1.1);if(d.inn)Ln+=ar_(ly,a,0,1)+ar_(ly,b,0,-1);else Ln+=ln(ly,a,ly,a+fs*1.3,1.1)+ln(ly,b-fs*1.3,ly,b,1.1)+ar_(ly,a,0,-1)+ar_(ly,b,0,1);Tx+=T(ly-4,(a+b)/2,d.t,1)}})}
   return E+Ln+Tx};
  const arcs=[];polys.forEach(P=>P.loops.forEach(L=>arcsOf(L).forEach(a=>{if((full||Math.hypot(a.m[0],a.m[1])<rmm*.85)&&!arcs.some(b=>Math.hypot(b.m[0]-a.m[0],b.m[1]-a.m[1])<2&&Math.abs(b.r-a.r)<.3))arcs.push(a)})));
  const rl=arcs.slice(0,full?6:4).map(a=>{const nx=a.m[0]-a.c[0],ny=a.m[1]-a.c[1],l=Math.hypot(nx,ny)||1,ux=nx/l,uy=ny/l,mx=X(a.m[0]),my=Y(a.m[1]),ex=mx+ux*fs*3,ey=my-uy*fs*3,dr=ux>=0?1:-1,tx=ex+dr*fs*3.4;
