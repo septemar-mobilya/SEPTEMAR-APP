@@ -235,7 +235,7 @@ const pp=e=>{const r=pen.getBoundingClientRect();return[e.clientX-r.left,e.clien
 pen.addEventListener('pointerdown',e=>{pc2.clearRect(0,0,pen.width,pen.height);ps=[pp(e)];pen.setPointerCapture(e.pointerId)});
 pen.addEventListener('pointermove',e=>{if(!ps.length)return;const p=pp(e),l=ps[ps.length-1];ps.push(p);pc2.strokeStyle='#e11';pc2.lineWidth=3;pc2.lineCap='round';pc2.beginPath();pc2.moveTo(l[0],l[1]);pc2.lineTo(p[0],p[1]);pc2.stroke()});
 pen.addEventListener('pointerup',()=>{if(ps.length<8){ps=[];return}const cx=ps.reduce((a,p)=>a+p[0],0)/ps.length,cy=ps.reduce((a,p)=>a+p[1],0)/ps.length,r=ps.reduce((a,p)=>a+Math.hypot(p[0]-cx,p[1]-cy),0)/ps.length;ps=[];pc2.clearRect(0,0,pen.width,pen.height);if(r<14)return;
- pc2.strokeStyle='#e11';pc2.lineWidth=3;pc2.beginPath();pc2.arc(cx,cy,r,0,7);pc2.stroke();setTimeout(()=>{(penIso?makeIso:makeDetail)(cx,cy,r);setPen(false);popUI()},60)});
+ pc2.strokeStyle='#e11';pc2.lineWidth=3;pc2.beginPath();pc2.arc(cx,cy,r,0,7);pc2.stroke();setTimeout(()=>{makeDetail(cx,cy,r,penIso?{iso:true}:{});setPen(false);popUI()},60)});
 function loopsOf(sg){const key=(x,y,z)=>Math.round(x*1e6)+','+Math.round(y*1e6)+','+Math.round(z*1e6),adj=new Map(),P=new Map(),add=(a,b)=>{(adj.get(a)||adj.set(a,[]).get(a)).push(b)};
  for(let j=0;j<sg.length;j+=6){const a=key(sg[j],sg[j+1],sg[j+2]),b=key(sg[j+3],sg[j+4],sg[j+5]);if(a==b)continue;P.set(a,[sg[j],sg[j+1],sg[j+2]]);P.set(b,[sg[j+3],sg[j+4],sg[j+5]]);add(a,b);add(b,a)}
  const used=new Set(),ek=(a,b)=>a<b?a+'|'+b:b+'|'+a,out=[];
@@ -247,17 +247,28 @@ function arcsOf(L){const n=L.length,res=[];if(n<5)return res;const sd=i=>{const 
  while(i<n){const g=Math.sign(t[i]);if(!g||Math.abs(t[i])<.01||Math.abs(t[i])>.5){i++;continue}let j=i,tot=0;while(j<n&&Math.sign(t[j])==g&&Math.abs(t[j])>=.01&&Math.abs(t[j])<=.5){tot+=t[j];j++}
   if(j-i>=3&&Math.abs(tot)>.35){const e=Math.min(j,n-1),m=L[(i+e)>>1],r=circ(L[i],m,L[e]);if(r&&r.r>1&&r.r<300){let ok=true;for(let k=i;k<=e;k++)if(Math.abs(Math.hypot(L[k][0]-r.c[0],L[k][1]-r.c[1])-r.r)>r.r*.08)ok=false;if(ok)res.push({m,r:r.r,c:r.c})}}i=j+1}
  return res}
-function makeIso(cx,cy,r){const q=pl[ap].on?pl[ap]:pl.find(z=>z.on);if(!q){alert('Önce bir kesit düzlemi açın (Ön, Üst veya Sağ).');return}ap=q.i;
- const W=stage.clientWidth,H=stage.clientHeight,at=(x,y)=>{rc.setFromCamera(new THREE.Vector2(x/W*2-1,-y/H*2+1),cam);return rc.ray.intersectPlane(q.p,new THREE.Vector3())};
- const f=F/sc,d=new THREE.Vector3().setComponent(q.i,q.s),U=q.i==1?new THREE.Vector3(0,0,-1):new THREE.Vector3(0,1,0),Rv=d.clone().cross(U).normalize();
- const Cw=at(cx,cy),E=[at(cx+r,cy),at(cx-r,cy),at(cx,cy+r),at(cx,cy-r)];if(!Cw||E.some(x=>!x)){alert('Daireyi kesit düzlemi üzerinde çizin.');return}
- const rw=E.reduce((a,x)=>a+x.distanceTo(Cw),0)/4,hs=[...pl.map(z=>z.quad),hd3,...olM,...gz.children.filter(c=>c.userData.mk),...fm],hv=hs.map(o=>o.visible);hs.forEach(o=>o.visible=false);const ei=[];
- sel.forEach(k=>parts[k].meshes.forEach(m=>mats(m).forEach(x=>{if(x.emissive){ei.push([x,x.emissiveIntensity]);x.emissiveIntensity=0}})));
- const bp=[];[[1,0,0],[0,1,0],[0,0,1]].forEach(a=>{const nv=new THREE.Vector3(...a),c=nv.dot(Cw);bp.push(new THREE.Plane(nv.clone(),-(c-rw)),new THREE.Plane(nv.clone().negate(),c+rw))});
- const oc=ren.clippingPlanes;let bg;try{ren.clippingPlanes=bp;const nd=d.clone().negate().add(Rv).add(U).normalize();bg=view(Cw.clone().addScaledVector(nd,3),new THREE.Vector3(0,1,0),rw*1.75,rw*1.75,900,900,Cw)}finally{ren.clippingPlanes=oc||[];hs.forEach((o,i)=>o.visible=hv[i]);ei.forEach(([x,v])=>x.emissiveIntensity=v)}
- const n=DET.length?Math.max(...DET.map(z=>z.n))+1:1,pos=Math.round((q.v-BB.min.getComponent(q.i))/sc*F),sz=Math.round(2*rw*f);
- const svg=`<svg viewBox="0 0 900 990" style="width:100%" font-family="system-ui,sans-serif"><rect width="100%" height="100%" fill="#fff"/><image href="${bg}" x="0" y="0" width="900" height="900"/><text x="450" y="930" text-anchor="middle" font-size="22" font-weight="700" fill="#a3262a">3B İZOMETRİK DETAY ${n}</text><text x="450" y="958" text-anchor="middle" font-size="13" fill="#555">${AXN[q.i]} kesiti · konum ${pos} mm · bölge ${sz} × ${sz} × ${sz} mm</text></svg>`;
- DET.push({n,svg});try{localStorage.det=JSON.stringify(DET)}catch{}showDet(svg,n)}
+/*ISO-START*/
+function isoSvg(polys,R,colOf,codeOf,title,sub){
+ const nf=x=>(+x.toFixed(1)).toString().replace('.',','),ph=Math.PI/4,th=Math.atan(1/Math.SQRT2),cr=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+ const t=[Math.sin(ph)*Math.cos(th),Math.sin(th),-Math.cos(ph)*Math.cos(th)],rg=[Math.cos(ph),0,Math.sin(ph)],up=cr(t.map(x=>-x),rg),D=R*.9;
+ const pr=(u,v,w)=>[u*rg[0]+v*rg[1]+w*rg[2],-(u*up[0]+v*up[1]+w*up[2])];
+ const shade=(h,f)=>{const n=parseInt(h.slice(1),16),c=[n>>16,n>>8&255,n&255].map(x=>Math.max(0,Math.min(255,Math.round(f>0?x+(255-x)*f:x*(1+f)))));return'#'+c.map(x=>x.toString(16).padStart(2,'0')).join('')};
+ const clipL=L=>{let o=L;for(const[ax,sg]of[[0,1],[0,-1],[1,1],[1,-1]]){const inp=o;o=[];for(let i=0;i<inp.length;i++){const p=inp[i],q=inp[(i+1)%inp.length],ip=sg*p[ax]<=R,iq=sg*q[ax]<=R;if(ip!==iq){const k=(sg*R-p[ax])/(q[ax]-p[ax]),x=[p[0]+(q[0]-p[0])*k,p[1]+(q[1]-p[1])*k];x[ax]=sg*R;o.push(x)}if(iq)o.push(q)}if(!o.length)break}return o.length>2?o:null};
+ const area=L=>{let a=0;for(let i=0;i<L.length;i++){const p=L[i],q=L[(i+1)%L.length];a+=p[0]*q[1]-q[0]*p[1]}return a/2};
+ const inside=(pt,L)=>{let c=false;for(let i=0,j=L.length-1;i<L.length;j=i++){if((L[i][1]>pt[1])!==(L[j][1]>pt[1])&&pt[0]<(L[j][0]-L[i][0])*(pt[1]-L[i][1])/(L[j][1]-L[i][1])+L[i][0])c=!c}return c};
+ const onB=(p,q)=>{for(const ax of[0,1])for(const sg of[1,-1])if(Math.abs(p[ax]-sg*R)<1e-6&&Math.abs(q[ax]-sg*R)<1e-6)return true;return false};
+ const PS=polys.map(P=>{const Ls=P.loops.map(clipL).filter(Boolean);if(!Ls.length)return null;const hole=Ls.map((L,i)=>Ls.reduce((c,M,j)=>c+(j!=i&&inside(L[0],M)?1:0),0)%2==1);let b=[1e9,-1e9,1e9,-1e9];Ls.forEach(L=>L.forEach(p=>{b=[Math.min(b[0],p[0]),Math.max(b[1],p[0]),Math.min(b[2],p[1]),Math.max(b[3],p[1])]}));return{P,Ls,hole,b,key:((b[0]+b[1])/2)*t[0]+((b[2]+b[3])/2)*t[1]}}).filter(Boolean).sort((x,y)=>x.key-y.key);
+ let mn=[1e9,1e9],mx=[-1e9,-1e9];PS.forEach(o=>o.Ls.forEach(L=>L.forEach(p=>[0,D].forEach(w=>{const q=pr(p[0],p[1],w);mn=[Math.min(mn[0],q[0]),Math.min(mn[1],q[1])];mx=[Math.max(mx[0],q[0]),Math.max(mx[1],q[1])]}))));
+ const W=900,M=40,sc=Math.min((W-2*M)/(mx[0]-mn[0]),(W-2*M)/(mx[1]-mn[1])),HH=Math.round((mx[1]-mn[1])*sc+2*M),XY=(u,v,w)=>{const q=pr(u,v,w);return((q[0]-mn[0])*sc+M).toFixed(1)+','+((q[1]-mn[1])*sc+M).toFixed(1)};
+ let out='';
+ for(const o of PS){const base=colOf(o.P),code=codeOf(o.P);
+  o.Ls.forEach((L,li)=>{const ar=area(L);for(let i=0;i<L.length;i++){const p=L[i],q=L[(i+1)%L.length];if(onB(p,q))continue;const du=q[0]-p[0],dv=q[1]-p[1],l=Math.hypot(du,dv);if(l<1e-4)continue;let nu=dv/l,nv=-du/l;if(ar<0){nu=-nu;nv=-nv}if(o.hole[li]){nu=-nu;nv=-nv}if(nu*t[0]+nv*t[1]<=1e-6)continue;
+   out+=`<polygon points="${XY(p[0],p[1],0)} ${XY(q[0],q[1],0)} ${XY(q[0],q[1],D)} ${XY(p[0],p[1],D)}" fill="${shade(base,.18*nv-.22*Math.max(0,nu)-.05)}" stroke="#111" stroke-width=".9" stroke-linejoin="round"/>`}});
+  out+=`<path d="${o.Ls.map(L=>'M'+L.map(p=>XY(p[0],p[1],0)).join('L')+'Z').join('')}" fill="${shade(base,.35)}" fill-rule="evenodd" stroke="none"/>`;
+  o.Ls.forEach(L=>{for(let i=0;i<L.length;i++){const p=L[i],q=L[(i+1)%L.length];if(onB(p,q))continue;out+=`<line x1="${XY(p[0],p[1],0).split(',')[0]}" y1="${XY(p[0],p[1],0).split(',')[1]}" x2="${XY(q[0],q[1],0).split(',')[0]}" y2="${XY(q[0],q[1],0).split(',')[1]}" stroke="#111" stroke-width="1.4" stroke-linecap="round"/>`}});
+  if(code&&Math.min(o.b[1]-o.b[0],o.b[3]-o.b[2])*sc>=14){const c=XY((o.b[0]+o.b[1])/2,(o.b[2]+o.b[3])/2,0).split(',');out+=`<text x="${c[0]}" y="${c[1]}" text-anchor="middle" dominant-baseline="middle" font-size="14" font-weight="700" fill="#d61f1f" stroke="#fff" stroke-width="3" paint-order="stroke">${code}</text>`}}
+ return`<svg viewBox="0 0 ${W} ${HH+70}" style="width:100%" font-family="system-ui,sans-serif"><rect width="100%" height="100%" fill="#fff"/>${out}<text x="${W/2}" y="${HH+20}" text-anchor="middle" font-size="22" font-weight="700" fill="#a3262a">${title}</text><text x="${W/2}" y="${HH+44}" text-anchor="middle" font-size="13" fill="#555">${sub}</text></svg>`}
+/*ISO-END*/
 function makeDetail(cx,cy,r,o={}){const q=pl[ap].on?pl[ap]:pl.find(z=>z.on);if(!q){alert('Önce bir kesit düzlemi açın (Ön, Üst veya Sağ).');return}ap=q.i;
  const W=stage.clientWidth,H=stage.clientHeight,at=(x,y)=>{rc.setFromCamera(new THREE.Vector2(x/W*2-1,-y/H*2+1),cam);return rc.ray.intersectPlane(q.p,new THREE.Vector3())};
  const f=F/sc,d=new THREE.Vector3().setComponent(q.i,q.s),U=q.i==1?new THREE.Vector3(0,0,-1):new THREE.Vector3(0,1,0),Rv=d.clone().cross(U).normalize();let Cw,rw,hwW,hwH;
@@ -272,6 +283,7 @@ function makeDetail(cx,cy,r,o={}){const q=pl[ap].on?pl[ap]:pl.find(z=>z.on);if(!
   const loops=loopsOf(fl(sg,ot)).map(L=>L.map(toUV)).filter(L=>L.length>2);let u0=1e9,u1=-1e9,v0=1e9,v1=-1e9;loops.forEach(L=>L.forEach(([u,v])=>{u0=Math.min(u0,u);u1=Math.max(u1,u);v0=Math.min(v0,v);v1=Math.max(v1,v)}));
   if(!loops.length||u1<-wmm||u0>wmm||v1<-hmm||v0>hmm)continue;polys.push({k,loops,bb:[u0,u1,v0,v1],i:ix++})}
  if(!polys.length){alert('Bu bölgede kesit yüzeyi bulunamadı.');return}
+ if(o.iso){const n2=DET.length?Math.max(...DET.map(z=>z.n))+1:1,pos2=Math.round((q.v-BB.min.getComponent(q.i))/sc*F),svg2=isoSvg(polys,rmm,P=>data.malzemeler?.[data.parts?.[P.k]?.malzeme]?.renk||'#cfd4db',P=>data.malzemeler?.[data.parts?.[P.k]?.malzeme]?.kod||'','3B İZOMETRİK DETAY '+n2,AXN[q.i]+' kesiti · konum '+pos2+' mm · bölge Ø '+Math.round(2*rmm)+' mm · derinlik temsilidir');DET.push({n:n2,svg:svg2});try{localStorage.det=JSON.stringify(DET)}catch{}showDet(svg2,n2);return}
  const VE=[],HE=[];polys.forEach(P=>P.loops.forEach(L=>{for(let a=0;a<L.length;a++){const p=L[a],b=L[(a+1)%L.length],du=b[0]-p[0],dv=b[1]-p[1];if(Math.hypot(du,dv)<.05)continue;if(Math.abs(du)<.02)VE.push({c:p[0],lo:Math.min(p[1],b[1]),hi:Math.max(p[1],b[1])});else if(Math.abs(dv)<.02)HE.push({c:p[1],lo:Math.min(p[0],b[0]),hi:Math.max(p[0],b[0])})}}));
  const clus=A=>{A.sort((a,b)=>a.c-b.c);const o=[];A.forEach(e=>{const l=o[o.length-1];if(l&&Math.abs(e.c-l.c)<.06){l.s+=e.hi-e.lo;l.lo=Math.min(l.lo,e.lo);l.hi=Math.max(l.hi,e.hi)}else o.push({c:e.c,lo:e.lo,hi:e.hi,s:e.hi-e.lo})});return o},
   pick=(C,lim)=>C.filter(c=>c.s>=Math.max(1.5,rmm*.06)&&Math.abs(c.c)<lim*(o.full?1.03:.88)).sort((a,b)=>b.s-a.s).slice(0,o.full?14:8).sort((a,b)=>a.c-b.c),CU=pick(clus(VE),wmm),CV=pick(clus(HE),hmm);
