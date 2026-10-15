@@ -632,7 +632,7 @@ function hwScan(raw){let s=raw.trim(),pq=null;const mp=/[?&.]pk[-=]([^&\s]+)/i.e
  select(k)}
 addEventListener('keydown',e=>{const tg=e.target;if(tg&&/^(INPUT|TEXTAREA|SELECT)$/.test(tg.tagName)||e.ctrlKey||e.altKey||e.metaKey)return;const now=performance.now();
  if(e.key==='Enter'||e.key==='Tab'){clearTimeout(kTm);if(kb.length>=3){e.preventDefault();const t=kb;kb='';hwScan(t)}else kb='';return}
- if(e.key.length==1){if(now-kt>250)kb='';kt=now;if(e.key===' '&&kb)e.preventDefault();kb+=e.key;clearTimeout(kTm);kTm=setTimeout(()=>{if(kb.length>=12){const t=kb;kb='';hwScan(t)}},200);if($('#scanov').style.display=='flex'&&hwCb)$('#sct').innerHTML='Okuyucudan gelen: <small>'+esc(kb.slice(-60))+'</small>'}},true);
+ if(e.key.length==1){if(now-kt>1500)kb='';kt=now;if(e.key===' '&&kb)e.preventDefault();kb+=e.key;clearTimeout(kTm);kTm=setTimeout(()=>{if(kb.length>=12){const t=kb;kb='';hwScan(t)}},900);if($('#scanov').style.display=='flex'&&hwCb)$('#sct').innerHTML='Okuyucudan gelen: <small>'+esc(kb.slice(-60))+'</small>'}},true);
 $('#scan').onclick=scan;$('#x1').onclick=stop;
 $('#lab').onclick=()=>{$('#grid').innerHTML=Object.keys(parts).map(k=>{const e=data.parts?.[k]||{},m=data.malzemeler?.[e.malzeme],q=qrcode(0,'M');q.addData(location.origin+location.pathname+'?p='+encodeURIComponent(k));q.make();return`<div class="lb">${q.createImgTag(3,1)}<div><b>${nm(k)}</b><br>${data.info?.Kabin||''}<br>${T(k)=='parca'?'Parça':'Aksesuar'} · ${parts[k].dim.join('×')} mm<br>Malzeme: ${m?m.ad:'—'}<br><small>${k}</small></div></div>`}).join('');$('#labels').style.display='flex'};
 $('#x2').onclick=()=>$('#labels').style.display='none';
