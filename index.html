@@ -168,7 +168,7 @@ function exBuild(){const V=THREE.Vector3,C=BB.getCenter(new V()),E=BB.getSize(ne
 function explode(v){dirty=true;exv=v;exU??=exBuild();allMeshes.forEach(m=>m.userData.wp=null);for(const u of exU){const d=new THREE.Vector3().setComponent(u.ax,u.sg*u.mag*sm01((v-u.w[0])/(u.w[1]-u.w[0])));for(const k of u.ks)parts[k].meshes.forEach(m=>m.position.copy(m.parent.worldToLocal(m.userData.w0.clone().add(d))))}}
 const cut=k=>done(k)>=1;
 function repaint(){dirty=true;const M=data.malzemeler||{};for(const[k,p]of Object.entries(parts))p.meshes.forEach(m=>mats(m).forEach(x=>{if(!x.color)return;x.map=paint?null:x.userData.m0;const c=paint=='mat'?(M[data.parts?.[k]?.malzeme]?.renk||'#cfd4db'):paint=='on'?(T(k)=='parca'?(cut(k)?'#2e9e5b':'#e86a5e'):'#cfd4db'):null;c?x.color.set(c):x.color.copy(x.userData.c0);x.needsUpdate=true}))}
-const clock=new THREE.Clock(),tags=[],tgEl=$$('.tg');let NT=[],noteAdd=false,noteHide=false,noteOpen=new Set(),NM={},detMark=null,bandK=null,bandStrips=[],bandEd=false,BT={},BD={};try{NT=JSON.parse(localStorage.notlar||'[]')}catch{}try{BT=JSON.parse(localStorage.bant||'{}');BD=JSON.parse(localStorage.bantd||'{}')}catch{}const bandOf=k=>{const a=BT[k]||data.parts?.[k]?.bant;return Array.isArray(a)?a:null},bandSave=()=>{try{localStorage.bant=JSON.stringify(BT);localStorage.bantd=JSON.stringify(BD)}catch{}},BN={u1:'Uzun kenar 1',u2:'Uzun kenar 2',k1:'Kısa kenar 1',k2:'Kısa kenar 2'};
+const clock=new THREE.Clock(),tags=[],tgEl=$$('.tg');let rmode=false,NT=[],noteAdd=false,noteHide=false,noteOpen=new Set(),NM={},detMark=null,bandK=null,bandStrips=[],bandEd=false,BT={},BD={};try{NT=JSON.parse(localStorage.notlar||'[]')}catch{}try{BT=JSON.parse(localStorage.bant||'{}');BD=JSON.parse(localStorage.bantd||'{}')}catch{}const bandOf=k=>{const a=BT[k]||data.parts?.[k]?.bant;return Array.isArray(a)?a:null},bandSave=()=>{try{localStorage.bant=JSON.stringify(BT);localStorage.bantd=JSON.stringify(BD)}catch{}},BN={u1:'Uzun kenar 1',u2:'Uzun kenar 2',k1:'Kısa kenar 1',k2:'Kısa kenar 2'};
 (function loop(){requestAnimationFrame(loop);if(!stage.clientWidth)return;const now=performance.now(),pulse=sel.length>0||!!detMark,moved=ctl.update();
  if(!(dirty||moved||now-lastR>=(pulse?33:300)))return;dirty=false;lastR=now;
  if(pulse){const e=.5+.5*Math.sin(clock.getElapsedTime()*6);if(detMark)detMark.userData.fx(e);if(bandK)bandStrips.forEach(m=>{m.material.opacity=m.userData.on?.2+.8*e:.2});else sel.forEach(k=>parts[k].meshes.forEach(m=>mats(m).forEach(x=>{if(x.emissive){x.emissive.setHex(0xff1a1a);x.emissiveIntensity=.15+e*1.6}})))}
@@ -207,7 +207,7 @@ function faceReg(m,fi){const g=m.geometry,P=g.attributes.position,I=g.index,vi=(
  while(st.length){const t=st.pop();A.ks[t].forEach(k=>A.mp.get(k).forEach(u=>{if(seen.has(u))return;if(A.ns[u].dot(n0)>.9995&&Math.abs(n0.dot(V(vi(u,0)).sub(v0)))<tol){seen.add(u);st.push(u)}}))}
  const arr=[];seen.forEach(t=>[0,1,2].forEach(j=>{const v=V(vi(t,j));arr.push(v.x,v.y,v.z)}));const gg=new THREE.BufferGeometry();gg.setAttribute('position',new THREE.Float32BufferAttribute(arr,3));
  const me=new THREE.Mesh(gg,new THREE.MeshBasicMaterial({color:0xff1a1a,side:THREE.DoubleSide,clippingPlanes:pl.filter(q=>q.on).map(q=>q.p),polygonOffset:true,polygonOffsetFactor:-4,polygonOffsetUnits:-4}));m.add(me);fm.push(me);return n0}
-function clrM(){dirty=true;fm.splice(0).forEach(f=>f.parent?.remove(f));gz.children.filter(c=>c.userData.mk).forEach(c=>gz.remove(c));pts=[];tags.length=0;const r=$('#mres');if(r)r.innerHTML='Modelde ölçmek istediğiniz <b>1. yüzeye</b> dokunun.'}
+function clrM(){dirty=true;fm.splice(0).forEach(f=>f.parent?.remove(f));gz.children.filter(c=>c.userData.mk).forEach(c=>gz.remove(c));pts=[];tags.length=0;const r=$('#mres');if(r)r.innerHTML=rmode?'Yarıçapını ölçmek istediğiniz <b>yuvarlak yüzeye</b> dokunun (ör. R200 köşe/kavis).':'Modelde ölçmek istediğiniz <b>1. yüzeye</b> dokunun.'}
 const lab=p=>nm(p.k)+(p.c?' · kesit yüzeyi':'');
 function cutHit(a,h){if(!a.length)return null;const R=rc.ray;let best=null;for(const q of a){const X=R.intersectPlane(q.p,new THREE.Vector3());if(!X)continue;const dX=X.distanceTo(R.origin);if(h&&h.distance<dX)continue;if(!BB.containsPoint(X)||a.some(o=>o!==q&&o.p.distanceToPoint(X)<0)||(best&&best.d<dX))continue;
   const old=allMeshes.map(m=>mats(m).map(x=>x.side));allMeshes.forEach(m=>mats(m).forEach(x=>x.side=THREE.DoubleSide));const hs=rc.intersectObjects(allMeshes,false).filter(z=>z.object.visible&&z.distance>dX+1e-6&&!a.some(o=>o.p.distanceToPoint(z.point)<0));allMeshes.forEach((m,i)=>mats(m).forEach((x,j)=>x.side=old[i][j]));
@@ -233,7 +233,7 @@ function popUI(){const p=$('#pop'),q=pl[ap];p.style.display=tool?'block':'none';
   p.querySelectorAll('[data-pi]').forEach(b=>b.onclick=()=>{const i=+b.dataset.pi,z=pl[i];if(ap==i&&z.on){z.on=false;ap=(pl.find(o=>o.on)||{i}).i}else{z.on=true;ap=i;if(!z.v)z.v=mid(i)}applyCut();popUI()});
   if(q.on){const st=d=>{q.v=Math.min(BB.max.getComponent(q.i),Math.max(BB.min.getComponent(q.i),q.v+d*sc/F));applyCut();popUI()};$('#cm').onclick=()=>st(-10);$('#cp').onclick=()=>st(10);$('#cf').onclick=()=>{q.s*=-1;applyCut()};$('#cv').onchange=e=>{q.v=BB.min.getComponent(q.i)+(+e.target.value)*sc/F;applyCut()}}
   $('#pb').onclick=()=>{const w=penOn&&!penIso;penIso=false;setPen(!w);popUI()};$('#pb3').onclick=()=>{const w=penOn&&penIso;penIso=true;setPen(!w);popUI()};if(q.on){$('#dsc').onchange=e=>{detScale=+e.target.value};$('#fsb').onclick=()=>makeDetail(0,0,0,{full:true})};$('#mo').onclick=()=>{meas=!meas;popUI();clrM()};$('#cs').onclick=()=>{showPl=!showPl;applyCut();popUI()};$('#cx').onclick=()=>{ap=2;pl.forEach(z=>z.on=false);applyCut();popUI()}}
- if(tool=='olc'){p.innerHTML='<b>Ölçü</b> <button id="mc">Temizle</button><div id="mres"></div>';$('#mc').onclick=clrM;clrM()}
+ if(tool=='olc'){p.innerHTML=`<b>Ölçü</b> <button id="mc">Temizle</button><div class="row"><button id="mD" class="${rmode?'':'on'}">↔ Mesafe</button><button id="mR" class="${rmode?'on':''}">◜ Yarıçap (R)</button></div><div id="mres"></div>`;$('#mc').onclick=clrM;$('#mD').onclick=()=>{rmode=false;popUI()};$('#mR').onclick=()=>{rmode=true;popUI()};clrM()}
  if(tool=='not'){const L=nAll();p.innerHTML=`<b>Önemli Notlar</b> <small>(${L.length})</small><div class="row"><button id="nAdd" class="${noteAdd?'on':''}">${noteAdd?'Modele dokunun…':'＋ Not ekle'}</button><button id="nHide">${noteHide?'Notları göster':'Notları gizle'}</button>${NT.length?'<button id="nExp">JSON kopyala</button>':''}</div><small>${noteAdd?'Notu koymak istediğiniz yere modele dokunun.':'Ünlem işaretine dokunarak notu açıp kapatın.'}</small>`;
   $('#nAdd').onclick=()=>{noteAdd=!noteAdd;popUI()};$('#nHide').onclick=()=>{noteHide=!noteHide;dirty=true;popUI()};
   if($('#nExp'))$('#nExp').onclick=()=>{const t=JSON.stringify(NT);(navigator.clipboard?.writeText(t)||Promise.reject()).then(()=>alert('Notlar kopyalandı. komodin.json içindeki "notlar" alanına yapıştırırsanız tüm cihazlarda görünür.')).catch(()=>prompt('Kopyalayın:',t))}}}
@@ -247,7 +247,7 @@ addEventListener('pointermove',e=>{if(!drag)return;ray(e);const q=pl[ap],d1=new 
 addEventListener('pointerup',e=>{if(drag){drag=false;ctl.enabled=true;applyCut(true);return}if(!dn||e.target!==ren.domElement||Math.hypot(e.clientX-dn[0],e.clientY-dn[1])>6)return;ray(e);
  const a=pl.filter(q=>q.on),hs=rc.intersectObjects(allMeshes,false).filter(h=>h.object.visible&&mats(h.object)[0].opacity>.5&&!a.some(q=>q.p.distanceToPoint(h.point)<0));
  if(noteAdd&&cur=='3d'){if(hs[0])noteNew(hs[0]);return}
- if(meas){const c=cutHit(a,hs[0]);if(c)addPt(c);else if(hs[0])addPt(hs[0]);return}
+ if(meas){if(rmode){if(hs[0])radMeasure(hs[0]);return}const c=cutHit(a,hs[0]);if(c)addPt(c);else if(hs[0])addPt(hs[0]);return}
  if(cur!='3d')return;if(hs[0])select(hs[0].object.userData.k,{tap:true});else if(sel.length)select([],{tap:true})});
 /* ---- kalem ve detay resmi ---- */
 const pen=$('#pen'),pc2=pen.getContext('2d');let ps=[];
@@ -588,6 +588,32 @@ function noteNew(h){const k=h.object.userData.k,p=parts[k];if(!p)return;const m0
 function noteEdit(n,isNew){const o=$('#nte');$('#ntx').value=n.t;o.style.display='flex';$('#ntx').focus();
  $('#ntNo').onclick=()=>{o.style.display='none';noteAdd=false;if(tool=='not')popUI()};
  $('#ntOk').onclick=()=>{const t=$('#ntx').value.trim();o.style.display='none';noteAdd=false;if(t){n.t=t;if(isNew)NT.push(n);nSave();noteOpen.add(n.id);noteRender()}if(tool=='not')popUI()}}
+
+/* ---- yarıçap ölçümü: dokunulan yuvarlak yüzeye silindir uydurur ---- */
+function radMeasure(h){clrM();const m=h.object,g=m.geometry,I=g.index,vi=(t,j)=>I?I.getX(3*t+j):3*t+j,w=wpos(m),Vw=i=>new THREE.Vector3(w[3*i],w[3*i+1],w[3*i+2]),out=t=>{$('#mres').innerHTML=t};
+ let A=g.userData.adj;if(!A){faceReg(m,h.faceIndex);fm.splice(0).forEach(f=>f.parent?.remove(f));A=g.userData.adj}
+ const tn=new Map(),N=t=>{let x=tn.get(t);if(!x){const a=Vw(vi(t,0)),b=Vw(vi(t,1)),c=Vw(vi(t,2));x=b.sub(a).cross(c.sub(a)).normalize();tn.set(t,x)}return x},nb=t=>{const s=new Set();A.ks[t].forEach(k=>A.mp.get(k).forEach(u=>u!=t&&s.add(u)));return s};
+ const cMax=Math.cos(20*Math.PI/180),cMin=Math.cos(.2*Math.PI/180),seen=new Set([h.faceIndex]),st=[h.faceIndex],cv=new Set();
+ while(st.length&&seen.size<4000){const t=st.pop();for(const u of nb(t)){const d=N(t).dot(N(u));if(d<cMax)continue;if(d<cMin){cv.add(t);cv.add(u)}if(!seen.has(u)){seen.add(u);st.push(u)}}}
+ if(cv.size<4){out('Burası düz görünüyor ya da yarıçap bulunamadı. Yuvarlak (kavisli) yüzeye dokunun.');return}
+ let xx=0,xy=0,xz=0,yy=0,yz=0,zz=0;cv.forEach(t=>{const n=N(t);xx+=n.x*n.x;xy+=n.x*n.y;xz+=n.x*n.z;yy+=n.y*n.y;yz+=n.y*n.z;zz+=n.z*n.z});const tr=xx+yy+zz,ax=new THREE.Vector3(1,1,1).normalize();
+ for(let i=0;i<80;i++){const x=ax.x,y=ax.y,z=ax.z;ax.set(tr*x-(xx*x+xy*y+xz*z),tr*y-(xy*x+yy*y+yz*z),tr*z-(xz*x+yz*y+zz*z)).normalize()}
+ const lam=(ax.x*(xx*ax.x+xy*ax.y+xz*ax.z)+ax.y*(xy*ax.x+yy*ax.y+yz*ax.z)+ax.z*(xz*ax.x+yz*ax.y+zz*ax.z))/tr;
+ if(lam>.04){out('Bu yüzey silindirik değil (küre veya serbest form olabilir), yarıçap tek değer değil.');return}
+ const vs=new Set();cv.forEach(t=>[0,1,2].forEach(j=>vs.add(vi(t,j))));const P=[...vs].map(Vw),cen=P.reduce((a,p)=>a.add(p),new THREE.Vector3()).divideScalar(P.length);
+ const u=new THREE.Vector3(Math.abs(ax.x)<.9?1:0,Math.abs(ax.x)<.9?0:1,0).cross(ax).normalize(),v=ax.clone().cross(u),Q=P.map(p=>{const d=p.clone().sub(cen);return[d.dot(u),d.dot(v)]});
+ let sx=0,sy=0,sxx=0,syy=0,sxy=0,sr=0,sxr=0,syr=0;const n=Q.length;Q.forEach(([x,y])=>{const r=x*x+y*y;sx+=x;sy+=y;sxx+=x*x;syy+=y*y;sxy+=x*y;sr+=r;sxr+=x*r;syr+=y*r});
+ const det3=(a,b,c,d,e,f,g2,h2,i)=>a*(e*i-f*h2)-b*(d*i-f*g2)+c*(d*h2-e*g2),D0=det3(sxx,sxy,sx,sxy,syy,sy,sx,sy,n);if(Math.abs(D0)<1e-30){out('Yarıçap hesaplanamadı.');return}
+ const Dd=det3(-sxr,sxy,sx,-syr,syy,sy,-sr,sy,n)/D0,Ee=det3(sxx,-sxr,sx,sxy,-syr,sy,sx,-sr,n)/D0,Ff=det3(sxx,sxy,-sxr,sxy,syy,-syr,sx,sy,-sr)/D0,cx=-Dd/2,cy=-Ee/2,R2=cx*cx+cy*cy-Ff;
+ if(!(R2>0)){out('Yarıçap hesaplanamadı.');return}const R=Math.sqrt(R2),rms=Math.sqrt(Q.reduce((a,[x,y])=>a+(Math.hypot(x-cx,y-cy)-R)**2,0)/n)/R,mm=R*F/sc;
+ const t0=h.point.clone().sub(cen).dot(ax),ctr=cen.clone().addScaledVector(u,cx).addScaledVector(v,cy).addScaledVector(ax,t0),rd=h.point.clone().sub(ctr);rd.addScaledVector(ax,-rd.dot(ax));rd.normalize();const end=ctr.clone().addScaledVector(rd,R),up=new THREE.Vector3(0,1,0);
+ const rm=new THREE.MeshBasicMaterial({color:0xff1a1a,depthTest:false,transparent:true,opacity:.9}),mk=(geo,pos)=>{const o=new THREE.Mesh(geo,rm);o.renderOrder=40;o.userData.mk=1;o.position.copy(pos);gz.add(o);return o};
+ mk(new THREE.TorusGeometry(R,.0016,6,128),ctr).quaternion.setFromUnitVectors(new THREE.Vector3(0,0,1),ax);
+ mk(new THREE.SphereGeometry(.006,12,8),ctr);
+ mk(new THREE.CylinderGeometry(.0022,.0022,R,8),ctr.clone().add(end).multiplyScalar(.5)).quaternion.setFromUnitVectors(up,rd);
+ const ah=Math.min(.03,R*.3);mk(new THREE.ConeGeometry(ah*.32,ah,14),end.clone().addScaledVector(rd,-ah/2)).quaternion.setFromUnitVectors(up,rd);
+ tags.push({v:ctr.clone().add(end).multiplyScalar(.5),s:'R '+mm.toFixed(1)+' mm'});dirty=true;
+ out(`<b>${nm(m.userData.k)}</b><br><span style="font-size:22px;font-weight:700;color:#d61f1f">R ${mm.toFixed(1)} mm</span> (çap ${(2*mm).toFixed(1)} mm)`+(rms>.03?'<br><span style="color:#b45309">⚠ Yüzey tam daire değil, değer yaklaşıktır.</span>':''))}
 $('#scan').onclick=scan;$('#x1').onclick=stop;
 $('#lab').onclick=()=>{$('#grid').innerHTML=Object.keys(parts).map(k=>{const e=data.parts?.[k]||{},m=data.malzemeler?.[e.malzeme],q=qrcode(0,'M');q.addData(location.origin+location.pathname+'?p='+encodeURIComponent(k));q.make();return`<div class="lb">${q.createImgTag(3,1)}<div><b>${nm(k)}</b><br>${data.info?.Kabin||''}<br>${T(k)=='parca'?'Parça':'Aksesuar'} · ${parts[k].dim.join('×')} mm<br>Malzeme: ${m?m.ad:'—'}<br><small>${k}</small></div></div>`}).join('');$('#labels').style.display='flex'};
 $('#x2').onclick=()=>$('#labels').style.display='none';
