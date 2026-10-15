@@ -157,7 +157,7 @@ let exU=null;const sm01=t=>{t=Math.min(1,Math.max(0,t));return t*t*(3-2*t)};
 function exBuild(){const V=THREE.Vector3,C=BB.getCenter(new V()),E=BB.getSize(new V()),Em=Math.max(E.x,E.y,E.z),g={};
  for(const[k,p]of Object.entries(parts)){const a=(p.anc||[]).join('|');let id=k;if(/ÇEKMECE/i.test(a+'|'+k))id='#cek';else{const m=/FASTMOUNTLU.ARKALIK.(\d)/i.exec(a+'|'+k);if(m)id='#ark'+m[1];else if(/ELEKTR/i.test(a))id='#elk'}(g[id]??=[]).push(k)}
  const U=Object.entries(g).map(([id,ks])=>{const bb=new THREE.Box3();ks.forEach(k=>bb.union(parts[k].bb));const c=bb.getCenter(new V()),s=bb.getSize(new V()),cc=[c.x-C.x,c.y-C.y,c.z-C.z],sz=[s.x,s.y,s.z],ee=[E.x,E.y,E.z];let ax,sg;
-  if(id=='#cek'){ax=2;sg=cc[2]>=0?1:-1}
+  if(id=='#cek'){ax=2;const on=ks.find(k=>/KASA.ON/i.test(k)),ar=ks.find(k=>/KASA.ARKA/i.test(k));sg=on&&ar?(parts[on].bb.getCenter(new V()).z>=parts[ar].bb.getCenter(new V()).z?1:-1):(cc[2]>=0?-1:1)}
   else{const so=[0,1,2].sort((x,y)=>sz[x]-sz[y]);ax=so[0];if(sz[so[0]]>.5*sz[so[1]])ax=[0,1,2].sort((x,y)=>Math.abs(cc[y])/ee[y]-Math.abs(cc[x])/ee[x])[0];sg=cc[ax]>=0?1:-1}
   return{id,ks,ax,sg,d:Math.abs(cc[ax]),w:id=='#cek'?[.08,.6]:[[.35,.9],[0,.6],[.5,1]][ax],mag:id=='#cek'?1.05*sz[2]:0}});
  /* aynı eksen ve yöndeki birimleri merkezden dışa doğru sırala; aynı düzlemdekiler tek katman, her katman eşit aralıkla */
