@@ -153,7 +153,7 @@ function select(ks,o={}){if(bandK&&!o.band)bandOff(true);sel=[].concat(ks||[]).f
 $('#aH').onclick=()=>{sel.forEach(k=>hid.add(k));select([],{tap:true})};$('#aG').onclick=()=>{const all=sel.every(k=>gho.has(k));sel.forEach(k=>all?gho.delete(k):gho.add(k));applyVis()};
 $('#aI').onclick=()=>{Object.keys(parts).forEach(k=>{if(!sel.includes(k))hid.add(k)});applyVis();list($('#q').value)};$('#aA').onclick=()=>{hid.clear();gho.clear();select([],{tap:true})};
 function exUI(){$('#clr').style.display=sel.length?'':'none';$('#rp').style.display=paint?'':'none'}
-$('#ex').oninput=e=>explode(+e.target.value);$('#clr').onclick=()=>select(null);$('#rp').onclick=()=>{paint=false;repaint();exUI()};
+$('#ex').oninput=e=>explode(+e.target.value);$('#ex').onchange=fitAll;$('#clr').onclick=()=>select(null);$('#rp').onclick=()=>{paint=false;repaint();exUI()};
 function pick(t){const ks=Object.keys(parts),k=ks.find(x=>x===t)||ks.find(x=>x.toLowerCase().includes(t.toLowerCase()));k?select(k):alert('Parça bulunamadı: '+t)}
 let exU=null;const sm01=t=>{t=Math.min(1,Math.max(0,t));return t*t*(3-2*t)};
 /* Düzenli patlatma: çekmece / arkalıklar / elektrik blok, diğerleri kendi kalınlık ekseninde katman katman */
@@ -165,8 +165,13 @@ function exBuild(){const V=THREE.Vector3,C=BB.getCenter(new V()),E=BB.getSize(ne
   return{id,ks,ax,sg,d:Math.abs(cc[ax]),w:id=='#cek'?[.08,.6]:[[.35,.9],[0,.6],[.5,1]][ax],mag:id=='#cek'?1.05*sz[2]:0}});
  /* aynı eksen ve yöndeki birimleri merkezden dışa doğru sırala; aynı düzlemdekiler tek katman, her katman eşit aralıkla */
  for(const ax of[0,1,2])for(const sg of[-1,1]){const L=U.filter(u=>u.id!='#cek'&&u.ax==ax&&u.sg==sg).sort((a,b)=>a.d-b.d);let lay=-1,last=-1e9;L.forEach(u=>{if(u.d-last>.02*Em){lay++;last=u.d}u.mag=Em*(.12+.08*lay)})}
+ /* çekmece çıktıktan sonra kendi parçaları da açılır: kılapa öne, yanlar dışa, arka geriye, taban aşağı, raylar yanlara */
+ const cu=U.find(u=>u.id=='#cek');if(cu){cu.sub={};const f=cu.sg,bbC=new THREE.Box3();cu.ks.forEach(k=>bbC.union(parts[k].bb));const cx=bbC.getCenter(new V()).x;
+  cu.ks.forEach(k=>{const p=parts[k],a=(p.anc||[]).join('|'),px=p.bb.getCenter(new V()).x,sx=px>=cx?1:-1,d=new V();
+   if(/KILAPA/i.test(k))d.z=f*.18*Em;else if(/KASA.ON/i.test(k))d.z=f*.09*Em;else if(/KASA.ARKA/i.test(k))d.z=-f*.10*Em;else if(/KASA.TABAN/i.test(k))d.y=-.12*Em;else if(/(SOL|SA[GĞ]).YAN/i.test(k))d.x=sx*.14*Em;else if(/^C\.RAY|RAY MONTAJ/i.test(k+'|'+a))d.x=sx*.26*Em;else return;cu.sub[k]=d})}
  return U}
-function explode(v){dirty=true;exv=v;exU??=exBuild();allMeshes.forEach(m=>m.userData.wp=null);for(const u of exU){const d=new THREE.Vector3().setComponent(u.ax,u.sg*u.mag*sm01((v-u.w[0])/(u.w[1]-u.w[0])));for(const k of u.ks)parts[k].meshes.forEach(m=>m.position.copy(m.parent.worldToLocal(m.userData.w0.clone().add(d))))}}
+function fitAll(){const bb=new THREE.Box3();allMeshes.forEach(m=>m.visible&&bb.expandByObject(m));if(bb.isEmpty())return;const V=THREE.Vector3,c=bb.getCenter(new V()),r=bb.getSize(new V()).length()/2,d=cam.position.clone().sub(ctl.target).normalize(),vf=cam.fov*Math.PI/180,hf=2*Math.atan(Math.tan(vf/2)*cam.aspect);ctl.target.copy(c);cam.position.copy(c).addScaledVector(d,r/Math.sin(Math.min(vf,hf)/2)*1.05);ctl.update();dirty=true}
+function explode(v){dirty=true;exv=v;exU??=exBuild();allMeshes.forEach(m=>m.userData.wp=null);for(const u of exU){const d=new THREE.Vector3().setComponent(u.ax,u.sg*u.mag*sm01((v-u.w[0])/(u.w[1]-u.w[0])));const e2=sm01((v-.55)/.45);for(const k of u.ks){const dd=u.sub&&u.sub[k]?d.clone().addScaledVector(u.sub[k],e2):d;parts[k].meshes.forEach(m=>m.position.copy(m.parent.worldToLocal(m.userData.w0.clone().add(dd))))}}}
 const cut=k=>done(k)>=1;
 function repaint(){dirty=true;const M=data.malzemeler||{};for(const[k,p]of Object.entries(parts))p.meshes.forEach(m=>mats(m).forEach(x=>{if(!x.color)return;x.map=paint?null:x.userData.m0;const c=paint=='mat'?(M[data.parts?.[k]?.malzeme]?.renk||'#cfd4db'):paint=='on'?(T(k)=='parca'?(cut(k)?'#2e9e5b':'#e86a5e'):'#cfd4db'):null;c?x.color.set(c):x.color.copy(x.userData.c0);x.needsUpdate=true}))}
 const clock=new THREE.Clock(),tags=[],tgEl=$$('.tg');let rmode=false,NT=[],noteAdd=false,noteHide=false,noteOpen=new Set(),NM={},detMark=null,bandK=null,bandStrips=[],bandEd=false,BT={},BD={};try{NT=JSON.parse(localStorage.notlar||'[]')}catch{}try{BT=JSON.parse(localStorage.bant||'{}');BD=JSON.parse(localStorage.bantd||'{}')}catch{}const bandOf=k=>{const a=BT[k]||data.parts?.[k]?.bant;return Array.isArray(a)?a:null},bandSave=()=>{try{localStorage.bant=JSON.stringify(BT);localStorage.bantd=JSON.stringify(BD)}catch{}},BN={u1:'Uzun kenar 1',u2:'Uzun kenar 2',k1:'Kısa kenar 1',k2:'Kısa kenar 2'};
