@@ -617,13 +617,13 @@ $('#anaK').onclick=()=>{$('#ana').style.display='none';go('ov')};
 if(/[?&](p|pk)=/.test(location.search))$('#ana').style.display='none';
 
 /* ---- USB QR / barkod okuyucu: klavye gibi çalışır, okutulan metni yazıp Enter gönderir ---- */
-let kb='',kt=0,toastT,hwCb=null;
+let kb='',kt=0,toastT,hwCb=null,kTm=0;
 const tnorm=x=>String(x).toLocaleUpperCase('tr').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^A-Z0-9]/g,'');
 function toast(h){const t=$('#toast');t.innerHTML=h;t.style.display='block';clearTimeout(toastT);toastT=setTimeout(()=>t.style.display='none',3500)}
 const lcs=(a,b)=>{let p=new Uint16Array(b.length+1);for(let i=1;i<=a.length;i++){let d=0;for(let j=1;j<=b.length;j++){const t=p[j];p[j]=a[i-1]==b[j-1]?d+1:Math.max(p[j],p[j-1]);d=t}}return p[b.length]};
 function fuzzyPart(t){const n=tnorm(t);if(n.length<8)return null;const r=Object.keys(parts).map(k=>{const q=tnorm(k);return{k,sc:lcs(n,q)/Math.max(n.length,q.length)}}).sort((a,b)=>b.sc-a.sc);if(!r.length||r[0].sc<.85)return null;if(r[1]&&r[0].sc-r[1].sc<.02)return null;return r[0].k}
 function findPart(t){const ks=Object.keys(parts);let k=ks.find(x=>x===t)||ks.find(x=>x.toLowerCase()===t.toLowerCase());if(k)return k;const n=tnorm(t);if(n.length<3)return null;return ks.find(x=>tnorm(x)===n)||ks.find(x=>tnorm(x).includes(n))||fuzzyPart(t)}
-function hwScan(raw){let s=raw.trim(),pq=null;const mp=/[?&]pk=([^&\s]+)/.exec(s),m=/[?&]p=([^&\s]+)/.exec(s),dc=x=>x.replace(/(%[0-9A-Fa-f]{2})+/g,m=>{try{return decodeURIComponent(m)}catch{return ''}});if(mp)pq=dc(mp[1]);if(m)s=dc(m[1]);
+function hwScan(raw){let s=raw.trim(),pq=null;const mp=/[?&.]pk[-=]([^&\s]+)/i.exec(s),m=mp?null:/[?&.]p[-=]([^&\s]+)/i.exec(s),dc=x=>x.replace(/(%[0-9A-Fa-f]{2})+/g,m=>{try{return decodeURIComponent(m)}catch{return ''}});if(mp)pq=dc(mp[1]);if(m)s=dc(m[1]);
  if($('#scanov').style.display=='flex'){if(hwCb&&!pq){const kk=findPart(s);if(!kk){$('#sct').innerHTML='⚠ Tanınmayan kod:<br><small>'+esc(s.slice(0,80))+'</small>';return}hwCb(kk);return}stop()}
  if(pq){recvPkg(pq);return}
  const k=findPart(s);if(!k){toast('⚠ Tanınmayan kod:<br><small>'+esc(s.slice(0,80))+'</small>');return}
@@ -631,8 +631,8 @@ function hwScan(raw){let s=raw.trim(),pq=null;const mp=/[?&]pk=([^&\s]+)/.exec(s
  if(okm=='bant'){if(T(k)!='parca'){toast('⚠ Bu bir üretim parçası değil:<br>'+esc(nm(k)));return}showBand(k);return}
  select(k)}
 addEventListener('keydown',e=>{const tg=e.target;if(tg&&/^(INPUT|TEXTAREA|SELECT)$/.test(tg.tagName)||e.ctrlKey||e.altKey||e.metaKey)return;const now=performance.now();
- if(e.key==='Enter'||e.key==='Tab'){if(kb.length>=3){e.preventDefault();const t=kb;kb='';hwScan(t)}else kb='';return}
- if(e.key.length==1){if(now-kt>250)kb='';kt=now;if(e.key===' '&&kb)e.preventDefault();kb+=e.key;if($('#scanov').style.display=='flex'&&hwCb)$('#sct').innerHTML='Okuyucudan gelen: <small>'+esc(kb.slice(-60))+'</small>'}},true);
+ if(e.key==='Enter'||e.key==='Tab'){clearTimeout(kTm);if(kb.length>=3){e.preventDefault();const t=kb;kb='';hwScan(t)}else kb='';return}
+ if(e.key.length==1){if(now-kt>250)kb='';kt=now;if(e.key===' '&&kb)e.preventDefault();kb+=e.key;clearTimeout(kTm);kTm=setTimeout(()=>{if(kb.length>=12){const t=kb;kb='';hwScan(t)}},200);if($('#scanov').style.display=='flex'&&hwCb)$('#sct').innerHTML='Okuyucudan gelen: <small>'+esc(kb.slice(-60))+'</small>'}},true);
 $('#scan').onclick=scan;$('#x1').onclick=stop;
 $('#lab').onclick=()=>{$('#grid').innerHTML=Object.keys(parts).map(k=>{const e=data.parts?.[k]||{},m=data.malzemeler?.[e.malzeme],q=qrcode(0,'M');q.addData(location.origin+location.pathname+'?p='+encodeURIComponent(k));q.make();return`<div class="lb">${q.createImgTag(3,1)}<div><b>${nm(k)}</b><br>${data.info?.Kabin||''}<br>${T(k)=='parca'?'Parça':'Aksesuar'} · ${parts[k].dim.join('×')} mm<br>Malzeme: ${m?m.ad:'—'}<br><small>${k}</small></div></div>`}).join('');$('#labels').style.display='flex'};
 $('#x2').onclick=()=>$('#labels').style.display='none';
