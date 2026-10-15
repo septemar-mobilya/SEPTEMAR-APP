@@ -435,14 +435,19 @@
  },
  "tersaneler": [
   {
-   "ad": "BILGIN",
-   "tekne": "NB97",
+   "ad": "ICE68",
+   "tersane": "ICE",
+   "plan": "data/plan-ice68.jpg"
+  },
+  {
+   "ad": "NB97",
+   "tersane": "BILGIN",
    "plan": "data/plan-nb97.jpg"
   },
   {
-   "ad": "ICE",
-   "tekne": "68",
-   "plan": "data/plan-68.jpg"
+   "ad": "NB98",
+   "tersane": "BILGIN",
+   "plan": "data/plan-nb98.jpg"
   }
  ]
 }
