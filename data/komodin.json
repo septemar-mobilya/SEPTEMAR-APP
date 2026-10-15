@@ -432,5 +432,17 @@
  ],
  "kabinRenkleri": {
   "Misafir Kabin 202": "#2b2fa0"
- }
+ },
+ "tersaneler": [
+  {
+   "ad": "BILGIN",
+   "tekne": "NB97",
+   "plan": "data/plan-nb97.jpg"
+  },
+  {
+   "ad": "ICE",
+   "tekne": "68",
+   "plan": "data/plan-68.jpg"
+  }
+ ]
 }
