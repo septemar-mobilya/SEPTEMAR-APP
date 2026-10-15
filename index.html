@@ -547,10 +547,10 @@ function detLocOff(){if(detMark){detMark.traverse(o=>{o.geometry?.dispose();o.ma
 function showDetLoc(i){const d=DET[i];if(!d)return;let L=d.loc;
  if(!L){const m=/(Sağ|Üst|Ön)\s+kesit\w*\s*·\s*konum\s*(-?\d+)/.exec(d.svg.replace(/<[^>]+>/g,' ').replace(/\s+/g,' '));if(!m){alert('Bu eski detayın konum kaydı yok. Detayı yeniden alırsanız konumu kaydedilir.');return}const ii=AXN.indexOf(m[1]);L={i:ii,s:1,v:BB.min.getComponent(ii)+(+m[2])*sc/F,old:1}}
  $('#det').style.display='none';go('3d');
- pl.forEach(z=>z.on=false);const q=pl[L.i];q.on=true;q.s=L.s;q.v=L.v;ap=L.i;applyCut();
+ pl.forEach(z=>z.on=false);const q=pl[L.i];q.on=true;q.s=L.s;q.v=L.v;ap=L.i;showPl=false;applyCut();
  const V=THREE.Vector3,c=L.c?new V(...L.c):BB.getCenter(new V()).setComponent(L.i,L.v),R=L.r||BB.getSize(new V()).length()*.4;
  if(L.c){const g=new THREE.Group(),mk=(geo,col)=>{const m=new THREE.Mesh(geo,new THREE.MeshBasicMaterial({color:col,transparent:true,depthTest:false,depthWrite:false,side:THREE.DoubleSide}));m.renderOrder=40;g.add(m);return m},ring=mk(new THREE.RingGeometry(R*.965,R,96),0xe01010),disc=mk(new THREE.CircleGeometry(R,96),0xff2a2a);
-  g.position.copy(c);if(L.i==0)g.rotation.y=Math.PI/2;if(L.i==1)g.rotation.x=-Math.PI/2;g.userData.fx=e=>{ring.material.opacity=.45+.55*e;disc.material.opacity=.05+.14*e};gz.add(g);detMark=g}
+  g.position.copy(c);if(L.i==0)g.rotation.y=Math.PI/2;if(L.i==1)g.rotation.x=-Math.PI/2;g.userData.fx=e=>{ring.material.opacity=.45+.55*e;disc.material.opacity=.08+.25*e};gz.add(g);detMark=g}
  const dir=new V().setComponent(L.i,-L.s);if(L.i==1)dir.z+=.5;dir.normalize();ctl.target.copy(c);cam.position.copy(c).addScaledVector(dir,L.c?R/Math.tan(cam.fov*Math.PI/360)*1.5:R*3);ctl.update();
  const mm=Math.round((q.v-BB.min.getComponent(L.i))/sc*F),el=$('#dlc');el.style.display='block';
  el.innerHTML=`<b class="t">DETAY ${d.n}</b><p>${AXN[L.i]} kesiti · konum ${mm} mm${L.c?' · çap '+Math.round(2*L.r*F/sc)+' mm':''}</p><p>${L.c?'Kırmızı yanıp sönen daire, detayın modelden alındığı yerdir.':'⚠ Eski detay: dairenin yeri kayıtlı değil, yalnız kesit konumu gösteriliyor. Detayı yeniden alırsanız daire de işaretlenir.'}</p><div class="row"><button class="p" id="dlB">Teknik resme dön</button><button id="dlX">Kapat</button></div>`;
