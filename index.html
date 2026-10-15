@@ -620,8 +620,10 @@ if(/[?&](p|pk)=/.test(location.search))$('#ana').style.display='none';
 let kb='',kt=0,toastT,hwCb=null;
 const tnorm=x=>String(x).toLocaleUpperCase('tr').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^A-Z0-9]/g,'');
 function toast(h){const t=$('#toast');t.innerHTML=h;t.style.display='block';clearTimeout(toastT);toastT=setTimeout(()=>t.style.display='none',3500)}
-function findPart(t){const ks=Object.keys(parts);let k=ks.find(x=>x===t)||ks.find(x=>x.toLowerCase()===t.toLowerCase());if(k)return k;const n=tnorm(t);if(n.length<3)return null;return ks.find(x=>tnorm(x)===n)||ks.find(x=>tnorm(x).includes(n))||null}
-function hwScan(raw){let s=raw.trim(),pq=null;const mp=/[?&]pk=([^&\s]+)/.exec(s),m=/[?&]p=([^&\s]+)/.exec(s),dc=x=>{try{return decodeURIComponent(x)}catch{return x}};if(mp)pq=dc(mp[1]);if(m)s=dc(m[1]);
+const lcs=(a,b)=>{let p=new Uint16Array(b.length+1);for(let i=1;i<=a.length;i++){let d=0;for(let j=1;j<=b.length;j++){const t=p[j];p[j]=a[i-1]==b[j-1]?d+1:Math.max(p[j],p[j-1]);d=t}}return p[b.length]};
+function fuzzyPart(t){const n=tnorm(t);if(n.length<8)return null;const r=Object.keys(parts).map(k=>{const q=tnorm(k);return{k,sc:lcs(n,q)/Math.max(n.length,q.length)}}).sort((a,b)=>b.sc-a.sc);if(!r.length||r[0].sc<.85)return null;if(r[1]&&r[0].sc-r[1].sc<.02)return null;return r[0].k}
+function findPart(t){const ks=Object.keys(parts);let k=ks.find(x=>x===t)||ks.find(x=>x.toLowerCase()===t.toLowerCase());if(k)return k;const n=tnorm(t);if(n.length<3)return null;return ks.find(x=>tnorm(x)===n)||ks.find(x=>tnorm(x).includes(n))||fuzzyPart(t)}
+function hwScan(raw){let s=raw.trim(),pq=null;const mp=/[?&]pk=([^&\s]+)/.exec(s),m=/[?&]p=([^&\s]+)/.exec(s),dc=x=>x.replace(/(%[0-9A-Fa-f]{2})+/g,m=>{try{return decodeURIComponent(m)}catch{return ''}});if(mp)pq=dc(mp[1]);if(m)s=dc(m[1]);
  if($('#scanov').style.display=='flex'){if(hwCb&&!pq){const kk=findPart(s);if(!kk){$('#sct').innerHTML='⚠ Tanınmayan kod:<br><small>'+esc(s.slice(0,80))+'</small>';return}hwCb(kk);return}stop()}
  if(pq){recvPkg(pq);return}
  const k=findPart(s);if(!k){toast('⚠ Tanınmayan kod:<br><small>'+esc(s.slice(0,80))+'</small>');return}
