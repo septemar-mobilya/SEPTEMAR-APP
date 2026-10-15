@@ -121,7 +121,7 @@ async function boot(){
  const b=new THREE.Box3().setFromObject(model),M=Math.max(...b.getSize(new THREE.Vector3()).toArray());F=M<20?1000:1;sc=1/M;model.scale.setScalar(sc);model.updateMatrixWorld(true);
  model.position.sub(new THREE.Box3().setFromObject(model).getCenter(new THREE.Vector3()));model.updateMatrixWorld(true);BB=new THREE.Box3().setFromObject(model);
  root.traverse(o=>{if(!o.isMesh)return;let p=o.parent;const N=x=>x.userData.name||x.name;while(p&&p!==root&&N(p).includes(' - Parça'))p=p.parent;
-  const k=(p&&p!==root&&N(p))||N(o)||o.uuid.slice(0,6);(parts[k]??={meshes:[]}).meshes.push(o);allMeshes.push(o);o.userData.k=k;
+  const k=(p&&p!==root&&N(p))||N(o)||o.uuid.slice(0,6);(parts[k]??={meshes:[]}).meshes.push(o);parts[k].anc??=(()=>{const a=[];for(let x=o.parent;x&&x!==root;x=x.parent)a.push(N(x));return a})();allMeshes.push(o);o.userData.k=k;
   o.material=Array.isArray(o.material)?o.material.map(x=>x.clone()):o.material.clone();mats(o).forEach(x=>{x.userData.c0=x.color&&x.color.clone();x.userData.m0=x.map});o.userData.w0=o.getWorldPosition(new THREE.Vector3())});
  for(const p of Object.values(parts)){const bb=new THREE.Box3();p.meshes.forEach(m=>bb.expandByObject(m));p.bb=bb.clone();p.dir=bb.getCenter(new THREE.Vector3()).normalize();p.dim=bb.getSize(new THREE.Vector3()).toArray().map(v=>Math.round(v/sc*F)).sort((a,b)=>b-a)}
  init();
@@ -152,7 +152,18 @@ $('#aI').onclick=()=>{Object.keys(parts).forEach(k=>{if(!sel.includes(k))hid.add
 function exUI(){$('#clr').style.display=sel.length?'':'none';$('#rp').style.display=paint?'':'none'}
 $('#ex').oninput=e=>explode(+e.target.value);$('#clr').onclick=()=>select(null);$('#rp').onclick=()=>{paint=false;repaint();exUI()};
 function pick(t){const ks=Object.keys(parts),k=ks.find(x=>x===t)||ks.find(x=>x.toLowerCase().includes(t.toLowerCase()));k?select(k):alert('Parça bulunamadı: '+t)}
-function explode(v){dirty=true;exv=v;allMeshes.forEach(m=>m.userData.wp=null);for(const p of Object.values(parts))p.meshes.forEach(m=>{m.position.copy(m.parent.worldToLocal(m.userData.w0.clone().addScaledVector(p.dir,v*.5)))})}
+let exU=null;const sm01=t=>{t=Math.min(1,Math.max(0,t));return t*t*(3-2*t)};
+/* Düzenli patlatma: çekmece / arkalıklar / elektrik blok, diğerleri kendi kalınlık ekseninde katman katman */
+function exBuild(){const V=THREE.Vector3,C=BB.getCenter(new V()),E=BB.getSize(new V()),Em=Math.max(E.x,E.y,E.z),g={};
+ for(const[k,p]of Object.entries(parts)){const a=(p.anc||[]).join('|');let id=k;if(/ÇEKMECE/i.test(a+'|'+k))id='#cek';else{const m=/FASTMOUNTLU.ARKALIK.(\d)/i.exec(a+'|'+k);if(m)id='#ark'+m[1];else if(/ELEKTR/i.test(a))id='#elk'}(g[id]??=[]).push(k)}
+ const U=Object.entries(g).map(([id,ks])=>{const bb=new THREE.Box3();ks.forEach(k=>bb.union(parts[k].bb));const c=bb.getCenter(new V()),s=bb.getSize(new V()),cc=[c.x-C.x,c.y-C.y,c.z-C.z],sz=[s.x,s.y,s.z],ee=[E.x,E.y,E.z];let ax,sg;
+  if(id=='#cek'){ax=2;sg=cc[2]>=0?1:-1}
+  else{const so=[0,1,2].sort((x,y)=>sz[x]-sz[y]);ax=so[0];if(sz[so[0]]>.5*sz[so[1]])ax=[0,1,2].sort((x,y)=>Math.abs(cc[y])/ee[y]-Math.abs(cc[x])/ee[x])[0];sg=cc[ax]>=0?1:-1}
+  return{id,ks,ax,sg,d:Math.abs(cc[ax]),w:id=='#cek'?[.08,.6]:[[.35,.9],[0,.6],[.5,1]][ax],mag:id=='#cek'?1.05*sz[2]:0}});
+ /* aynı eksen ve yöndeki birimleri merkezden dışa doğru sırala; aynı düzlemdekiler tek katman, her katman eşit aralıkla */
+ for(const ax of[0,1,2])for(const sg of[-1,1]){const L=U.filter(u=>u.id!='#cek'&&u.ax==ax&&u.sg==sg).sort((a,b)=>a.d-b.d);let lay=-1,last=-1e9;L.forEach(u=>{if(u.d-last>.02*Em){lay++;last=u.d}u.mag=Em*(.12+.08*lay)})}
+ return U}
+function explode(v){dirty=true;exv=v;exU??=exBuild();allMeshes.forEach(m=>m.userData.wp=null);for(const u of exU){const d=new THREE.Vector3().setComponent(u.ax,u.sg*u.mag*sm01((v-u.w[0])/(u.w[1]-u.w[0])));for(const k of u.ks)parts[k].meshes.forEach(m=>m.position.copy(m.parent.worldToLocal(m.userData.w0.clone().add(d))))}}
 const cut=k=>done(k)>=1;
 function repaint(){dirty=true;const M=data.malzemeler||{};for(const[k,p]of Object.entries(parts))p.meshes.forEach(m=>mats(m).forEach(x=>{if(!x.color)return;x.map=paint?null:x.userData.m0;const c=paint=='mat'?(M[data.parts?.[k]?.malzeme]?.renk||'#cfd4db'):paint=='on'?(T(k)=='parca'?(cut(k)?'#2e9e5b':'#e86a5e'):'#cfd4db'):null;c?x.color.set(c):x.color.copy(x.userData.c0);x.needsUpdate=true}))}
 const clock=new THREE.Clock(),tags=[],tgEl=$$('.tg');let detMark=null,bandK=null,bandStrips=[],bandEd=false,BT={},BD={};try{BT=JSON.parse(localStorage.bant||'{}');BD=JSON.parse(localStorage.bantd||'{}')}catch{}const bandOf=k=>{const a=BT[k]||data.parts?.[k]?.bant;return Array.isArray(a)?a:null},bandSave=()=>{try{localStorage.bant=JSON.stringify(BT);localStorage.bantd=JSON.stringify(BD)}catch{}},BN={u1:'Uzun kenar 1',u2:'Uzun kenar 2',k1:'Kısa kenar 1',k2:'Kısa kenar 2'};
