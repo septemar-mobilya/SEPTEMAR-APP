@@ -545,11 +545,11 @@ function init(){const I=data.info||{},tot=Object.keys(parts).length,s=Object.key
 /* ---- QR ---- */
 let stream=null;
 async function scan(cb,cont){$('#scanov').style.display='flex';$('#sct').textContent='QR kodu kameraya göster';const v=$('#cam');let cool=0;
- try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});v.srcObject=stream;await v.play()}catch{alert('Kamera açılamadı (HTTPS ve izin gerekli).');return stop()}
+ try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});v.srcObject=stream;await v.play()}catch{$('#sct').innerHTML='Kamera yok / izin verilmedi.<br><b>USB okuyucuyla okutun</b> — okuyucu hazır';hwCb=cont?cb:null;return}
  const c=document.createElement('canvas'),x=c.getContext('2d',{willReadFrequently:true});
  const t=setInterval(()=>{if(!stream){clearInterval(t);return}if(v.videoWidth&&Date.now()>cool){c.width=v.videoWidth;c.height=v.videoHeight;x.drawImage(v,0,0);const r=jsQR(x.getImageData(0,0,c.width,c.height).data,c.width,c.height);
   if(r){let s=r.data,pq=null;try{const u=new URL(s);pq=u.searchParams.get('pk');s=u.searchParams.get('p')||s}catch{}if(pq&&!cont){clearInterval(t);stop();recvPkg(pq);return}if(cont){cool=Date.now()+1500;cb(s)}else{clearInterval(t);stop();pick(s)}}}},200)}
-function stop(){const w=stream;stream?.getTracks().forEach(t=>t.stop());stream=null;$('#scanov').style.display='none';if(w&&cur=='pl')plRe()}
+function stop(){hwCb=null;const w=stream;stream?.getTracks().forEach(t=>t.stop());stream=null;$('#scanov').style.display='none';if(w&&cur=='pl')plRe()}
 
 /* ---- kenar bantlama: parça tek başına, bantlanacak cumbalar kırmızı yanıp söner ---- */
 
@@ -617,11 +617,12 @@ $('#anaK').onclick=()=>{$('#ana').style.display='none';go('ov')};
 if(/[?&](p|pk)=/.test(location.search))$('#ana').style.display='none';
 
 /* ---- USB QR / barkod okuyucu: klavye gibi çalışır, okutulan metni yazıp Enter gönderir ---- */
-let kb='',kt=0,toastT;
+let kb='',kt=0,toastT,hwCb=null;
 const tnorm=x=>String(x).toLocaleUpperCase('tr').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^A-Z0-9]/g,'');
 function toast(h){const t=$('#toast');t.innerHTML=h;t.style.display='block';clearTimeout(toastT);toastT=setTimeout(()=>t.style.display='none',3500)}
 function findPart(t){const ks=Object.keys(parts);let k=ks.find(x=>x===t)||ks.find(x=>x.toLowerCase()===t.toLowerCase());if(k)return k;const n=tnorm(t);if(n.length<3)return null;return ks.find(x=>tnorm(x)===n)||ks.find(x=>tnorm(x).includes(n))||null}
 function hwScan(raw){let s=raw.trim(),pq=null;const mp=/[?&]pk=([^&\s]+)/.exec(s),m=/[?&]p=([^&\s]+)/.exec(s),dc=x=>{try{return decodeURIComponent(x)}catch{return x}};if(mp)pq=dc(mp[1]);if(m)s=dc(m[1]);
+ if($('#scanov').style.display=='flex'){if(hwCb&&!pq){hwCb(s);return}stop()}
  if(pq){recvPkg(pq);return}
  const k=findPart(s);if(!k){toast('⚠ Tanınmayan kod:<br><small>'+esc(s.slice(0,80))+'</small>');return}
  if(okm=='on'){if(T(k)!='parca'){toast('⚠ Bu bir üretim parçası değil:<br>'+esc(nm(k)));return}const was=cut(k);if(!was)toggleCut(k);const L=pList();toast((was?'ℹ Zaten kesilmişti':'✅ Kesildi')+'<br><b>'+esc(nm(k))+'</b><br>Kesilen: '+L.filter(cut).length+' / '+L.length);if(cur=='pl'&&fab=='oi')plRe();return}
