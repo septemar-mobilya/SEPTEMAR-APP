@@ -136,14 +136,14 @@ function swParse(txt){const d=new DOMParser().parseFromString(txt,'application/x
   else if(dst==='EDGEBAND'){const k=swT(f.STR1);(eb.get(k)||eb.set(k,[]).get(k)).push({n:f.STR7||'',len:swN(f.STR6),thk:f.STR8||'',mat:(f.STR11||'').trim()})}});
  return{cut,eb}}
 const swKit=an=>{const h=[...an].reverse().find(n=>/MEKAN[İI]ZMA/i.test(n));return h?(h.match(/[^_]*MEKAN[İI]ZMASI[^_]*/i)||[h])[0].replace(/-\d+$/,'').trim().toLocaleUpperCase('tr-TR').replace('MEKANIZMASI','MEKANİZMASI'):''},swLeaf=b=>{b=b.replace(/[<>]/g,'');const m=b.match(/MEKAN[İI]ZMASI-(.+)$/i);return(m?m[1]:b.split('_').pop()).replace(/\[\d+\]$/,'').trim()};
-let MLIB={};
+let MLIB={},SWP={};const swQ=n=>String(n==null?'':n).trim().replace(/\s+/g,' ').replace(/[^\x20-\x7e]/g,'?').toUpperCase();
 function swApply(sw,pre){const P={},M={tanimsiz:{kod:'',ad:'Belirtilmedi',en:'',renk:'#cfd4db'}},pal=['#c9a77c','#8b6b4a','#b9b2a5','#9aa7b5','#d8c8a8','#7d8f7a','#b08f8f','#8c7ba0','#c7b299','#a4a4a6'];let pi=0;
  const mid=n=>{if(!n)return'tanimsiz';const id='m_'+n.toLowerCase().replace(/[^a-z0-9ğüşıöç]+/gi,'-').replace(/^-|-$/g,'');if(!M[id]){const L=MLIB[n.trim()];M[id]=L?{kod:L.kod,ad:L.ad,en:L.tur,renk:L.renk||pal[pi++%pal.length],gorsel:L.doku||'',tur:L.tur,pf:L.pf,lib:1}:{kod:n.length>18?n.slice(0,18):n,ad:n,en:'',renk:pal[pi++%pal.length],lib:0}}return id};
  const IM={EBATLAMA:'ebatlama',CNC:'cnc',KALIP:'kalip'};
  for(const k of Object.keys(parts)){const base=k.replace(/-\d+$/,''),r=sw.cut.get(swT(base))||sw.cut.get(swT(base.replace(/Mirror/g,'')));
   if(r){const rows=sw.eb.get(swT(r.ad))||[],big=Math.max(r.boy,r.en),bn=[],uc={u:0,k:0};
    rows.forEach(w=>{const lng=Math.abs(w.len-big)<.8;const t=lng?'u':'k';if(uc[t]<2){uc[t]++;bn.push(t+uc[t])}});
-   const lam=[r.top,r.bot].filter(Boolean);
+   const spk=SWP[swQ(base)]||SWP[swQ(base.replace(/Mirror/g,''))],lam=(spk?[spk.top,spk.bot]:[r.top,r.bot]).map(x=>(x||'').trim()).filter(Boolean);
    P[k]={ad:r.ad.replace(/^\d+-\d+\s+/,'').replace(/_/g,' ').replace(/^(YATAK|BAŞLIK) /,'').replace(/^YATAK GÖVDE 5 ?/,'').trim()||r.ad,malzeme:(lam.length?mid(lam[0]):mid(r.mal)),yuz:lam.map(mid),cekirdek:mid(r.mal),tur:'parca',bant:bn,islem:IM[r.parkur.toUpperCase()]||'',yuzey:r.parkur.toUpperCase()==='YIĞMA'?'yigma':lam.length?'kaplamali':'ham',
     sw:{no:r.no,boy:r.boy,en:r.en,kal:r.kal,adet:r.adet,top:r.top,bot:r.bot,parkur:r.parkur,desen:r.desen,bant:rows}}}
   else{const an=parts[k].anc||[],kit=swKit(an),rr=!kit&&an.map(a=>sw.cut.get(swT(a.replace(/-\d+$/,'')))).find(Boolean);
@@ -161,6 +161,7 @@ async function boot(){
  let OP=null;try{OP=JSON.parse(sessionStorage.getItem('kmdOpen')||'null')}catch{}
  MP=DEFM();if(OP){try{const t=TYS().find(t=>t.ad==OP.tekne),k=t&&(t.kabinler||[]).find(k=>k.ad==OP.kabin),x=k&&k.isler.find(x=>x.kod==OP.kod);if(x&&x.glb)MP=x.glb;if(x&&x.swood)SWU=x.swood}catch{}}
  try{MLIB=(await(await fetch('data/ice68-malzeme.json',{cache:'no-cache'})).json()).malzemeler||{}}catch{MLIB={}}
+ SWP={};if(SWU){try{SWP=await(await fetch(SWU.replace(/\.xml$/i,'-sw.json'),{cache:'no-cache'})).json()}catch{SWP={}}}
  let SW=null;if(SWU){try{SW=swParse(await(await fetch(SWU,{cache:'no-cache'})).text())}catch(e){SW=null}}{const pkq=new URLSearchParams(location.search).get('pk');if(pkq)recvPkg(pkq)}
  let root;try{root=(await new GLTFLoader().loadAsync(MP)).scene}catch(e){root=demo();$('#tag').style.display='block'}
  const model=new THREE.Group();model.add(root);scene.add(model);
