@@ -437,7 +437,7 @@
   {
    "ad": "ICE68",
    "tersane": "ICE",
-   "plan": "data/plan-ice68.jpg",
+   "plan": "data/ice68-plan.jpg",
    "kabinler": [
     {
      "ad": "Tekne Sahibi Kamara",
@@ -451,27 +451,32 @@
       {
        "kod": "68-107",
        "ad": "Tekne Sahibi Kamara Alabanda İmalatı",
-       "grup": "Alabanda"
+       "grup": "Alabanda",
+       "tip": "alabanda"
       },
       {
        "kod": "68-108",
        "ad": "Tekne Sahibi Kamara Duvar Paneli İmalatı",
-       "grup": "Duvar Paneli"
+       "grup": "Duvar Paneli",
+       "tip": "duvar"
       },
       {
        "kod": "68-109",
        "ad": "Tekne Sahibi Kamara Yatak İmalatı",
-       "grup": "Yatak"
+       "grup": "Yatak",
+       "tip": "yatak"
       },
       {
        "kod": "68-110",
        "ad": "Tekne Sahibi Kamara Komodin İmalatı",
-       "grup": "Seyyar Mobilyalar"
+       "grup": "Seyyar Mobilyalar",
+       "tip": "komodin"
       },
       {
        "kod": "68-111",
        "ad": "Tekne Sahibi Kamara Kayar Kapı İmalatı",
-       "grup": "Kapı"
+       "grup": "Kapı",
+       "tip": "kapi"
       }
      ]
     }
