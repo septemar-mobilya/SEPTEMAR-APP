@@ -464,7 +464,8 @@
        "kod": "68-109",
        "ad": "Tekne Sahibi Kamara Yatak İmalatı",
        "grup": "Yatak",
-       "tip": "yatak"
+       "tip": "yatak",
+       "glb": "models/68-109.glb"
       },
       {
        "kod": "68-110",
