@@ -127,11 +127,34 @@ const AS={parca:['Ön imalat'],aksesuar:['Tedarik','Takıldı']};
 const stg=k=>(data.asamalar||AS)[T(k)],done=k=>dur[k]||0,col=k=>!done(k)?'#b8c0cc':done(k)>=stg(k).length?'#2e9e5b':'#f2a516',save=()=>{try{localStorage.durum=JSON.stringify(dur)}catch{}},stt=k=>done(k)?stg(k)[done(k)-1]:'Başlamadı';
 function demo(){const g=new THREE.Group(),W=(c,m=.6,mt=0)=>new THREE.MeshStandardMaterial({color:c,roughness:m,metalness:mt});
  [['01_Sol Yan',[.018,.5,.4],[-.241,0,0],0],['02_Sağ Yan',[.018,.5,.4],[.241,0,0],0],['03_Üst Panel',[.5,.018,.4],[0,.241,0],0],['04_Alt Panel',[.5,.018,.4],[0,-.241,0],0],['05_Arka Panel',[.464,.464,.008],[0,0,-.196],0],['08_Çekmece Ön Üst',[.46,.2,.02],[0,.12,.2],0],['09_Çekmece Ön Alt',[.46,.2,.02],[0,-.1,.2],0]].forEach(([n,s,p])=>{const g0=new THREE.Group();g0.name='KOMODIN-'+n;const m=new THREE.Mesh(new THREE.BoxGeometry(...s),W(0xb08a5a));m.position.set(...p);g0.add(m);g.add(g0)});return g}
-let MP='';const DEFM=()=>data.model||'models/komodin.glb';
+let MP='',SWU='';const DEFM=()=>data.model||'models/komodin.glb';
+/* ---- SWOOD raporu (XML) → parça verisi ---- */
+const swT=s=>String(s==null?'':s).trim().replace(/\s+/g,' ').toLocaleUpperCase('tr-TR'),swN=v=>{const n=parseFloat(v);return isFinite(n)?n:0};
+function swParse(txt){const d=new DOMParser().parseFromString(txt,'application/xml'),cut=new Map(),eb=new Map();
+ [...d.getElementsByTagName('GENERIC')].forEach(g=>{const f={};[...g.children].forEach(c=>f[c.tagName]=c.textContent);const dst=f.SHEET_DESTINATION;
+  if(dst==='KESİM_LİSTESİ'){const r={no:f.STR18||'',ad:f.STR2||f.STR1||'',mal:(f.STR3||'').trim(),boy:swN(f.STR4),en:swN(f.STR5),kal:swN(f.STR6),adet:swN(f.STR7)||swN(f.QTY)||1,top:f.STR12&&f.STR12!='X'?f.STR12.trim():'',bot:f.STR13&&f.STR13!='X'?f.STR13.trim():'',parkur:(f.STR25||'').trim(),desen:(f.STR24||'').trim()};cut.set(swT(r.ad),r)}
+  else if(dst==='EDGEBAND'){const k=swT(f.STR1);(eb.get(k)||eb.set(k,[]).get(k)).push({n:f.STR7||'',len:swN(f.STR6),thk:f.STR8||'',mat:(f.STR11||'').trim()})}});
+ return{cut,eb}}
+function swApply(sw,pre){const P={},M={tanimsiz:{kod:'',ad:'Belirtilmedi',en:'',renk:'#cfd4db'}},pal=['#c9a77c','#8b6b4a','#b9b2a5','#9aa7b5','#d8c8a8','#7d8f7a','#b08f8f','#8c7ba0','#c7b299','#a4a4a6'];let pi=0;
+ const mid=n=>{if(!n)return'tanimsiz';const id='m_'+n.toLowerCase().replace(/[^a-z0-9ğüşıöç]+/gi,'-').replace(/^-|-$/g,'');if(!M[id])M[id]={kod:n.length>18?n.slice(0,18):n,ad:n,en:'',renk:pal[pi++%pal.length]};return id};
+ const IM={EBATLAMA:'ebatlama',CNC:'cnc',KALIP:'kalip'};
+ for(const k of Object.keys(parts)){const base=k.replace(/-\d+$/,''),r=sw.cut.get(swT(base))||sw.cut.get(swT(base.replace(/Mirror/g,'')));
+  if(r){const rows=sw.eb.get(swT(r.ad))||[],big=Math.max(r.boy,r.en),bn=[],uc={u:0,k:0};
+   rows.forEach(w=>{const lng=Math.abs(w.len-big)<.8;const t=lng?'u':'k';if(uc[t]<2){uc[t]++;bn.push(t+uc[t])}});
+   const lam=[r.top,r.bot].filter(Boolean);
+   P[k]={ad:r.ad.replace(/^\d+-\d+\s+/,'').replace(/_/g,' ').replace(/^(YATAK|BAŞLIK) /,'').replace(/^YATAK GÖVDE 5 ?/,'').trim()||r.ad,malzeme:mid(r.mal),tur:'parca',bant:bn,islem:IM[r.parkur.toUpperCase()]||'',yuzey:r.parkur.toUpperCase()==='YIĞMA'?'yigma':lam.length?'kaplamali':'ham',
+    sw:{no:r.no,boy:r.boy,en:r.en,kal:r.kal,adet:r.adet,top:r.top,bot:r.bot,parkur:r.parkur,desen:r.desen,bant:rows}}}
+  else P[k]={ad:base.replace(/^\d+-\d+\s+/,'').replace(/_/g,' ').trim(),malzeme:'tanimsiz',tur:(pre&&k.startsWith(pre))?'parca':'aksesuar',sw:{yok:true}}}
+ data.parts=P;data.malzemeler=M}
+function swRows(e){const w=e&&e.sw;if(!w)return'';if(w.yok)return'<div><span>SWOOD</span><b>Kesim listesinde bulunamadı</b></div>';
+ const R=(a,b)=>b?`<div><span>${a}</span><b>${esc(b)}</b></div>`:'';
+ return R('Parça no',w.no)+R('Kesim ölçüsü',`${w.boy} × ${w.en} × ${w.kal} mm`)+R('Adet',w.adet)+R('Kaplama (üst)',w.top)+R('Kaplama (alt)',w.bot)+R('Kenar bandı',w.bant.map(b=>`${b.mat} · ${b.len} mm`).join('  |  ')||'Yok')+R('Makine parkuru',w.parkur)+R('Desen takibi',w.desen)}
+
 async function boot(){
  try{data=await(await fetch('data/komodin.json')).json()}catch{}
  let OP=null;try{OP=JSON.parse(sessionStorage.getItem('kmdOpen')||'null')}catch{}
- MP=DEFM();if(OP){try{const t=TYS().find(t=>t.ad==OP.tekne),k=t&&(t.kabinler||[]).find(k=>k.ad==OP.kabin),x=k&&k.isler.find(x=>x.kod==OP.kod);if(x&&x.glb)MP=x.glb}catch{}}{const pkq=new URLSearchParams(location.search).get('pk');if(pkq)recvPkg(pkq)}
+ MP=DEFM();if(OP){try{const t=TYS().find(t=>t.ad==OP.tekne),k=t&&(t.kabinler||[]).find(k=>k.ad==OP.kabin),x=k&&k.isler.find(x=>x.kod==OP.kod);if(x&&x.glb)MP=x.glb;if(x&&x.swood)SWU=x.swood}catch{}}
+ let SW=null;if(SWU){try{SW=swParse(await(await fetch(SWU,{cache:'no-cache'})).text())}catch(e){SW=null}}{const pkq=new URLSearchParams(location.search).get('pk');if(pkq)recvPkg(pkq)}
  let root;try{root=(await new GLTFLoader().loadAsync(MP)).scene}catch(e){root=demo();$('#tag').style.display='block'}
  const model=new THREE.Group();model.add(root);scene.add(model);
  const b=new THREE.Box3().setFromObject(model),M=Math.max(...b.getSize(new THREE.Vector3()).toArray());F=M<20?1000:1;sc=1/M;model.scale.setScalar(sc);model.updateMatrixWorld(true);
@@ -140,6 +163,7 @@ async function boot(){
   const k=(p&&p!==root&&N(p))||N(o)||o.uuid.slice(0,6);(parts[k]??={meshes:[]}).meshes.push(o);parts[k].anc??=(()=>{const a=[];for(let x=o.parent;x&&x!==root;x=x.parent)a.push(N(x));return a})();allMeshes.push(o);o.userData.k=k;
   o.material=Array.isArray(o.material)?o.material.map(x=>x.clone()):o.material.clone();mats(o).forEach(x=>{x.userData.c0=x.color&&x.color.clone();x.userData.m0=x.map});o.userData.w0=o.getWorldPosition(new THREE.Vector3())});
  for(const p of Object.values(parts)){const bb=new THREE.Box3();p.meshes.forEach(m=>bb.expandByObject(m));p.bb=bb.clone();p.dir=bb.getCenter(new THREE.Vector3()).normalize();p.dim=bb.getSize(new THREE.Vector3()).toArray().map(v=>Math.round(v/sc*F*10)/10).sort((a,b)=>b-a)}
+ if(SW)swApply(SW,OP&&OP.kod);
  init();
  if(OP){try{sessionStorage.removeItem('kmdOpen')}catch{}try{resumeWork(OP)}catch(e){}}
 }
@@ -156,7 +180,7 @@ $('#q').oninput=e=>list(e.target.value);
 function info(){const el=$('#info');if(!sel.length){el.innerHTML='<h3>Parça seçilmedi</h3>Listeden seç veya QR okut.';return}
  if(sel.length>1){el.innerHTML=`<h3>${sel.length} parça seçili</h3>`;return}
  const k=sel[0],e=data.parts?.[k]||{},m=data.malzemeler?.[e.malzeme];
- el.innerHTML=`<h3>${nm(k)}</h3><div><span>Ölçü (kutu)</span><b>${parts[k].dim.join('×')} mm</b></div><div><span>Malzeme</span><b>${m?m.ad:'—'}</b></div>`+(e.not?`<div><span>Not</span><b>${e.not}</b></div>`:'')+(PN[k]?`<div><span>Eksik notu</span><b>${esc(PN[k])}</b></div>`:'')+`<div class="st">${stg(k).map((t,i)=>`<button data-i="${i}" class="${i<done(k)?'ok':''}">${t}</button>`).join('')}</div><button id="mv" style="margin-top:6px;padding:2px 4px;background:none;border:0;color:#6b7686;font-size:12px;text-decoration:underline">${T(k)=='parca'?'Aksesuara taşı':'Üretim parçasına taşı'}</button>`;
+ el.innerHTML=`<h3>${nm(k)}</h3><div><span>Ölçü (kutu)</span><b>${parts[k].dim.join('×')} mm</b></div><div><span>Malzeme</span><b>${m?m.ad:'—'}</b></div>`+swRows(e)+(e.not?`<div><span>Not</span><b>${e.not}</b></div>`:'')+(PN[k]?`<div><span>Eksik notu</span><b>${esc(PN[k])}</b></div>`:'')+`<div class="st">${stg(k).map((t,i)=>`<button data-i="${i}" class="${i<done(k)?'ok':''}">${t}</button>`).join('')}</div><button id="mv" style="margin-top:6px;padding:2px 4px;background:none;border:0;color:#6b7686;font-size:12px;text-decoration:underline">${T(k)=='parca'?'Aksesuara taşı':'Üretim parçasına taşı'}</button>`;
  el.querySelector('#mv').onclick=()=>{tr[k]=T(k)=='parca'?'aksesuar':'parca';try{localStorage.tur=JSON.stringify(tr)}catch{};info();list($('#q').value)};
  el.querySelectorAll('.st button').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;dur[k]=done(k)==i+1?i:i+1;save();info();list($('#q').value)})}
 function focus(ks){const bb=new THREE.Box3();(ks.length?ks.flatMap(k=>parts[k].meshes):allMeshes).forEach(m=>bb.expandByObject(m));const c=bb.getCenter(new THREE.Vector3()),s=bb.getSize(new THREE.Vector3()).length();const d=cam.position.clone().sub(ctl.target).normalize();ctl.target.copy(c);cam.position.copy(c).addScaledVector(d,ks.length?Math.max(s*2.5,.5):1.9)}
@@ -615,7 +639,7 @@ function noteEdit(n,isNew){const o=$('#nte');$('#ntx').value=n.t;o.style.display
   else{n.t=t;n.ts=new Date().toISOString();fin()}}}
 
 /* ---- ana menü: tersane seçimi → tekne yerleşim planı ---- */
-const TYD=[{ad:'ICE68',tersane:'ICE',plan:'data/ice68-plan.jpg',foto:'data/ice68-tekne.jpg',kabinler:[{"ad": "Tekne Sahibi Kamara", "alan": [0.6559, 0.3778, 0.0796, 0.2401], "isler": [{"kod": "68-107", "ad": "Tekne Sahibi Kamara Alabanda İmalatı", "grup": "Alabanda", "tip": "alabanda"}, {"kod": "68-108", "ad": "Tekne Sahibi Kamara Duvar Paneli İmalatı", "grup": "Duvar Paneli", "tip": "duvar"}, {"kod": "68-109", "ad": "Tekne Sahibi Kamara Yatak İmalatı", "grup": "Yatak", "tip": "yatak", "glb": "models/68-109.glb"}, {"kod": "68-110", "ad": "Tekne Sahibi Kamara Komodin İmalatı", "grup": "Seyyar Mobilyalar", "tip": "komodin"}, {"kod": "68-111", "ad": "Tekne Sahibi Kamara Kayar Kapı İmalatı", "grup": "Kapı", "tip": "kapi"}]}]},{ad:'NB97',tersane:'BILGIN',plan:'data/plan-nb97.jpg'},{ad:'NB98',tersane:'BILGIN',plan:'data/plan-nb98.jpg'}];
+const TYD=[{ad:'ICE68',tersane:'ICE',plan:'data/ice68-plan.jpg',foto:'data/ice68-tekne.jpg',kabinler:[{"ad": "Tekne Sahibi Kamara", "alan": [0.6559, 0.3778, 0.0796, 0.2401], "isler": [{"kod": "68-107", "ad": "Tekne Sahibi Kamara Alabanda İmalatı", "grup": "Alabanda", "tip": "alabanda"}, {"kod": "68-108", "ad": "Tekne Sahibi Kamara Duvar Paneli İmalatı", "grup": "Duvar Paneli", "tip": "duvar"}, {"kod": "68-109", "ad": "Tekne Sahibi Kamara Yatak İmalatı", "grup": "Yatak", "tip": "yatak", "glb": "models/68-109.glb", "swood": "data/68-109.xml"}, {"kod": "68-110", "ad": "Tekne Sahibi Kamara Komodin İmalatı", "grup": "Seyyar Mobilyalar", "tip": "komodin"}, {"kod": "68-111", "ad": "Tekne Sahibi Kamara Kayar Kapı İmalatı", "grup": "Kapı", "tip": "kapi"}]}]},{ad:'NB97',tersane:'BILGIN',plan:'data/plan-nb97.jpg'},{ad:'NB98',tersane:'BILGIN',plan:'data/plan-nb98.jpg'}];
 const TYS=()=>((data.tersaneler&&data.tersaneler.every(t=>t.tersane))?data.tersaneler:TYD).map(t=>{const d=TYD.find(x=>x.ad==t.ad)||{};return{...t,plan:d.plan||t.plan,foto:d.foto||t.foto,kabinler:t.kabinler||d.kabinler}});
 const TZ={s:1,x:0,y:0,f:1,W:1,H:1,sel:-1,K:[],t:null,P:new Map(),moved:false,d0:0,s0:1,sx:0,sy:0};
 function tpFit(){const r=$('#tpV').getBoundingClientRect();TZ.f=Math.max(.05,Math.min((r.width-20)/TZ.W,(r.height-20)/TZ.H))}
