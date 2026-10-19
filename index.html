@@ -162,7 +162,7 @@ async function boot(){
  let OP=null;try{OP=JSON.parse(sessionStorage.getItem('kmdOpen')||'null')}catch{}
  MP=DEFM();if(OP){try{const t=TYS().find(t=>t.ad==OP.tekne),k=t&&(t.kabinler||[]).find(k=>k.ad==OP.kabin),x=k&&k.isler.find(x=>x.kod==OP.kod);if(x&&x.glb)MP=x.glb;if(x&&x.swood)SWU=x.swood}catch{}}
  try{MLIB=(await(await fetch('data/ice68-malzeme.json',{cache:'no-cache'})).json()).malzemeler||{}}catch{MLIB={}}
- SWP={};if(SWU){try{SWP=Object.fromEntries(Object.entries(await(await fetch(SWU.replace(/\.xml$/i,'-sw.json'),{cache:'no-cache'})).json()).map(([q,v])=>[swQ(q),v]))}catch{SWP={}}}
+ SWP={};if(SWU){try{{const J=await(await fetch(SWU.replace(/\.xml$/i,'-sw.json'),{cache:'no-cache'})).json();SWP=Object.fromEntries(Object.entries(J.paneller||J).map(([q,v])=>[swQ(q),v]))}}catch{SWP={}}}
  let SW=null;if(SWU){try{SW=swParse(await(await fetch(SWU,{cache:'no-cache'})).text())}catch(e){SW=null}}{const pkq=new URLSearchParams(location.search).get('pk');if(pkq)recvPkg(pkq)}
  let root;try{root=(await new GLTFLoader().loadAsync(MP)).scene}catch(e){root=demo();$('#tag').style.display='block'}
  const model=new THREE.Group();model.add(root);scene.add(model);
