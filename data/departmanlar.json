@@ -1,0 +1,162 @@
+{
+ "departmanlar": [
+  {
+   "id": "proje",
+   "ad": "Proje",
+   "sayfalar": [
+    "ov",
+    "3d",
+    "pl",
+    "ml",
+    "ak",
+    "tr",
+    "ko",
+    "dk"
+   ],
+   "s": "f1a7fdf4",
+   "h": "80fc730b1cce3178bdde348332f2da49b23e4112307fe9566986919fee41c256"
+  },
+  {
+   "id": "planlama",
+   "ad": "Planlama",
+   "sayfalar": [
+    "ov",
+    "pl",
+    "ko",
+    "ur",
+    "dk"
+   ],
+   "s": "180f402d",
+   "h": "be80e6ca3f6933af671bc5b62d977df43567b70d5121237236bc485dd54d6811"
+  },
+  {
+   "id": "depo",
+   "ad": "Depo / Satın Alma",
+   "sayfalar": [
+    "ov",
+    "ml",
+    "ak",
+    "dk"
+   ],
+   "s": "28931996",
+   "h": "51b92bf08b3bcbecb8749ca801d2ff8bcd9f70f1e3e7a81970e47e03920fde37"
+  },
+  {
+   "id": "onimalat",
+   "ad": "Ön İmalat",
+   "sayfalar": [
+    "ov",
+    "3d",
+    "pl",
+    "tr",
+    "ml",
+    "ur",
+    "dk"
+   ],
+   "s": "2a50bc3a",
+   "h": "dc39d599fdd3cbc062d016bd9b762dc51569e580b82357ce86d738ebd6c0680e"
+  },
+  {
+   "id": "onmontaj",
+   "ad": "Ön Montaj",
+   "sayfalar": [
+    "ov",
+    "3d",
+    "tr",
+    "ak",
+    "mt",
+    "ur",
+    "dk"
+   ],
+   "s": "2a8e179b",
+   "h": "6747c20228317193b00069ba163a38349f6dab4b13108cb3f77a37a7db4b150a"
+  },
+  {
+   "id": "cila",
+   "ad": "Cila",
+   "sayfalar": [
+    "ov",
+    "3d",
+    "ml",
+    "ur",
+    "dk"
+   ],
+   "s": "1664c645",
+   "h": "157049544c563c2b6b921857547022fe402cb9a826925bf2baf1cee75560cc0a"
+  },
+  {
+   "id": "prova",
+   "ad": "Prova Montaj",
+   "sayfalar": [
+    "ov",
+    "3d",
+    "tr",
+    "ak",
+    "mt",
+    "ur",
+    "dk"
+   ],
+   "s": "243f1293",
+   "h": "2496cbfcd11bbddb8322280df0d6869e9cc50764f0deb47ee5f473a9762e6403"
+  },
+  {
+   "id": "kalite",
+   "ad": "Kalite Kontrol",
+   "sayfalar": [
+    "ov",
+    "3d",
+    "tr",
+    "ml",
+    "ak",
+    "kk",
+    "dk"
+   ],
+   "s": "62980cc4",
+   "h": "9d46a86e1b41e9678874c5c58458b49716cb387422c87c7f9f33565bfa3e57c1"
+  },
+  {
+   "id": "paketleme",
+   "ad": "Paketleme",
+   "sayfalar": [
+    "ov",
+    "3d",
+    "pk",
+    "ak",
+    "dk"
+   ],
+   "s": "77d5c025",
+   "h": "bbffdffcd5f2cd91a3d31c4c55c442b53ceda9660f29664b05b5e73f5f05ee5b"
+  },
+  {
+   "id": "sevkiyat",
+   "ad": "Sevkiyat",
+   "sayfalar": [
+    "ov",
+    "sv",
+    "pk",
+    "dk"
+   ],
+   "s": "eb7c61d4",
+   "h": "8d801c0b451b0c077a6b288581e7605e597da6881ce33647892528a78eff38b5"
+  },
+  {
+   "id": "montaj",
+   "ad": "Montaj",
+   "sayfalar": [
+    "ov",
+    "3d",
+    "tr",
+    "ak",
+    "mt",
+    "ko",
+    "dk"
+   ],
+   "s": "7d2152c6",
+   "h": "5a89d9d7ca4d9efaebbfa30e00c4c0ded9a5252d548e0450ea0fd87e62d40d27"
+  }
+ ],
+ "yonetim": {
+  "s": "ac52a656",
+  "h": "6c95cea6c8706a7fd3ad3c0e99f2f68e35d48bf01c93671ba681bfbd6662e9a8"
+ }
+}
