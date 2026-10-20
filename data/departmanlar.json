@@ -14,7 +14,8 @@
     "dk"
    ],
    "s": "f1a7fdf4",
-   "h": "80fc730b1cce3178bdde348332f2da49b23e4112307fe9566986919fee41c256"
+   "h": "80fc730b1cce3178bdde348332f2da49b23e4112307fe9566986919fee41c256",
+   "ikon": "dpProje"
   },
   {
    "id": "planlama",
@@ -27,7 +28,8 @@
     "dk"
    ],
    "s": "180f402d",
-   "h": "be80e6ca3f6933af671bc5b62d977df43567b70d5121237236bc485dd54d6811"
+   "h": "be80e6ca3f6933af671bc5b62d977df43567b70d5121237236bc485dd54d6811",
+   "ikon": "dpPlan"
   },
   {
    "id": "depo",
@@ -39,7 +41,8 @@
     "dk"
    ],
    "s": "28931996",
-   "h": "51b92bf08b3bcbecb8749ca801d2ff8bcd9f70f1e3e7a81970e47e03920fde37"
+   "h": "51b92bf08b3bcbecb8749ca801d2ff8bcd9f70f1e3e7a81970e47e03920fde37",
+   "ikon": "dpDepo"
   },
   {
    "id": "onimalat",
@@ -54,7 +57,8 @@
     "dk"
    ],
    "s": "2a50bc3a",
-   "h": "dc39d599fdd3cbc062d016bd9b762dc51569e580b82357ce86d738ebd6c0680e"
+   "h": "dc39d599fdd3cbc062d016bd9b762dc51569e580b82357ce86d738ebd6c0680e",
+   "ikon": "dpOnim"
   },
   {
    "id": "onmontaj",
@@ -69,7 +73,8 @@
     "dk"
    ],
    "s": "2a8e179b",
-   "h": "6747c20228317193b00069ba163a38349f6dab4b13108cb3f77a37a7db4b150a"
+   "h": "6747c20228317193b00069ba163a38349f6dab4b13108cb3f77a37a7db4b150a",
+   "ikon": "dpOnmon"
   },
   {
    "id": "cila",
@@ -82,7 +87,8 @@
     "dk"
    ],
    "s": "1664c645",
-   "h": "157049544c563c2b6b921857547022fe402cb9a826925bf2baf1cee75560cc0a"
+   "h": "157049544c563c2b6b921857547022fe402cb9a826925bf2baf1cee75560cc0a",
+   "ikon": "dpCila"
   },
   {
    "id": "prova",
@@ -97,7 +103,8 @@
     "dk"
    ],
    "s": "243f1293",
-   "h": "2496cbfcd11bbddb8322280df0d6869e9cc50764f0deb47ee5f473a9762e6403"
+   "h": "2496cbfcd11bbddb8322280df0d6869e9cc50764f0deb47ee5f473a9762e6403",
+   "ikon": "dpProva"
   },
   {
    "id": "kalite",
@@ -112,7 +119,8 @@
     "dk"
    ],
    "s": "62980cc4",
-   "h": "9d46a86e1b41e9678874c5c58458b49716cb387422c87c7f9f33565bfa3e57c1"
+   "h": "9d46a86e1b41e9678874c5c58458b49716cb387422c87c7f9f33565bfa3e57c1",
+   "ikon": "shield"
   },
   {
    "id": "paketleme",
@@ -125,7 +133,8 @@
     "dk"
    ],
    "s": "77d5c025",
-   "h": "bbffdffcd5f2cd91a3d31c4c55c442b53ceda9660f29664b05b5e73f5f05ee5b"
+   "h": "bbffdffcd5f2cd91a3d31c4c55c442b53ceda9660f29664b05b5e73f5f05ee5b",
+   "ikon": "box"
   },
   {
    "id": "sevkiyat",
@@ -137,11 +146,12 @@
     "dk"
    ],
    "s": "eb7c61d4",
-   "h": "8d801c0b451b0c077a6b288581e7605e597da6881ce33647892528a78eff38b5"
+   "h": "8d801c0b451b0c077a6b288581e7605e597da6881ce33647892528a78eff38b5",
+   "ikon": "truck"
   },
   {
    "id": "montaj",
-   "ad": "Montaj",
+   "ad": "Tekne Montaj",
    "sayfalar": [
     "ov",
     "3d",
@@ -152,7 +162,8 @@
     "dk"
    ],
    "s": "7d2152c6",
-   "h": "5a89d9d7ca4d9efaebbfa30e00c4c0ded9a5252d548e0450ea0fd87e62d40d27"
+   "h": "5a89d9d7ca4d9efaebbfa30e00c4c0ded9a5252d548e0450ea0fd87e62d40d27",
+   "ikon": "dpTmont"
   }
  ],
  "yonetim": {
