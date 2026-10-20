@@ -719,7 +719,7 @@ let AM={tab:'at',t:0,f:'hepsi'};
 function atmEl(){let o=$('#atm');if(!o){o=document.createElement('div');o.id='atm';document.body.appendChild(o)}return o}
 const PYK=[['GÖKHAN GÜNEŞ','Proje Direktörü'],['AYKUT CÖMERT','Alt Yönetici'],['AYŞE YAVUZ','Alt Yönetici'],['ÖZGÜR TOPRAK','Alt Yönetici']];
 const pyAd=()=>{try{const n=sessionStorage.getItem('kmdPY');return PYK.some(x=>x[0]==n)?n:null}catch{return null}};
-function atmNav(){const id=DP&&DP.id,PA=['pa','Proje Atama','dpProje',1],PY=['py','Proje Yönetimi','dpProje'],AT=['at','İş Atama','dpPlan'],US=['us','Ustalar','dpProje'],MI=['mi','Proje Ekibi','draw',1],TP=['tp','Tekne Planı','pin'];
+function atmNav(){const id=DP&&DP.id,PA=['pa','Proje Atama','dpProje',1],PY=['py','Proje Yönetimi','dpProje'],AT=['at','İş Atama','dpPlan'],US=['us','Ustalar','dpProje'],MI=['mi','Proje Ekibi','draw',1],TP=['tp','Tekneler','pin'];
  if(id=='proje')return pyAd()?[PY,PA,MI,TP]:[PY,TP];if(id=='planlama')return[AT,US,TP];if(id=='yonetim')return[PA.slice(0,3),AT,MI.slice(0,3),US,TP];if(id=='onmontaj')return[['is','İşlerim','list']];return[['hb','Ana sayfa','home']]}
 function atmOpen(){try{sessionStorage.removeItem('kmdAtmOff')}catch{}const n=atmNav().filter(x=>!x[4]);if(!n.some(x=>x[0]==AM.tab))AM.tab=n[0][0];$('#ana').style.display='none';$('#tpl').style.display='none';atmEl().style.display='grid';atmDraw()}
 function atmClose(){const o=$('#atm');if(o)o.style.display='none'}
