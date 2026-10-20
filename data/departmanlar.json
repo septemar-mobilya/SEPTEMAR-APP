@@ -15,7 +15,8 @@
    ],
    "s": "f1a7fdf4",
    "h": "80fc730b1cce3178bdde348332f2da49b23e4112307fe9566986919fee41c256",
-   "ikon": "dpProje"
+   "ikon": "dpProje",
+   "plan": true
   },
   {
    "id": "planlama",
@@ -29,7 +30,8 @@
    ],
    "s": "180f402d",
    "h": "be80e6ca3f6933af671bc5b62d977df43567b70d5121237236bc485dd54d6811",
-   "ikon": "dpPlan"
+   "ikon": "dpPlan",
+   "plan": true
   },
   {
    "id": "depo",
