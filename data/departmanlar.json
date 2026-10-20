@@ -1,6 +1,20 @@
 {
  "departmanlar": [
   {
+   "id": "planlama",
+   "ad": "Planlama",
+   "sayfalar": [
+    "ov",
+    "ko",
+    "ur",
+    "dk"
+   ],
+   "s": "180f402d",
+   "h": "be80e6ca3f6933af671bc5b62d977df43567b70d5121237236bc485dd54d6811",
+   "ikon": "dpPlan",
+   "plan": true
+  },
+  {
    "id": "proje",
    "ad": "Proje",
    "sayfalar": [
@@ -21,18 +35,15 @@
    "plan": true
   },
   {
-   "id": "planlama",
-   "ad": "Planlama",
+   "id": "optimizasyon",
+   "ad": "Optimizasyon",
    "sayfalar": [
     "ov",
-    "ko",
-    "ur",
     "dk"
    ],
-   "s": "180f402d",
-   "h": "be80e6ca3f6933af671bc5b62d977df43567b70d5121237236bc485dd54d6811",
-   "ikon": "dpPlan",
-   "plan": true
+   "s": "0ptim1za",
+   "h": "",
+   "ikon": "cut"
   },
   {
    "id": "depo",
