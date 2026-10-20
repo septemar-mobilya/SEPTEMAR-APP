@@ -783,7 +783,7 @@ function anaUI(){const a=$('#ana'),L=TYS(),gs=[...new Set(L.map(t=>t.tersane))];
  tekneList()}
 function wkApply(){{const m=$('#mola');if(m)m.style.display=WK?'':'none'}const I=data.info||{};
  if(WK){$('#bc').innerHTML=`<a id="bcp">${esc(WK.tekne)}</a>  ›  ${esc(WK.kabin)}  ›  ${esc(WK.kisa)}`;$('#bcp').onclick=backPlan;
-  const M=Object.assign({},I,{'İş Emri':WK.kod,Kabin:WK.kabin,Proje:WK.tekne}),ks=['İş Emri',...(WK.model&&!WK.glb?['Kod']:[]),'Kabin','Proje','Revizyon','Malzeme'];
+  const M=Object.assign({},I,{'İş Emri':WK.kod,Kabin:WK.kabin,Proje:WK.tekne,'Çizen':ATS.g().cizen[upKey(WK.tekne,WK.kod)]||''}),ks=['İş Emri',...(WK.model&&!WK.glb?['Kod']:[]),'Kabin','Proje','Revizyon','Çizen'];
   $('#meta').innerHTML=ks.map(k=>`<div>${k}<b>${esc(M[k]||'—')}</b></div>`).join('');
   const b=$('#wkb');b.style.display=(WK.model&&!WK.glb)?'none':'block';b.textContent=WK.glb?'Bu iş emri için 3D model bağlandı. Teknik resim, dosya ve malzeme verileri henüz bağlanmadı; bu sekmelerde örnek (Komodin) verisi görünebilir.':'Bu iş emri için 3D model ve teknik veriler henüz bağlanmadı. Aşağıda örnek ürün (Komodin 505-91 · NB85) gösteriliyor.'}
  else{$('#bc').textContent=[I.Proje,I.Kabin,data.title].filter(Boolean).join('  ›  ');$('#meta').innerHTML=['Kod','Kabin','Proje','Revizyon','Malzeme'].map(k=>`<div>${k}<b>${esc(I[k]||'—')}</b></div>`).join('');$('#wkb').style.display='none'}
