@@ -192,7 +192,7 @@ async function boot(){
  try{data=await(await fetch('data/komodin.json')).json()}catch{}
  try{DPT=await(await fetch('data/departmanlar.json',{cache:'no-cache'})).json()}catch{DPT=null}
  try{const id=sessionStorage.getItem('kmdDept');DP=!DPT?null:id=='yonetim'?{id:'yonetim',ad:'Yönetim',sayfalar:null}:(DPT.departmanlar||[]).find(d=>d.id==id)||null}catch{DP=null}
- if(DPT&&(!DP||!(dpLogged()||ustaOk()))){try{sessionStorage.removeItem('kmdOpen')}catch{}}
+ if(DPT&&(!DP||!(dpLogged()||ustaOk()))&&sessionStorage.getItem('kmdPil')!='1'){try{sessionStorage.removeItem('kmdOpen')}catch{}}
  try{const w=new URLSearchParams(location.search).get('w');if(w){const[tn,kd]=w.split('|'),t=TYS().find(t=>t.ad==tn),k=t&&(t.kabinler||[]).find(k=>k.isler.some(x=>x.kod==kd));if(k)sessionStorage.setItem('kmdOpen',JSON.stringify({tekne:tn,kabin:k.ad,kod:kd}))}}catch{}
  try{UPK=new Set(await MDB.keys())}catch{UPK=new Set()}
  try{const y=YAY.g();let ch=0;for(const k of UPK){if(!y[k]||!y[k].s){const r=await MDB.get(k);y[k]={y:(y[k]&&y[k].y)||0,s:r?r.ver:1};ch=1}}if(ch)YAY.s(y);if(!dpProje())UPK=new Set([...UPK].filter(k=>y[k]&&y[k].y>0))}catch{}
