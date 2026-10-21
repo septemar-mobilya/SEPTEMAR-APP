@@ -64,11 +64,13 @@
    "sayfalar": [
     "ov",
     "3d",
-    "pl",
     "tr",
     "ml",
+    "ak",
     "ur",
-    "dk"
+    "nt",
+    "mt",
+    "kk"
    ],
    "s": "2a50bc3a",
    "h": "dc39d599fdd3cbc062d016bd9b762dc51569e580b82357ce86d738ebd6c0680e",
@@ -81,13 +83,12 @@
     "ov",
     "3d",
     "tr",
-    "ak",
-    "mt",
-    "ur",
-    "dk",
     "ml",
+    "ak",
+    "ur",
     "nt",
-    "rv"
+    "mt",
+    "kk"
    ],
    "s": "2a8e179b",
    "h": "6747c20228317193b00069ba163a38349f6dab4b13108cb3f77a37a7db4b150a",
