@@ -831,8 +831,8 @@ const PLNC={};
 function planLoad(t){if(PLNC[t]!==undefined)return PLNC[t];PLNC[t]=null;fetch('data/plan-'+t.toLowerCase()+'.json',{cache:'no-cache'}).then(r=>r.ok?r.json():Promise.reject()).then(d=>{PLNC[t]=d;if(AM.tab=='pa'||AM.tab=='mi')atmDraw()}).catch(e=>{console.error('plan',e&&e.stack||e);PLNC[t]=false;if(AM.tab=='pa')atmDraw()});return null}
 const PLS={g(){try{return JSON.parse(localStorage.getItem('kmdPlanDurum')||'{}')}catch{return{}}},s(v){try{localStorage.setItem('kmdPlanDurum',JSON.stringify(v))}catch{}}};
 const plWork=r=>{const m=String(r.calisma||'').replace(',','.').match(/[\d.]+/);return m?+m[0]:0};
-function plModel(t,P){const all=PLS.g(),st=all[t]||(all[t]={r:{},b:{}}),A=ATS.g(),I=ILR.g(),L=[];let bi=-1;
- P.satirlar.forEach(r=>{if(r.lv==1)bi++;const o={r,bi:r.lv==1?bi:r.lv==2?bi:-1,sr:st.r[r.id]||{}};if(r.lv==2){const no=(o.sr.no||'').trim(),key=no&&r.tip=='Model'?upKey(t,no):'';o.key=key;o.no=no;o.k=key?(A.cizen[key]||r.kaynak):(o.sr.k!==undefined?o.sr.k:r.kaynak);o.p=key?+((I[key]||{}).p||0):+(o.sr.p||0);o.ts=key?(I[key]||{}).ts:o.sr.ts}L.push(o)});
+function plModel(t,P){const all=PLS.g(),st=all[t]||(all[t]={r:{},b:{}}),A=ATS.g(),I=ILR.g(),L=[];let bi=-1;const dv=n=>n&&A.cizenler.includes(n)?n:'';
+ P.satirlar.forEach(r=>{if(r.lv==1)bi++;const o={r,bi:r.lv==1?bi:r.lv==2?bi:-1,sr:st.r[r.id]||{}};if(r.lv==2){const no=(o.sr.no||'').trim(),key=no&&r.tip=='Model'?upKey(t,no):'';o.key=key;o.no=no;o.k=key?(A.cizen[key]||dv(r.kaynak)):(o.sr.k!==undefined?o.sr.k:dv(r.kaynak));o.p=key?+((I[key]||{}).p||0):+(o.sr.p||0);o.ts=key?(I[key]||{}).ts:o.sr.ts}L.push(o)});
  const agg=f=>{let sw=0,sp=0;L.filter(o=>o.r.lv==2&&f(o)).forEach(o=>{const w=plWork(o.r);sw+=w;sp+=w*o.p});return sw?Math.round(sp/sw):0};
  L.forEach(o=>{if(o.r.lv==0)o.p=agg(()=>true);else if(o.r.lv==1)o.p=agg(q=>q.bi==o.bi);if(o.r.lv==1){const b=st.b[o.bi]||{};o.ad=b.ad||o.r.ad;o.g=b.g||''}else o.ad=o.r.ad});
  return{all,st,L,A}}
