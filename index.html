@@ -128,7 +128,7 @@ i.d{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:8
 <div id="toast"></div>
 <div id="pkp"></div>
 <div class="ov" id="rcv"><div class="bx4"><div style="font-size:26px;font-weight:800;color:#1c8f4a">✓ MONTAJ EKİBİ TESLİM ALDI</div><div id="rcvi"></div><button class="p" id="rcvo">Tamam</button></div></div>
-<div class="ov" id="labels"><div class="no"><button class="p" onclick="print()">Yazdır</button> <button id="x2">Kapat</button></div><div id="grid"></div></div>
+<div class="ov" id="labels"><div class="no"><button class="p" onclick="print()">Yazdır</button> <button id="labX">⬇ Etiket makinesi için Excel</button> <button id="x2">Kapat</button></div><div id="grid"></div></div>
 <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script><script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 <script type="module">
@@ -193,6 +193,7 @@ async function boot(){
  try{DPT=await(await fetch('data/departmanlar.json',{cache:'no-cache'})).json()}catch{DPT=null}
  try{const id=sessionStorage.getItem('kmdDept');DP=!DPT?null:id=='yonetim'?{id:'yonetim',ad:'Yönetim',sayfalar:null}:(DPT.departmanlar||[]).find(d=>d.id==id)||null}catch{DP=null}
  if(DPT&&(!DP||!(dpLogged()||ustaOk()))){try{sessionStorage.removeItem('kmdOpen')}catch{}}
+ try{const w=new URLSearchParams(location.search).get('w');if(w){const[tn,kd]=w.split('|'),t=TYS().find(t=>t.ad==tn),k=t&&(t.kabinler||[]).find(k=>k.isler.some(x=>x.kod==kd));if(k)sessionStorage.setItem('kmdOpen',JSON.stringify({tekne:tn,kabin:k.ad,kod:kd}))}}catch{}
  try{UPK=new Set(await MDB.keys())}catch{UPK=new Set()}
  try{const y=YAY.g();let ch=0;for(const k of UPK){if(!y[k]||!y[k].s){const r=await MDB.get(k);y[k]={y:(y[k]&&y[k].y)||0,s:r?r.ver:1};ch=1}}if(ch)YAY.s(y);if(!dpProje())UPK=new Set([...UPK].filter(k=>y[k]&&y[k].y>0))}catch{}
  let OP=null;try{OP=JSON.parse(sessionStorage.getItem('kmdOpen')||'null')}catch{}
@@ -1041,7 +1042,11 @@ addEventListener('keydown',e=>{const tg=e.target;if(tg&&/^(INPUT|TEXTAREA|SELECT
  if(e.key==='Enter'||e.key==='Tab'){clearTimeout(kTm);if(kb.length>=3){e.preventDefault();const t=kb;kb='';hwScan(t)}else kb='';return}
  if(e.key.length==1){if(now-kt>1500)kb='';kt=now;if(e.key===' '&&kb)e.preventDefault();kb+=e.key;clearTimeout(kTm);kTm=setTimeout(()=>{if(kb.length>=12){const t=kb;kb='';hwScan(t)}},900);if($('#scanov').style.display=='flex'&&hwCb)$('#sct').innerHTML='Okuyucudan gelen: <small>'+esc(kb.slice(-60))+'</small>'}},true);
 $('#scan').onclick=scan;$('#x1').onclick=stop;
-$('#lab').onclick=()=>{$('#grid').innerHTML=Object.keys(parts).map(k=>{const e=data.parts?.[k]||{},m=data.malzemeler?.[e.malzeme],q=qrcode(0,'M');q.addData(location.origin+location.pathname+'?p='+encodeURIComponent(k));q.make();return`<div class="lb">${q.createImgTag(3,1)}<div><b>${nm(k)}</b><br>${data.info?.Kabin||''}<br>${T(k)=='parca'?'Parça':'Aksesuar'} · ${parts[k].dim.join('×')} mm<br>Malzeme: ${m?m.ad:'—'}<br><small>${k}</small></div></div>`}).join('');$('#labels').style.display='flex'};
+const qrUrl=k=>location.origin+location.pathname+(WK&&WK.tekne&&WK.kod?'?w='+encodeURIComponent(WK.tekne+'|'+WK.kod)+'&p=':'?p=')+encodeURIComponent(k);
+$('#labX').onclick=()=>{const ks=Object.keys(parts);if(!ks.length){upMsg('Etiket için parça yok.');return}const kab=(WK&&WK.kabin)||data.info?.Kabin||'',tek=(WK&&WK.tekne)||'',ie=(WK&&WK.kod)||data.info?.Kod||'',rows=[['QR İçeriği','Parça Adı','Parça Kodu','Tekne','İş Emri No','Kamara','Tür','Boy (mm)','En (mm)','Kalınlık (mm)','Malzeme']];
+ ks.forEach(k=>{const e=data.parts?.[k]||{},m=data.malzemeler?.[e.malzeme],d=(parts[k].dim||[]).map(v=>Math.round(v*10)/10);rows.push([qrUrl(k),nm(k),k,tek,ie,kab,T(k)=='parca'?'Parça':'Aksesuar',d[0]??'',d[1]??'',d[2]??'',m?m.ad:''])});
+ const dt=new Date(),ds=dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');xlsSave(xlsxBlob(rows,[60,36,40,10,12,22,10,10,10,12,28],{sheet:'Etiketler'}),(ie||'Model')+'_Etiketler_'+ds+'.xlsx');upMsg(ks.length+' parça etiketi Excel olarak kaydedildi.',1)};
+$('#lab').onclick=()=>{$('#grid').innerHTML=Object.keys(parts).map(k=>{const e=data.parts?.[k]||{},m=data.malzemeler?.[e.malzeme],q=qrcode(0,'M');q.addData(qrUrl(k));q.make();return`<div class="lb">${q.createImgTag(3,1)}<div><b>${nm(k)}</b><br>${data.info?.Kabin||''}<br>${T(k)=='parca'?'Parça':'Aksesuar'} · ${parts[k].dim.join('×')} mm<br>Malzeme: ${m?m.ad:'—'}<br><small>${k}</small></div></div>`}).join('');$('#labels').style.display='flex'};
 $('#x2').onclick=()=>$('#labels').style.display='none';
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js');
 boot();
