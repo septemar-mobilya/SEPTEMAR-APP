@@ -46,7 +46,7 @@ End Function
 Sub main()
     Dim doc As Object, comps As Variant, i As Long, c As Object, d As Object
     Dim cpm As Object, nm As String, leaf As String, pj As String, first As Boolean
-    Dim base As String, kod As String, folder As String, st As Object, e As Long, w As Long
+    Dim base As String, kod As String, folder As String, st As Object
     Dim dic As Object, seen As Object, allm As Object, k As Variant, mj As String
     Dim tp As String, bt As String, cr As String, sp As Long, cnt As Long
     On Error GoTo EH
@@ -106,12 +106,7 @@ Sub main()
     st.WriteText "{""paneller"":{" & pj & "},""malzemeler"":{" & mj & "}}"
     st.SaveToFile folder & kod & "-sw.json", 2
     st.Close
-    doc.Extension.SaveAs3 folder & kod & ".glb", 0, 1, Nothing, Nothing, e, w
-    If Dir(folder & kod & ".glb") = "" Then
-        MsgBox "JSON hazir (" & cnt & " panel). GLB yazilamadi, onu elle kaydet." & vbCrLf & folder
-    Else
-        MsgBox "Hazir (" & cnt & " panel, " & allm.Count & " malzeme):" & vbCrLf & folder
-    End If
+    MsgBox "JSON hazir (" & cnt & " panel, " & allm.Count & " malzeme):" & vbCrLf & folder & kod & "-sw.json" & vbCrLf & "GLB: Visualize ile cevir."
     Exit Sub
 EH:
     MsgBox "Hata: " & Err.Description & " (satir " & Erl & ")"
