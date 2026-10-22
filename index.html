@@ -114,7 +114,7 @@ i.d{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:8
 .pkl input{width:100%;font:inherit;border:0;border-bottom:1px dashed #000;background:#f3f6ff;color:#000;padding:.4cqw}
 .pkf{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;margin:10px 0}.pkf label{display:flex;flex-direction:column;font-size:12px;gap:3px}.pkf input{padding:8px;border:1px solid #ccd3dd;border-radius:6px;font:inherit}
 .pkw{margin:14px 0}.pks{margin-top:6px;font-weight:700;color:#b45309}.pks.ok{color:#1c8f4a}.bx4{background:#fff;color:#1c2430;border-radius:14px;padding:22px;width:min(92vw,380px);text-align:center;display:flex;flex-direction:column;gap:12px}
-</style></head><body>
+#pop .psec{font-weight:700;background:#e3e9f3;padding:3px 6px;margin-top:6px;border-radius:4px;font-size:12px}#pop .ptree{max-height:150px;overflow:auto;border:1px solid #b9c3d3;border-radius:4px;background:#fff;margin:2px 0}#pop .ptr{display:flex;gap:4px;align-items:center;padding:2px 4px;cursor:pointer;font-size:12px}#pop .ptr.on{background:#cfe3ff}#pop .ptr button{padding:0 6px}#pop .ptc{font-size:11px;padding:1px 4px 1px 26px;color:#555}#pop .pbl{max-height:92px;overflow:auto;border:1px solid #b9c3d3;border-radius:4px;background:#fff;min-height:26px;margin:3px 0;padding:2px}#pop .pbl div{font-size:11px;padding:1px 3px;cursor:pointer}#pop .pbl div:hover{background:#ffe0e0}#pop .pph{display:flex;justify-content:space-between;align-items:center}#pop .pbt button{width:36px;font-size:16px;margin-left:3px}#pop .pck{display:flex;gap:6px;align-items:center;font-size:12px;margin:3px 0}</style></head><body>
 <div id="app"><nav id="nav"><div id="logo"><img src="data/logo.png" alt=""><span class="lt"><b>SEPTEMAR</b><small>YACHT INTERIORS</small></span></div><div id="items"></div><div id="kisi" class="kisi"></div><button id="bk">←<span> Ana menü</span></button><small class="t">Better Spaces At Sea</small></nav>
 <div id="main"><header id="hd"><div id="bc"></div><h1 id="ttl"></h1><div id="meta"></div><div id="wkb"></div><div id="hr"><button id="scan" class="p">QR Okut</button><button id="lab">QR Etiketleri</button><img id="hth" alt=""><span class="hbr"></span><button id="mola" style="display:none">⏸ Mola ver · Tekne planına dön</button></div></header>
 <div id="body"><div id="pg"></div><div id="v3"><div class="cd" id="slot" style="padding:0"><div id="stage"><span id="tag">DEMO MODEL</span><button id="fs" title="Tam ekran">⛶</button><div class="tg"></div><div class="tg"></div><div class="tg"></div><div id="pop"></div><div id="bnd"></div><div id="dlc"></div><div id="nts"></div><div id="exb"><span>Patlat</span><input id="ex" type="range" min="0" max="1" step=".01" value="0"><select id="pts" style="display:none;max-width:150px"></select><button id="clr">Seçimi temizle</button><button id="rp">Rengi kaldır</button><a id="arl" href="ar.html" target="_blank">📱 AR</a></div><canvas id="pen"></canvas><div id="arq"><img id="arqi" alt="AR"><small>AR için telefonla okutun</small></div><div id="act"><button id="aH">Gizle</button><button id="aG">Şeffaflaştır</button><button id="aI">Yalnız bunu göster</button><button id="aA">Tümünü göster</button><button id="aL">Malzeme listesinde göster</button><span id="aC"></span></div><aside><div id="info"></div><input id="q" placeholder="Parça ara…"><ul id="list"></ul></aside><div id="lej"></div><div id="tb"></div></div></div></div></div></div></div>
@@ -280,7 +280,7 @@ function exBuild(){const V=THREE.Vector3,C=BB.getCenter(new V()),E=BB.getSize(ne
    if(/KILAPA/i.test(k))d.z=f*.18*Em;else if(/KASA.ON/i.test(k))d.z=f*.09*Em;else if(/KASA.ARKA/i.test(k))d.z=-f*.10*Em;else if(/KASA.TABAN/i.test(k))d.y=-.12*Em;else if(/(SOL|SA[GĞ]).YAN/i.test(k))d.x=sx*.14*Em;else if(/^C\.RAY|RAY MONTAJ/i.test(k+'|'+a))d.x=sx*.26*Em;else return;cu.sub[k]=d})}
  return U}
 function fitAll(){const bb=new THREE.Box3();allMeshes.forEach(m=>m.visible&&bb.expandByObject(m));if(bb.isEmpty())return;const V=THREE.Vector3,c=bb.getCenter(new V()),r=bb.getSize(new V()).length()/2,d=cam.position.clone().sub(ctl.target).normalize(),vf=cam.fov*Math.PI/180,hf=2*Math.atan(Math.tan(vf/2)*cam.aspect);ctl.target.copy(c);cam.position.copy(c).addScaledVector(d,r/Math.sin(Math.min(vf,hf)/2)*1.05);ctl.update();dirty=true}
-function explode(v){dirty=true;exv=v;if(PM){allMeshes.forEach(m=>m.userData.wp=null);const f=sc/F,N=PST.length||1,mp={};PST.forEach((t,i)=>{const w=sm01(Math.min(1,Math.max(0,v*N-i)))*f;t.ks.forEach(k=>{const o=mp[k]??=[0,0,0];o[0]+=t.off[0]*w;o[1]+=t.off[1]*w;o[2]+=t.off[2]*w})});for(const[k,p]of Object.entries(parts)){const o=mp[k],dd=o?new THREE.Vector3(o[0],o[1],o[2]):new THREE.Vector3();p.meshes.forEach(m=>m.position.copy(m.parent.worldToLocal(m.userData.w0.clone().add(dd))))}return}exU??=exBuild();allMeshes.forEach(m=>m.userData.wp=null);for(const u of exU){const d=new THREE.Vector3().setComponent(u.ax,u.sg*u.mag*sm01((v-u.w[0])/(u.w[1]-u.w[0])));if(u.sh)d.addScaledVector(u.sh,sm01(v/.8));const e2=sm01((v-.55)/.45);for(const k of u.ks){const dd=u.sub&&u.sub[k]?d.clone().addScaledVector(u.sub[k],e2):d;parts[k].meshes.forEach(m=>m.position.copy(m.parent.worldToLocal(m.userData.w0.clone().add(dd))))}}}
+function explode(v){dirty=true;exv=v;if(PM){allMeshes.forEach(m=>m.userData.wp=null);const f=sc/F,L0=PST.filter(t=>t.ks.length),N=L0.length||1,mp={};L0.forEach((t,i)=>{const w=sm01(Math.min(1,Math.max(0,v*N-i)))*f;t.ks.forEach(k=>{const o=mp[k]??=[0,0,0];o[0]+=t.off[0]*w;o[1]+=t.off[1]*w;o[2]+=t.off[2]*w})});for(const[k,p]of Object.entries(parts)){const o=mp[k],dd=o?new THREE.Vector3(o[0],o[1],o[2]):new THREE.Vector3();p.meshes.forEach(m=>m.position.copy(m.parent.worldToLocal(m.userData.w0.clone().add(dd))))}return}exU??=exBuild();allMeshes.forEach(m=>m.userData.wp=null);for(const u of exU){const d=new THREE.Vector3().setComponent(u.ax,u.sg*u.mag*sm01((v-u.w[0])/(u.w[1]-u.w[0])));if(u.sh)d.addScaledVector(u.sh,sm01(v/.8));const e2=sm01((v-.55)/.45);for(const k of u.ks){const dd=u.sub&&u.sub[k]?d.clone().addScaledVector(u.sub[k],e2):d;parts[k].meshes.forEach(m=>m.position.copy(m.parent.worldToLocal(m.userData.w0.clone().add(dd))))}}}
 const cut=k=>done(k)>=1;
 function repaint(){dirty=true;const M=data.malzemeler||{};for(const[k,p]of Object.entries(parts))p.meshes.forEach(m=>mats(m).forEach(x=>{if(!x.color)return;x.map=paint?null:x.userData.m0;const c=paint=='mat'?(M[data.parts?.[k]?.malzeme]?.renk||'#cfd4db'):paint=='on'?(T(k)=='parca'?(cut(k)?'#2e9e5b':'#e86a5e'):'#cfd4db'):null;c?x.color.set(c):x.color.copy(x.userData.c0);x.needsUpdate=true}))}
 const clock=new THREE.Clock(),tags=[],tgEl=$$('.tg');let okm='goster',WK=null,rmode=false,NT=[],noteAdd=false,noteHide=false,noteOpen=new Set(),NM={},detMark=null,bandK=null,bandStrips=[],bandEd=false,BT={},BD={};try{NT=JSON.parse(localStorage.notlar||'[]');okm=localStorage.okm||'goster'}catch{}try{BT=JSON.parse(localStorage.bant||'{}');BD=JSON.parse(localStorage.bantd||'{}')}catch{}const bandOf=k=>{const a=BT[k]||data.parts?.[k]?.bant;return Array.isArray(a)?a:null},bandSave=()=>{try{localStorage.bant=JSON.stringify(BT);localStorage.bantd=JSON.stringify(BD)}catch{}},BN={u1:'Uzun kenar 1',u2:'Uzun kenar 2',k1:'Kısa kenar 1',k2:'Kısa kenar 2'};
@@ -337,7 +337,7 @@ function addPt(h){dirty=true;if(pts.length>=2)clrM();if(h.cut){const d=new THREE
  tags.push({v:A.v.clone().add(B).multiplyScalar(.5),s:`← ${(len*f).toFixed(1)} mm →`});
  $('#mres').innerHTML=`<b>1. yüzey:</b> ${lab(A)}<br><b>2. yüzey:</b> ${lab(B0)}<br><span style="font-size:20px;font-weight:700;color:#d61f1f">${(len*f).toFixed(1)} mm</span> (1. yüzeye 90° dik mesafe)`+(par?'':'<br><span style="color:#b45309">⚠ Yüzeyler paralel değil; 1. yüzeye dik mesafe gösteriliyor.</span>')}
 /* ---- araç çubuğu ---- */
-function resetTools(){detLocOff();noteAdd=false;setPen(false);showPl=true;tool=null;meas=false;$('#pop').style.display='none';clrM();const was=pl.some(q=>q.on);pl.forEach(q=>q.on=false);if(was)applyCut();hl()}
+function resetTools(){if(tool=='pat')patLeave();detLocOff();noteAdd=false;setPen(false);showPl=true;tool=null;meas=false;$('#pop').style.display='none';clrM();const was=pl.some(q=>q.on);pl.forEach(q=>q.on=false);if(was)applyCut();hl()}
 let lejT='',SWL=null;function openLej(w){lejT=w;stage.classList.remove('side');stage.classList.add('lej');$('#lej').classList.toggle('wide',w=='lt');if(w=='ak'){$('#lej').innerHTML=PG.ak();PB.ak()}else if(w=='lt')lejLT();else lejUI();hl()}
 function lejLT(){const L=$('#lej'),R=SWL;if(!R||!R.length){L.innerHTML='<h4>Malzeme Listesi</h4><p class="mu">Bu iş emri için malzeme listesi verisi yok. SolidWorks makrosunu (SeptemarGonder) çalıştırıp çıkan -sw.json dosyasını yükleyin.</p>';return}
  const n=v=>{const x=parseFloat(v);return isFinite(x)?String(x):''},H=['REF NO','PARÇA ADI','MALZEME','ADET','NET ÖLÇÜ (BOY)','NET ÖLÇÜ (GENİŞLİK)','KALINLIK','DESEN TAKİBİ','SU YÖNÜ','BANTLI KENAR (ÖN)','BANTLI KENAR (ARKA)','BANTLI KENAR (SOL)','BANTLI KENAR (SAĞ)','KAPLAMA(ALT)','KAPLAMA(ÜST)','MAKİNA_PARKURU'];
@@ -373,65 +373,88 @@ addEventListener('pointerup',e=>{if(drag){drag=false;ctl.enabled=true;applyCut(t
  if(noteAdd&&cur=='3d'){if(hs[0])noteNew(hs[0]);return}
  if(meas){if(rmode){if(hs[0])radMeasure(hs[0]);return}const c=cutHit(a,hs[0]);if(c)addPt(c);else if(hs[0])addPt(hs[0]);return}
  if(cur!='3d')return;if(hs[0])select(hs[0].object.userData.k,{tap:true});else if(sel.length)select([],{tap:true})});
-/* ---- Elle patlatma: grup seç, ekseni seç, sürükle / adım adım kaydır, görünüm olarak kaydet ---- */
-var pgz=null,PDT='';
+/* ---- Patlatma (SolidWorks "Patlatma Görünümü" mantığı): adımlar, adım ekle/düzenle, patlat/daralt/animasyon ---- */
+var pgz=null;
 function pgzMake(){const g=new THREE.Group(),C=[0xe53935,0x43a047,0x1e88e5];[0,1,2].forEach(i=>{const m=new THREE.MeshBasicMaterial({color:C[i],depthTest:false,transparent:true,opacity:.95}),a=new THREE.Group(),sh=new THREE.Mesh(new THREE.CylinderGeometry(.045,.045,.8,10),m),tp=new THREE.Mesh(new THREE.ConeGeometry(.13,.28,14),m);sh.position.y=.4;tp.position.y=.94;[sh,tp].forEach(o=>{o.renderOrder=999;o.userData.ax=i;a.add(o)});if(i==0)a.rotation.z=-Math.PI/2;if(i==2)a.rotation.x=Math.PI/2;g.add(a)});g.visible=false;g.renderOrder=999;scene.add(g);return g}
 function pgzUpd(){if(!pgz)pgz=pgzMake();if(tool!='pat'||!PGR.length){pgz.visible=false;dirty=true;return}const bb=new THREE.Box3();PGR.forEach(k=>parts[k]&&parts[k].meshes.forEach(m=>bb.expandByObject(m)));if(bb.isEmpty()){pgz.visible=false;return}bb.getCenter(pgz.position);pgz.visible=true;pgzFit();dirty=true}
 function pgzFit(){if(!pgz||!pgz.visible)return;if(tool!='pat'){pgz.visible=false;return}pgz.scale.setScalar(cam.position.distanceTo(pgz.position)*.14);pgz.updateMatrixWorld(true)}
-let PST=[],PAC=-1,PM=null,PA=null,PL=1,PGR=[],PSG=false,PMS=true,PBX=false,PRC=null,PAS=[],PAX=0,PSTEP=50,PDR=null,PRS=[],PSH=[],PNM='';
+let PST=[],PAC=-1,PM=null,PA=null,PL=0,PALT=false,PGR=[],PSG=false,PBX=false,PRC=null,PAS=[],PAX=0,PDR=null,PRS=[],PSH=[],PNM='',PEX=new Set(),PUN=[],PIN=null,PCAN=false,PDT='';
 const pKod=()=>(WK&&WK.kod)||(MP||'').split('/').pop().replace(/\.glb$/i,''),pKey=()=>'pt:'+pKod(),
- pShort=s=>String(s||'').replace(/^\d+-\d+\s+/,'').replace(/^(YATAK|BAŞLIK)[_ ]/,'').replace(/_/g,' ').slice(0,28),
- pAll=()=>PSH.map(x=>({...x,ort:1})).concat(PRS);
+ pShort=s=>String(s||'').replace(/^\d+-\d+\s+/,'').replace(/^(YATAK|BAŞLIK)[_ ]/,'').replace(/^YATAK GÖVDE 5 ?/,'').replace(/_/g,' ').slice(0,34),
+ pAll=()=>PSH.map(x=>({...x,ort:1})).concat(PRS),
+ pCom=()=>PST.filter(t=>!t.pend),pCp=t=>({ad:t.ad,ks:t.ks.slice(),off:t.off.slice()}),esc2=t=>String(t).replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
 function grpOf(k,L){if(!parts[k])return null;if(!L)return[k];const a=parts[k].anc||[];if(a.length<L)return null;const m=a.length-L+1,id=a.slice(L-1).join('|');return Object.keys(parts).filter(x=>{const b=parts[x].anc||[];return b.length>=m&&b.slice(b.length-m).join('|')==id})}
 async function pBoot(){PM=null;PST=[];PAC=-1;try{PRS=JSON.parse(localStorage.getItem(pKey())||'[]')}catch{PRS=[]}PSH=[];try{const r=await fetch('data/'+pKod()+'-patlat.json',{cache:'no-cache'});if(r.ok){const j=await r.json();if(Array.isArray(j))PSH=j}}catch{}pFill()}
-function pFill(){const s=$('#pts');if(!s)return;const L=pAll(),v=s.value;s.innerHTML='<option value="">Standart patlatma</option>'+L.map((x,i)=>`<option value="${i}">${x.ad.replace(/</g,'&lt;')}</option>`).join('');s.style.display=L.length?'':'none';s.value=v&&L[+v]?v:''}
+function pFill(){const s=$('#pts');if(!s)return;const L=pAll(),v=s.value;s.innerHTML='<option value="">Standart patlatma</option>'+L.map((x,i)=>`<option value="${i}">${esc2(x.ad)}</option>`).join('');s.style.display=L.length?'':'none';s.value=v&&L[+v]?v:''}
 function pSv(){try{localStorage.setItem(pKey(),JSON.stringify(PRS))}catch{}}
-function pApply(pr){PAC=-1;PST=[];if(pr){if(pr.steps)PST=pr.steps.map(t=>({ad:t.ad,ks:t.ks.filter(k=>parts[k]),off:t.off.slice()}));else{const g={};Object.entries(pr.off||{}).forEach(([k,o])=>{if(parts[k])(g[o.join(',')]??={ad:'',ks:[],off:o.slice()}).ks.push(k)});PST=Object.values(g).map((t,i)=>({...t,ad:'Adım '+(i+1)}))}}PM=pr?{}:null;hid.clear();gho.clear();if(pr)(pr.hid||[]).forEach(k=>parts[k]&&hid.add(k));$('#ex').value=pr?1:0;explode(pr?1:0);select([],{tap:true});applyVis();actUI();list($('#q').value);fitAll()}
-function pMove(ax,mm){if(!PGR.length)return;PM??={};if(PAC<0||!PST[PAC]){PST.push({ad:'Adım '+(PST.length+1),ks:PGR.slice(),off:[0,0,0]});PAC=PST.length-1;if($('#pop'))patUI($('#pop'))}const o=PST[PAC].off;o[ax]=Math.round((o[ax]+mm)*10)/10;$('#ex').value=1;explode(1);pRead();pgzUpd()}
-function pRead(){const e=$('#prd');if(!e)return;const o=(PST[PAC]&&PST[PAC].off)||[0,0,0];e.textContent=PGR.length?`${PGR.length} parça · Sağ ${o[0]} · Üst ${o[1]} · Ön ${o[2]} mm`:'Önce modelden bir parçaya dokunun'}
-function pAct(i){PAC=i;const t=PST[i];if(!t){return}PAS=t.ks.slice();PA=PAS[PAS.length-1];PL=0;$('#ex').value=1;explode(1);patGrp()}
-function pPlay(){const N=Math.max(1,PST.length),T=N*900,t0=performance.now();PM??={};const f=()=>{const v=Math.min(1,(performance.now()-t0)/T);$('#ex').value=v;explode(v);if(v<1)requestAnimationFrame(f);else pgzUpd()};requestAnimationFrame(f)}
-function patSel(){if(PSG)return;if(!sel.length){if(!PMS){PA=null;PAS=[];PGR=[];popUI();pgzUpd()}else if(PAS.length)patGrp();return}const c=sel[0];if(PMS){if(PGR.includes(c)){const rm=new Set(grpOf(c,PL)||[c]);PAS=PAS.filter(a=>!(grpOf(a,PL)||[a]).some(x=>rm.has(x)));PA=PAS[PAS.length-1]||null}else{PAS.push(c);PA=c}}else{PAS=[c];PA=c}patGrp()}
-function patGrp(){PGR=[...new Set(PAS.filter(a=>parts[a]).flatMap(a=>grpOf(a,PL)||[a]))];if(PAC>=0&&PST[PAC]){PST[PAC].ks=PGR.slice();explode(+$('#ex').value)}PSG=true;select(PGR,{tap:true});PSG=false;popUI();pgzUpd()}
-function patEnter(){PMS=true;PBX=false;PAS=[];PAC=-1;PM??={};$('#ex').value=1;explode(1);PA=null;PGR=[];pgzUpd()}
-function patUI(p){const a=PA&&parts[PA]?parts[PA].anc||[]:[],lv=[],seen=new Set();
- if(PA)for(let L=0;L<=Math.min(a.length,6);L++){const g=grpOf(PA,L);if(!g)break;const key=g.join('|');if(seen.has(key))continue;seen.add(key);lv.push([L,g.length,L?pShort(a[L-1]):pShort(PA)])}
- const ls=pAll();
- p.innerHTML=`<b>Elle patlat</b>
- <div class="row" style="flex-wrap:wrap"><button id="pnw">＋ Yeni adım</button><button id="ppy">▶ Oynat</button></div>
- ${PST.length?PST.map((t,i)=>`<div class="row" style="${i==PAC?'background:#ffe9d6;border-radius:6px;':''}padding:2px"><button data-ps="${i}" style="flex:1;text-align:left">${i+1}. ${(t.ad||'Adım '+(i+1)).replace(/</g,'&lt;')} <small>(${t.ks.length} parça)</small></button><button data-pe="${i}">✎</button><button data-px="${i}">✕</button></div>`).join(''):'<small>1) Parçaya dokun  2) Oku sürükle → adım kendiliğinden oluşur.<br>Adımı seçip başka parçaya dokunursan o parça adıma eklenir.</small>'}
- <div class="row">${['Sağ–Sol','Üst–Alt','Ön–Arka'].map((t,i)=>`<button data-pa="${i}" class="${i==PAX?'on':''}">${t}</button>`).join('')}</div>
- <div class="row"><button id="pmn">◀</button><input id="pst" type="number" value="${PSTEP}" style="width:60px"> mm <button id="ppl">▶</button></div>
- <small id="prd"></small>
- <details ${PDT=='s'?'open':''}><summary>Seçim ve gizleme</summary>
- <div class="row"><button id="pbx" class="${PBX?'on':''}">▭ Kutuyla seç</button><button id="pcl">Seçimi temizle</button></div>
- <div class="row" style="flex-wrap:wrap">${lv.length?lv.map(([L,n,t])=>`<button data-pl="${L}" class="${L==PL?'on':''}">${L?'▣ ':''}${t} (${n})</button>`).join(''):'<small>Henüz parça seçilmedi</small>'}</div>
+function pSteps(pr){if(pr.steps)return pr.steps.map(t=>({ad:t.ad,ks:t.ks.filter(k=>parts[k]),off:t.off.slice()})).filter(t=>t.ks.length);const g={};Object.entries(pr.off||{}).forEach(([k,o])=>{if(parts[k])(g[o.join(',')]??={ks:[],off:o.slice()}).ks.push(k)});return Object.values(g).map((t,i)=>({...t,ad:'Adımı Patlat'+(i+1)}))}
+function pApply(pr){PAC=-1;PST=pr?pSteps(pr):[];PM=pr?{}:null;hid.clear();gho.clear();if(pr)(pr.hid||[]).forEach(k=>parts[k]&&hid.add(k));$('#ex').value=pr?1:0;explode(pr?1:0);if(tool=='pat')pNew();else select([],{tap:true});applyVis();actUI();list($('#q').value);fitAll()}
+function pNew(){PST=PST.filter(t=>!t.pend);PST.push({ad:'Adımı Patlat'+(pCom().length+1),ks:[],off:[0,0,0],pend:1});PAC=PST.length-1;PAS=[];PA=null;PGR=[];PSG=true;select([],{tap:true});PSG=false;popUI();pgzUpd()}
+function pSnap(){PUN.push(JSON.stringify({s:pCom().map(pCp),h:[...hid]}));if(PUN.length>40)PUN.shift()}
+function pRestore(j){const o=JSON.parse(j);PST=o.s;hid.clear();o.h.forEach(k=>hid.add(k));PM=PM||{};explode(+$('#ex').value||1);applyVis();actUI()}
+function pUndo(){const j=PUN.pop();if(!j)return;pRestore(j);pNew()}
+function pGrp(){PGR=[...new Set(PAS.filter(a=>parts[a]).flatMap(a=>grpOf(a,PL)||[a]))]}
+function patGrp(){pGrp();if(PAC>=0&&PST[PAC]){PST[PAC].ks=PGR.slice();PM??={};$('#ex').value=1;explode(1)}PSG=true;select(PGR,{tap:true});PSG=false;popUI();pgzUpd()}
+function pToggle(c){if(PGR.includes(c)){const rm=new Set(grpOf(c,PL)||[c]);PAS=PAS.filter(a=>!(grpOf(a,PL)||[a]).some(x=>rm.has(x)));PA=PAS[PAS.length-1]||null}else{PAS.push(c);PA=c}patGrp()}
+function patSel(){if(PSG)return;if(!sel.length){if(PAS.length)patGrp();return}pToggle(sel[0])}
+function pAct(i){const t=PST[i];if(!t)return;PST=PST.filter(x=>!x.pend);PAC=i;PAS=t.ks.slice();PA=PAS[PAS.length-1];PL=0;PALT=false;patGrp()}
+function pMove(ax,mm){if(!PGR.length||!PST[PAC])return;PM??={};const o=PST[PAC].off;o[ax]=Math.round((o[ax]+mm)*10)/10;$('#ex').value=1;explode(1);pRead();pgzUpd()}
+function pRead(){const e=$('#pdist');if(e&&document.activeElement!==e){const t=PST[PAC];e.value=t?t.off[PAX]:0}}
+function pAnim(to,ms){PM??={};const v0=+$('#ex').value,t0=performance.now(),f=()=>{const k=Math.min(1,(performance.now()-t0)/ms),v=v0+(to-v0)*k;$('#ex').value=v;explode(v);pgzUpd();if(k<1)requestAnimationFrame(f)};requestAnimationFrame(f)}
+function pPlay(){const N=Math.max(1,PST.filter(t=>t.ks.length).length);PM??={};$('#ex').value=0;explode(0);pAnim(1,N*900)}
+function patEnter(){PBX=false;PL=0;PALT=false;PAS=[];PA=null;PGR=[];PUN=[];PCAN=false;PM??={};PST=pCom();PIN=JSON.stringify({s:PST.map(pCp),h:[...hid]});pNew();$('#ex').value=1;explode(1);pgzUpd()}
+function patLeave(){const c=PCAN;PCAN=false;if(c&&PIN)pRestore(PIN);else{const t=PST[PAC];if(t&&t.pend&&t.ks.length)delete t.pend;PST=PST.filter(t=>t.ks.length&&!t.pend);if(PST.length){const n=PNM||('Patlatma Görünümü'+(PRS.length+1)),e={ad:n,steps:PST.map(pCp),hid:[...hid]},i=PRS.findIndex(x=>x.ad==n);PNM=n;if(i>=0)PRS[i]=e;else PRS.push(e);pSv();pFill();const s=$('#pts');if(s)s.value=String(pAll().findIndex(x=>x.ad==n&&!x.ort))}}PAC=-1;PAS=[];PGR=[];PSG=true;select([],{tap:true});PSG=false;if(pgz)pgz.visible=false;dirty=true;explode(+$('#ex').value||0)}
+function patUI(p){const t=PST[PAC],ed=t&&!t.pend,a=PA&&parts[PA]?parts[PA].anc||[]:[],lv=[],seen=new Set(),cm=pCom(),ls=pAll();
+ if(PA&&PALT)for(let L=1;L<=Math.min(a.length,6);L++){const g=grpOf(PA,L);if(!g)break;const key=g.join('|');if(seen.has(key))continue;seen.add(key);lv.push([L,g.length,pShort(a[L-1])])}
+ p.innerHTML=`<div class="pph"><b>⚙ Patlatma</b><span class="pbt"><button id="pok" title="Tamam">✓</button><button id="pcn" title="İptal">✕</button><button id="pun" title="Geri al">↶</button></span></div>
+ <div class="psec">Patlatma Adımları</div>
+ <div class="ptree">${cm.length?cm.map(s=>{const i=PST.indexOf(s),op=PEX.has(i);return`<div class="ptr ${i==PAC?'on':''}"><span data-pt="${i}" style="width:14px">${op?'▾':'▸'}</span><span data-ps="${i}" style="flex:1">⇲ ${esc2(s.ad)} <small>(${s.ks.length})</small></span><button data-px="${i}" title="Sil">✕</button></div>`+(op?s.ks.map(k=>`<div class="ptc">▫ ${esc2(pShort(k))}</div>`).join(''):'')}).join(''):'<small style="padding:4px">Henüz adım yok</small>'}</div>
+ <div class="psec">${ed?'Düzenleme: '+esc2(t.ad):'Adım Ekle'}</div>
+ <div class="row"><span>⇲</span><input id="pnm2" value="${esc2(t?t.ad:'')}" style="flex:1;min-width:0"></div>
+ <div class="pbl">${PGR.length?PGR.map(k=>`<div data-pr="${esc2(k)}" title="Listeden çıkar">▫ ${esc2(pShort(k))}</div>`).join(''):'<small>Modelden patlatılacak parçalara dokunun</small>'}</div>
+ <div class="row"><span>↗</span><select id="pax" style="flex:1">${['X · Sağ–Sol','Y · Üst–Alt','Z · Ön–Arka'].map((x,i)=>`<option value="${i}" ${i==PAX?'selected':''}>${x}</option>`).join('')}</select><button id="pfl" title="Yönü ters çevir">⇄</button></div>
+ <div class="row"><span>↔</span><input id="pdist" type="number" step="10" value="${t?t.off[PAX]:0}" style="flex:1;min-width:0"> mm</div>
+ <div class="row"><button id="padd">${ed?'Bitti':'Adım Ekle'}</button><button id="prst">Sıfırla</button></div>
+ <div class="psec">Seçenekler</div>
+ <label class="pck"><input type="checkbox" id="palt" ${PALT?'checked':''}> Alt montaj parçalarını seç</label>
+ ${PALT&&lv.length?`<div class="row" style="flex-wrap:wrap">${lv.map(([L,n,x])=>`<button data-pl="${L}" class="${L==PL?'on':''}">${esc2(x)} (${n})</button>`).join('')}</div>`:''}
+ <label class="pck"><input type="checkbox" id="pbx" ${PBX?'checked':''}> Kutuyla seç (sürükle)</label>
  <div class="row"><button id="pgh">Gizle</button><button id="pgo">Yalnız bunu göster</button><button id="pga">Hepsini göster</button></div>
- <div class="row"><button id="pz1">Adımı sıfırla</button><button id="pz0">Tüm adımları sil</button></div></details>
- <details ${PDT=='k'?'open':''}><summary>Kaydet / Görünümler</summary>
- <div class="row"><input id="pnm" placeholder="Görünüm adı (ör. Yatak gövdesi)" value="${PNM.replace(/"/g,'&quot;')}" style="flex:1;min-width:0"><button id="psv">Kaydet</button></div>
- ${ls.length?`<div>${ls.map((x,i)=>`<div class="row"><span style="flex:1">${x.ort?'🔒 ':''}${x.ad.replace(/</g,'&lt;')}</span><button data-pu="${i}">Uygula</button><button data-pc="${i}">Kopyala</button>${x.ort?'':`<button data-pd="${i}">Sil</button>`}</div>`).join('')}</div>`:''}
- <div class="row"><button id="pim">İçe aktar</button></div></details>
- <div class="row"><button id="pstd">Standart patlatmaya dön</button></div>`;
- pRead();p.querySelectorAll('details').forEach((d,i)=>d.ontoggle=()=>{PDT=d.open?'sk'[i]:''});
- $('#pnw').onclick=()=>{if(!PGR.length){alert('Önce modelden bir parçaya dokunun');return}PM??={};PST.push({ad:'Adım '+(PST.length+1),ks:PGR.slice(),off:[0,0,0]});PAC=PST.length-1;patUI(p)};$('#ppy').onclick=pPlay;
- p.querySelectorAll('[data-ps]').forEach(b=>b.onclick=()=>pAct(+b.dataset.ps));p.querySelectorAll('[data-pe]').forEach(b=>b.onclick=()=>{const t=PST[+b.dataset.pe],n=prompt('Adım adı',t.ad);if(n){t.ad=n;patUI(p)}});p.querySelectorAll('[data-px]').forEach(b=>b.onclick=()=>{PST.splice(+b.dataset.px,1);PAC=-1;explode(+$('#ex').value||1);patUI(p);pgzUpd()});p.querySelectorAll('[data-pu2],[data-pd2]').forEach(b=>b.onclick=()=>{const i=+(b.dataset.pu2??b.dataset.pd2),j=b.dataset.pu2!=null?i-1:i+1;if(j<0||j>=PST.length)return;[PST[i],PST[j]]=[PST[j],PST[i]];if(PAC==i)PAC=j;else if(PAC==j)PAC=i;patUI(p)});
- $('#pbx').onclick=()=>{PBX=!PBX;patUI(p)};$('#pcl').onclick=()=>{PAC=-1;PAS=[];PA=null;PGR=[];select([],{tap:true});popUI();pgzUpd()};
- p.querySelectorAll('[data-pl]').forEach(b=>b.onclick=()=>{PL=+b.dataset.pl;patGrp()});
- p.querySelectorAll('[data-pa]').forEach(b=>b.onclick=()=>{PAX=+b.dataset.pa;patUI(p)});
- const st=()=>Math.abs(+$('#pst').value)||PSTEP;$('#pst').onchange=()=>{PSTEP=st()};
- $('#pmn').onclick=()=>pMove(PAX,-st());$('#ppl').onclick=()=>pMove(PAX,st());
- $('#pz1').onclick=()=>{if(PST[PAC])PST[PAC].off=[0,0,0];explode(1);pRead();patUI(p)};$('#pz0').onclick=()=>{PST=[];PAC=-1;explode(1);pRead();patUI(p)};
- $('#pgh').onclick=()=>{PGR.forEach(k=>hid.add(k));select([],{tap:true});applyVis();actUI()};
- $('#pgo').onclick=()=>{if(!PGR.length)return;Object.keys(parts).forEach(k=>PGR.includes(k)?hid.delete(k):hid.add(k));applyVis();actUI()};
- $('#pga').onclick=()=>{hid.clear();applyVis();actUI()};
- $('#psv').onclick=()=>{const n=$('#pnm').value.trim();if(!n){alert('Görünüm adı yazın');return}PNM=n;const e={ad:n,steps:PST.map(t=>({ad:t.ad,ks:t.ks.slice(),off:t.off.slice()})),hid:[...hid]},i=PRS.findIndex(x=>x.ad==n);if(i>=0)PRS[i]=e;else PRS.push(e);pSv();pFill();patUI(p)};
- p.querySelectorAll('[data-pu]').forEach(b=>b.onclick=()=>{const x=pAll()[+b.dataset.pu];PNM=x.ad;pApply(x);PM??={};patUI(p)});
- p.querySelectorAll('[data-pd]').forEach(b=>b.onclick=()=>{const x=pAll()[+b.dataset.pd];if(!confirm(x.ad+' silinsin mi?'))return;PRS.splice(PRS.indexOf(PRS.find(y=>y.ad==x.ad)),1);pSv();pFill();patUI(p)});
- p.querySelectorAll('[data-pc]').forEach(b=>b.onclick=async()=>{const x=pAll()[+b.dataset.pc],t=JSON.stringify({ad:x.ad,steps:x.steps,off:x.off,hid:x.hid});try{await navigator.clipboard.writeText(t);b.textContent='Kopyalandı ✓'}catch{prompt('Kopyalayın:',t)}});
+ <div class="psec">Patlatma Görünümü</div>
+ <div class="row"><button id="ppt">Patlat</button><button id="pdr">Daralt</button><button id="ppy">▶ Animasyon</button></div>
+ <details ${PDT=='k'?'open':''}><summary>Kayıtlı görünümler</summary>
+ <div class="row"><input id="pnm" placeholder="Görünüm adı" value="${esc2(PNM)}" style="flex:1;min-width:0"><button id="psv">Kaydet</button></div>
+ ${ls.map((x,i)=>`<div class="row"><span style="flex:1">${x.ort?'🔒 ':''}${esc2(x.ad)}</span><button data-pu="${i}">Uygula</button><button data-pc="${i}">Kopyala</button>${x.ort?'':`<button data-pd="${i}">Sil</button>`}</div>`).join('')}
+ <div class="row"><button id="pim">İçe aktar</button><button id="pstd">Standart patlatmaya dön</button></div></details>`;
+ const $$p=q=>p.querySelectorAll(q);
+ $$p('details').forEach(d=>d.ontoggle=()=>{PDT=d.open?'k':''});
+ $('#pok').onclick=()=>resetTools();
+ $('#pcn').onclick=()=>{PCAN=true;resetTools()};
+ $('#pun').onclick=pUndo;
+ $$p('[data-pt]').forEach(b=>b.onclick=e=>{e.stopPropagation();const i=+b.dataset.pt;PEX.has(i)?PEX.delete(i):PEX.add(i);patUI(p)});
+ $$p('[data-ps]').forEach(b=>b.onclick=()=>pAct(+b.dataset.ps));
+ $$p('[data-px]').forEach(b=>b.onclick=()=>{pSnap();PST.splice(+b.dataset.px,1);PEX.clear();PM??={};$('#ex').value=1;explode(1);pNew()});
+ $$p('[data-pr]').forEach(b=>b.onclick=()=>pToggle(b.dataset.pr));
+ $('#pnm2').oninput=e=>{if(PST[PAC])PST[PAC].ad=e.target.value};
+ $('#pax').onchange=e=>{PAX=+e.target.value;pRead()};
+ $('#pfl').onclick=()=>{if(!PST[PAC])return;pSnap();PST[PAC].off[PAX]=-PST[PAC].off[PAX];explode(1);pRead();pgzUpd()};
+ $('#pdist').onchange=e=>{if(!PST[PAC]||!PGR.length)return;pSnap();PST[PAC].off[PAX]=+e.target.value||0;$('#ex').value=1;explode(1);pgzUpd()};
+ $('#padd').onclick=()=>{if(ed){PEX.clear();pNew();return}if(!PGR.length){alert('Önce modelden parça seçin');return}pSnap();delete PST[PAC].pend;pNew()};
+ $('#prst').onclick=()=>{if(PST[PAC]){PST[PAC].off=[0,0,0]}PAS=[];PA=null;patGrp();if(PST[PAC])PST[PAC].ks=[];explode(1)};
+ $('#palt').onchange=e=>{PALT=e.target.checked;PL=PALT?1:0;patGrp()};
+ $$p('[data-pl]').forEach(b=>b.onclick=()=>{PL=+b.dataset.pl;patGrp()});
+ $('#pbx').onchange=e=>{PBX=e.target.checked};
+ $('#pgh').onclick=()=>{pSnap();PGR.forEach(k=>hid.add(k));applyVis();actUI()};
+ $('#pgo').onclick=()=>{if(!PGR.length)return;pSnap();Object.keys(parts).forEach(k=>PGR.includes(k)?hid.delete(k):hid.add(k));applyVis();actUI()};
+ $('#pga').onclick=()=>{pSnap();hid.clear();applyVis();actUI()};
+ $('#ppt').onclick=()=>pAnim(1,700);$('#pdr').onclick=()=>pAnim(0,700);$('#ppy').onclick=pPlay;
+ $('#psv').onclick=()=>{const n=$('#pnm').value.trim();if(!n){alert('Görünüm adı yazın');return}PNM=n;const e={ad:n,steps:pCom().filter(s=>s.ks.length).map(pCp),hid:[...hid]},i=PRS.findIndex(x=>x.ad==n);if(i>=0)PRS[i]=e;else PRS.push(e);pSv();pFill();patUI(p)};
+ $$p('[data-pu]').forEach(b=>b.onclick=()=>{const x=pAll()[+b.dataset.pu];PNM=x.ad;pApply(x)});
+ $$p('[data-pd]').forEach(b=>b.onclick=()=>{const x=pAll()[+b.dataset.pd];if(!confirm(x.ad+' silinsin mi?'))return;PRS.splice(PRS.findIndex(y=>y.ad==x.ad),1);pSv();pFill();patUI(p)});
+ $$p('[data-pc]').forEach(b=>b.onclick=async()=>{const x=pAll()[+b.dataset.pc],t=JSON.stringify({ad:x.ad,steps:x.steps,off:x.off,hid:x.hid});try{await navigator.clipboard.writeText(t);b.textContent='Kopyalandı ✓'}catch{prompt('Kopyalayın:',t)}});
  $('#pim').onclick=()=>{const t=prompt('Kopyalanan görünüm kodunu yapıştırın');if(!t)return;try{const x=JSON.parse(t);if(!x.ad||!(x.off||x.steps))throw 0;const i=PRS.findIndex(y=>y.ad==x.ad);if(i>=0)PRS[i]=x;else PRS.push(x);pSv();pFill();patUI(p)}catch{alert('Geçersiz kod')}};
- $('#pstd').onclick=()=>{PM=null;PST=[];PAC=-1;hid.clear();gho.clear();$('#pts').value='';$('#ex').value=0;explode(0);select([],{tap:true});resetTools();fitAll()}}
-ren.domElement.addEventListener('pointerdown',e=>{if(tool=='pat'&&pgz&&pgz.visible){ray(e);const h=rc.intersectObject(pgz,true)[0];if(h){PAX=h.object.userData.ax;PDR={p:h.point.clone()};ctl.enabled=false;popUI();return}}if(tool=='pat'&&PBX){const r=ren.domElement.getBoundingClientRect();let d=$('#pbxr');if(!d){d=document.createElement('div');d.id='pbxr';d.style.cssText='position:absolute;border:2px dashed #e0452b;background:#e0452b22;z-index:5;pointer-events:none;display:none';stage.appendChild(d)}PRC={x0:e.clientX,y0:e.clientY,r,d};ctl.enabled=false;return}if(tool!='pat'||!PGR.length)return;ray(e);const h=rc.intersectObjects(PGR.flatMap(k=>parts[k].meshes),false).find(x=>x.object.visible);if(!h)return;PDR={p:h.point.clone()};ctl.enabled=false},true);
+ $('#pstd').onclick=()=>{PM=null;PST=[];PAC=-1;PNM='';hid.clear();gho.clear();$('#pts').value='';$('#ex').value=0;explode(0);PCAN=false;resetTools();select([],{tap:true});fitAll()}}
+ren.domElement.addEventListener('pointerdown',e=>{if(tool=='pat'&&pgz&&pgz.visible){ray(e);const h=rc.intersectObject(pgz,true)[0];if(h){pSnap();PAX=h.object.userData.ax;PDR={p:h.point.clone()};ctl.enabled=false;popUI();return}}if(tool=='pat'&&PBX){const r=ren.domElement.getBoundingClientRect();let d=$('#pbxr');if(!d){d=document.createElement('div');d.id='pbxr';d.style.cssText='position:absolute;border:2px dashed #e0452b;background:#e0452b22;z-index:5;pointer-events:none;display:none';stage.appendChild(d)}PRC={x0:e.clientX,y0:e.clientY,r,d};ctl.enabled=false;return}if(tool!='pat'||!PGR.length)return;ray(e);const h=rc.intersectObjects(PGR.flatMap(k=>parts[k].meshes),false).find(x=>x.object.visible);if(!h)return;PDR={p:h.point.clone()};ctl.enabled=false},true);
 addEventListener('pointermove',e=>{if(PRC){const{x0,y0,d}=PRC,st=stage.getBoundingClientRect();d.style.display='block';d.style.left=Math.min(x0,e.clientX)-st.left+'px';d.style.top=Math.min(y0,e.clientY)-st.top+'px';d.style.width=Math.abs(e.clientX-x0)+'px';d.style.height=Math.abs(e.clientY-y0)+'px';return}if(!PDR)return;ray(e);const d1=new THREE.Vector3().setComponent(PAX,1),d2=rc.ray.direction,w0=PDR.p.clone().sub(rc.ray.origin),b=d1.dot(d2),den=1-b*b;if(den<1e-6)return;const s=(b*d2.dot(w0)-d1.dot(w0))/den;PDR.p.addScaledVector(d1,s);pMove(PAX,s/sc*F)});
 addEventListener('pointerup',e=>{if(PRC){const{x0,y0,r,d}=PRC;PRC=null;d.style.display='none';ctl.enabled=true;const xa=Math.min(x0,e.clientX),xb=Math.max(x0,e.clientX),ya=Math.min(y0,e.clientY),yb=Math.max(y0,e.clientY);if(xb-xa<6&&yb-ya<6)return;const bb=new THREE.Box3(),v=new THREE.Vector3(),add=[];for(const[k,p]of Object.entries(parts)){if(hid.has(k))continue;bb.makeEmpty();p.meshes.forEach(m=>bb.expandByObject(m));if(bb.isEmpty())continue;bb.getCenter(v).project(cam);const px=(v.x*.5+.5)*r.width+r.left,py=(-v.y*.5+.5)*r.height+r.top;if(v.z<1&&px>=xa&&px<=xb&&py>=ya&&py<=yb)add.push(k)}if(add.length){add.forEach(k=>{if(!PGR.includes(k)&&!PAS.includes(k))PAS.push(k)});PA=PAS[PAS.length-1];patGrp()}return}if(PDR){PDR=null;ctl.enabled=true}});
 /* ---- kalem ve detay resmi ---- */
