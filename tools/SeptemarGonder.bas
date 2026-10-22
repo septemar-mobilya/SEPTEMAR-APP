@@ -65,6 +65,30 @@ Function Diger(d As Object, cpm As Object, ByVal cfg As String) As String
     Diger = r & "}"
 End Function
 
+Function Ozel(d As Object, cpm As Object) As String
+    Dim nms As Variant, i As Long, r As String, f As Boolean, gp As Object
+    On Error Resume Next
+    f = True
+    Set gp = d.Extension.CustomPropertyManager("")
+    nms = Empty: nms = cpm.GetNames
+    If Not IsEmpty(nms) Then
+        For i = LBound(nms) To UBound(nms)
+            If Not f Then r = r & ","
+            f = False
+            r = r & """" & J(CStr(nms(i))) & """:""" & J(Pr(cpm, CStr(nms(i)))) & """"
+        Next i
+    End If
+    nms = Empty: nms = gp.GetNames
+    If Not IsEmpty(nms) Then
+        For i = LBound(nms) To UBound(nms)
+            If Not f Then r = r & ","
+            f = False
+            r = r & """g:" & J(CStr(nms(i))) & """:""" & J(Pr(gp, CStr(nms(i)))) & """"
+        Next i
+    End If
+    Ozel = r
+End Function
+
 Function GetL(d As Object, ByVal rol As String, ByVal mat As String) As String
     If d.Exists(rol & "|" & mat) Then GetL = d(rol & "|" & mat) Else GetL = ""
 End Function
@@ -76,6 +100,7 @@ Sub main()
     Dim dic As Object, seen As Object, allm As Object, k As Variant, mj As String
     Dim tp As String, bt As String, cr As String, sp As Long, cnt As Long
     Dim dg As String, dgf As Boolean, dseen As Object, lf2 As String
+    Dim op As String, pseen As Object
     On Error GoTo EH
     Set swApp = Application.SldWorks
     Set doc = swApp.ActiveDoc
@@ -93,6 +118,8 @@ Sub main()
     comps = doc.GetComponents(False)
     pj = "": first = True: cnt = 0: dg = "": dgf = True
     Set dseen = CreateObject("Scripting.Dictionary")
+    Set pseen = CreateObject("Scripting.Dictionary")
+    op = ""
     For i = LBound(comps) To UBound(comps)
         Set c = comps(i)
         Set d = Nothing
@@ -119,6 +146,11 @@ Sub main()
                 If Not first Then pj = pj & ","
                 first = False
                 cnt = cnt + 1
+                If Not pseen.Exists(leaf) Then
+                    pseen.Add leaf, 1
+                    If op <> "" Then op = op & ","
+                    op = op & """" & J(leaf) & """:{" & Ozel(d, cpm) & "}"
+                End If
                 pj = pj & """" & J(leaf) & """:{""top"":""" & J(tp) & """,""bot"":""" & J(bt) & """,""core"":""" & J(cr) & """,""desen"":""" & J(Pr(cpm, "Desen_Takibi")) & """,""parkur"":""" & J(Pr(cpm, "Makina_Parkuru")) & """,""boy"":" & N(Pr(cpm, "SWOODCP_PanelLength")) & ",""en"":" & N(Pr(cpm, "SWOODCP_PanelWidth")) & ",""kal"":" & N(Pr(cpm, "SWOODCP_PanelThickness")) & ",""kenar"":{" & Side(cpm, "Left") & "," & Side(cpm, "Front") & "," & Side(cpm, "Right") & "," & Side(cpm, "Back") & "}}"
             ElseIf d.GetType = 1 Then
                 lf2 = Mid(c.Name2, InStrRev(c.Name2, "/") + 1)
@@ -142,7 +174,7 @@ Sub main()
     Next k
     Set st = CreateObject("ADODB.Stream")
     st.Type = 2: st.Charset = "utf-8": st.Open
-    st.WriteText "{""paneller"":{" & pj & "},""malzemeler"":{" & mj & "},""diger"":{" & dg & "}}"
+    st.WriteText "{""paneller"":{" & pj & "},""malzemeler"":{" & mj & "},""diger"":{" & dg & "},""ozel"":{" & op & "}}"
     st.SaveToFile folder & kod & "-sw.json", 2
     st.Close
     MsgBox "JSON hazir (" & cnt & " panel, " & allm.Count & " malzeme):" & vbCrLf & folder & kod & "-sw.json" & vbCrLf & "GLB: Visualize ile cevir."
