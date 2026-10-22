@@ -149,11 +149,6 @@ Sub main()
                 If Not first Then pj = pj & ","
                 first = False
                 cnt = cnt + 1
-                If Not pseen.Exists(leaf) Then
-                    pseen.Add leaf, 1
-                    If op <> "" Then op = op & ","
-                    op = op & """" & J(leaf) & """:{" & Ozel(d, cpm) & "}"
-                End If
                 pj = pj & """" & J(leaf) & """:{""top"":""" & J(tp) & """,""bot"":""" & J(bt) & """,""core"":""" & J(cr) & """,""desen"":""" & J(Pr(cpm, "Desen_Takibi")) & """,""parkur"":""" & J(Pr(cpm, "Makina_Parkuru")) & """,""boy"":" & N(Pr(cpm, "SWOODCP_PanelLength")) & ",""en"":" & N(Pr(cpm, "SWOODCP_PanelWidth")) & ",""kal"":" & N(Pr(cpm, "SWOODCP_PanelThickness")) & ",""kenar"":{" & Side(cpm, "Left") & "," & Side(cpm, "Front") & "," & Side(cpm, "Right") & "," & Side(cpm, "Back") & "}}"
             ElseIf d.GetType = 1 Then
                 lf2 = Mid(c.Name2, InStrRev(c.Name2, "/") + 1)
@@ -177,7 +172,7 @@ Sub main()
     Next k
     Set st = CreateObject("ADODB.Stream")
     st.Type = 2: st.Charset = "utf-8": st.Open
-    st.WriteText "{""paneller"":{" & pj & "},""malzemeler"":{" & mj & "},""diger"":{" & dg & "},""ozel"":{" & op & "}}"
+    st.WriteText "{""paneller"":{" & pj & "},""malzemeler"":{" & mj & "},""diger"":{" & dg & "}}"
     st.SaveToFile folder & kod & "-sw.json", 2
     st.Close
     MsgBox "JSON hazir (" & cnt & " panel, " & allm.Count & " malzeme):" & vbCrLf & folder & kod & "-sw.json" & vbCrLf & "GLB: Visualize ile cevir."

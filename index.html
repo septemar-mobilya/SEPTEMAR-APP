@@ -168,7 +168,10 @@ function swParse(txt){const d=new DOMParser().parseFromString(txt,'application/x
   if(dst==='KESİM_LİSTESİ'){const r={no:f.STR18||'',ad:f.STR2||f.STR1||'',mal:(f.STR3||'').trim(),boy:swN(f.STR4),en:swN(f.STR5),kal:swN(f.STR6),adet:swN(f.STR7)||swN(f.QTY)||1,top:f.STR12&&f.STR12!='X'?f.STR12.trim():'',bot:f.STR13&&f.STR13!='X'?f.STR13.trim():'',parkur:(f.STR25||'').trim(),desen:(f.STR24||'').trim()};cut.set(swT(r.ad),r)}
   else if(dst==='EDGEBAND'){const k=swT(f.STR1);(eb.get(k)||eb.set(k,[]).get(k)).push({n:f.STR7||'',len:swN(f.STR6),thk:f.STR8||'',mat:(f.STR11||'').trim()})}});
  return{cut,eb}}
-function swFromJson(pn){const cut=new Map(),eb=new Map();
+function swFromJson(pn0,dg){const FP='fromparent+',pn={},cut=new Map(),eb=new Map(),sp=x=>typeof x=='string'&&x.startsWith(FP)?x.slice(FP.length):x;
+ for(const[k,v0]of Object.entries(pn0)){const v=Object.assign({},v0);for(const f of['top','bot','core','desen','parkur'])v[f]=sp(v[f]);v.kenar=Object.fromEntries(Object.entries(v0.kenar||{}).map(([q,w])=>[q,Object.assign({},w,{ad:sp(w.ad),mal:sp(w.mal)})]));pn[k]=v}
+ for(const[k,v]of Object.entries(pn0))if(['top','bot','core','desen'].some(f=>typeof v[f]=='string'&&v[f].startsWith(FP))){const p=pn[k.replace(/(\S+?_)Mirror\1/,'$1')];if(p&&p!==pn[k])for(const f of['boy','en','kal'])if(!pn[k][f])pn[k][f]=p[f]}
+ for(const[k,o]of Object.entries(dg||{})){if(pn[k])continue;const z=o.ozellik||{},t=z['g:SWOODLAMINATETOP_Material']||'',b=z['g:SWOODLAMINATEBOTTOM_Material']||'';if(t||b)pn[k]={top:t,bot:b,core:'',desen:'',parkur:z.Makina_Parkuru||'',boy:0,en:0,kal:0,kenar:{}}}
  for(const[k,v]of Object.entries(pn)){const r={no:'',ad:k.trim(),mal:(v.core||'').trim(),boy:swN(v.boy),en:swN(v.en),kal:swN(v.kal),adet:v.adet||0,top:(v.top||'').trim(),bot:(v.bot||'').trim(),parkur:(v.parkur||'').trim(),desen:(v.desen||'').trim()};cut.set(swT(r.ad),r);
   const rows=['Front','Back','Left','Right'].map(q=>v.kenar&&v.kenar[q]).filter(w=>w&&w.ad).map(w=>({n:w.ad,len:swN(w.boy),thk:String(w.kal||''),mat:(w.mal||'').trim()}));eb.set(swT(r.ad),rows)}
  return{cut,eb}}
@@ -192,7 +195,7 @@ function swApply(sw,pre){const P={},M={tanimsiz:{kod:'',ad:'Belirtilmedi',en:'',
  data.parts=P;data.malzemeler=M}
 function swRows(e){const w=e&&e.sw;if(!w)return'';if(w.yok)return'<div><span>SWOOD</span><b>Kesim listesinde bulunamadı</b></div>';
  const R=(a,b)=>b?`<div><span>${a}</span><b>${esc(b)}</b></div>`:'';
- return R('Parça no',w.no)+R('Kesim ölçüsü',`${w.boy} × ${w.en} × ${w.kal} mm`)+R('Adet',w.adet)+R('Kaplama (üst)',w.top)+R('Kaplama (alt)',w.bot)+R('Kenar bandı',w.bant.map(b=>`${b.mat} · ${b.len} mm`).join('  |  ')||'Yok')+R('Makine parkuru',w.parkur)+R('Desen takibi',w.desen)+R('Not',w.not)}
+ return R('Parça no',w.no)+R('Kesim ölçüsü',w.boy?`${w.boy} × ${w.en} × ${w.kal} mm`:'')+R('Adet',w.adet)+R('Kaplama (üst)',w.top)+R('Kaplama (alt)',w.bot)+R('Kenar bandı',w.bant.map(b=>`${b.mat} · ${b.len} mm`).join('  |  ')||'Yok')+R('Makine parkuru',w.parkur)+R('Desen takibi',w.desen)+R('Not',w.not)}
 
 async function boot(){
  try{data=await(await fetch('data/komodin.json')).json()}catch{}
@@ -205,8 +208,8 @@ async function boot(){
  let OP=null;try{OP=JSON.parse(sessionStorage.getItem('kmdOpen')||'null')}catch{}
  MP=DEFM();if(OP){try{const t=TYS().find(t=>t.ad==OP.tekne),k=t&&(t.kabinler||[]).find(k=>k.ad==OP.kabin),x=k&&k.isler.find(x=>x.kod==OP.kod);if(x&&x.glb)MP=x.glb;if(x&&x.swood)SWU=x.swood;if(x){const key=upKey(OP.tekne,x.kod);if(UPK.has(key)){let r=await MDB.get(key);const yv=dpProje()?r&&r.ver:(YAY.g()[key]||{}).y;if(r&&r.ver!=yv)r=(r.eski||[]).find(e=>e.ver==yv);if(r){MP=URL.createObjectURL(r.glb);MPK='up:'+key;UPD=r;SWU='up'}}}}catch{}}
  try{MLIB=(await(await fetch('data/ice68-malzeme.json',{cache:'no-cache'})).json()).malzemeler||{}}catch{MLIB={}}
- SWP={};let SWJ=null;if(SWU){try{{const J=UPD?JSON.parse(UPD.json):await(await fetch(SWU.replace(/\.xml$/i,'-sw.json'),{cache:'no-cache'})).json();if(J.paneller)SWJ=J.paneller;SWP=Object.fromEntries(Object.entries(J.paneller||J).map(([q,v])=>[swQ(q),v]))}}catch{SWP={}}}
- let SW=null;if(SWJ){try{SW=swFromJson(SWJ)}catch(e){SW=null}}else if(SWU){try{SW=swParse(UPD?UPD.xml:await(await fetch(SWU,{cache:'no-cache'})).text())}catch(e){SW=null}}{const pkq=new URLSearchParams(location.search).get('pk');if(pkq)recvPkg(pkq)}
+ SWP={};let SWJ=null,SWD={};if(SWU){try{{const J=UPD?JSON.parse(UPD.json):await(await fetch(SWU.replace(/\.xml$/i,'-sw.json'),{cache:'no-cache'})).json();if(J.paneller){SWJ=J.paneller;SWD=J.diger||{}}SWP=Object.fromEntries(Object.entries(J.paneller||J).map(([q,v])=>[swQ(q),v]))}}catch{SWP={}}}
+ let SW=null;if(SWJ){try{SW=swFromJson(SWJ,SWD)}catch(e){SW=null}}else if(SWU){try{SW=swParse(UPD?UPD.xml:await(await fetch(SWU,{cache:'no-cache'})).text())}catch(e){SW=null}}{const pkq=new URLSearchParams(location.search).get('pk');if(pkq)recvPkg(pkq)}
  let root;try{root=(await mkGL().loadAsync(MP)).scene}catch(e){root=demo();$('#tag').style.display='block'}
  const model=new THREE.Group();model.add(root);scene.add(model);
  const b=new THREE.Box3().setFromObject(model),M=Math.max(...b.getSize(new THREE.Vector3()).toArray());F=M<20?1000:1;sc=1/M;model.scale.setScalar(sc);model.updateMatrixWorld(true);
