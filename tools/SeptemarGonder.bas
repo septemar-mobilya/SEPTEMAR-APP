@@ -100,7 +100,7 @@ Sub main()
     Dim dic As Object, seen As Object, allm As Object, k As Variant, mj As String
     Dim tp As String, bt As String, cr As String, sp As Long, cnt As Long
     Dim dg As String, dgf As Boolean, dseen As Object, lf2 As String
-    Dim op As String, pseen As Object
+    Dim op As String, pseen As Object, gp0 As Object
     On Error GoTo EH
     Set swApp = Application.SldWorks
     Set doc = swApp.ActiveDoc
@@ -137,6 +137,9 @@ Sub main()
                 tp = Pr(cpm, "SWOODCP_TopStockMaterial")
                 bt = Pr(cpm, "SWOODCP_BottomStockMaterial")
                 cr = Pr(cpm, "SWOODCP_CoreStockMaterial")
+                Set gp0 = d.Extension.CustomPropertyManager("")
+                If tp = "" Then tp = Pr(gp0, "SWOODLAMINATETOP_Material")
+                If bt = "" Then bt = Pr(gp0, "SWOODLAMINATEBOTTOM_Material")
                 AddTo dic, seen, tp, "ust", leaf
                 AddTo dic, seen, bt, "alt", leaf
                 AddTo dic, seen, cr, "cekirdek", leaf
