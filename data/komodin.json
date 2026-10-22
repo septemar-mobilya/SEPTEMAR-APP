@@ -466,7 +466,7 @@
        "grup": "Yatak",
        "tip": "yatak",
        "glb": "models/68-109.glb",
-       "swood": "data/68-109.xml"
+       "swood": "data/68-109.xml", "olcu": {"silte": "68-109 YATAK_YATAK GÖVDE_5_UST_5"}
       },
       {
        "kod": "68-110",
