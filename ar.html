@@ -6,4 +6,4 @@
 <body><div id="t">SEPTEMAR · AR</div>
 <model-viewer id="mv" src="models/komodin.glb" alt="Komodin" ar ar-modes="scene-viewer webxr quick-look" ar-scale="fixed" ar-placement="floor" camera-controls auto-rotate shadow-intensity="1" environment-image="neutral" exposure="1.1">
 <button slot="ar-button" id="ar">📱 Gerçek ortamda aç (AR)</button></model-viewer><div id="m"></div>
-<script>const mv=document.getElementById('mv');mv.addEventListener('load',()=>{setTimeout(()=>{if(!mv.canActivateAR)document.getElementById('m').textContent='Bu cihaz veya tarayıcı AR desteklemiyor. Android\'de Chrome, iPhone\'da Safari ile açın.'},800)})</script></body></html>
+<script>const mv=document.getElementById('mv');mv.addEventListener('load',()=>{setTimeout(()=>{if(!mv.canActivateAR)document.getElementById('m').textContent='Bu cihaz veya tarayıcı AR desteklemiyor. Android\'de Chrome, iPhone\'da Safari ile açın.'},800)})</script><script>try{const m=new URLSearchParams(location.search).get('m');if(m&&/^[\w\-\/.%]+\.glb$/i.test(m)&&!m.includes('..'))mv.src=decodeURIComponent(m)}catch{}</script></body></html>

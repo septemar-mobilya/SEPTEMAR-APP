@@ -160,7 +160,7 @@ const AS={parca:['Ön imalat'],aksesuar:['Tedarik','Takıldı']};
 const stg=k=>(data.asamalar||AS)[T(k)],done=k=>dur[k]||0,col=k=>!done(k)?'#b8c0cc':done(k)>=stg(k).length?'#2e9e5b':'#f2a516',save=()=>{try{localStorage.durum=JSON.stringify(dur)}catch{}},stt=k=>done(k)?stg(k)[done(k)-1]:'Başlamadı';
 function demo(){const g=new THREE.Group(),W=(c,m=.6,mt=0)=>new THREE.MeshStandardMaterial({color:c,roughness:m,metalness:mt});
  [['01_Sol Yan',[.018,.5,.4],[-.241,0,0],0],['02_Sağ Yan',[.018,.5,.4],[.241,0,0],0],['03_Üst Panel',[.5,.018,.4],[0,.241,0],0],['04_Alt Panel',[.5,.018,.4],[0,-.241,0],0],['05_Arka Panel',[.464,.464,.008],[0,0,-.196],0],['08_Çekmece Ön Üst',[.46,.2,.02],[0,.12,.2],0],['09_Çekmece Ön Alt',[.46,.2,.02],[0,-.1,.2],0]].forEach(([n,s,p])=>{const g0=new THREE.Group();g0.name='KOMODIN-'+n;const m=new THREE.Mesh(new THREE.BoxGeometry(...s),W(0xb08a5a));m.position.set(...p);g0.add(m);g.add(g0)});return g}
-let MP='',SWU='',UPK=new Set(),UPD=null,MPK='';const DEFM=()=>data.model||'models/komodin.glb';
+let ARM='',MP='',SWU='',UPK=new Set(),UPD=null,MPK='';const DEFM=()=>data.model||'models/komodin.glb';
 /* ---- SWOOD raporu (XML) → parça verisi ---- */
 const swT=s=>String(s==null?'':s).trim().replace(/\s+/g,' ').toLocaleUpperCase('tr-TR'),swN=v=>{const n=parseFloat(v);return isFinite(n)?n:0};
 function swParse(txt){const d=new DOMParser().parseFromString(txt,'application/xml'),cut=new Map(),eb=new Map();
@@ -206,7 +206,7 @@ async function boot(){
  try{UPK=new Set(await MDB.keys())}catch{UPK=new Set()}
  try{const y=YAY.g();let ch=0;for(const k of UPK){if(!y[k]||!y[k].s){const r=await MDB.get(k);y[k]={y:(y[k]&&y[k].y)||0,s:r?r.ver:1};ch=1}}if(ch)YAY.s(y);if(!dpProje())UPK=new Set([...UPK].filter(k=>y[k]&&y[k].y>0))}catch{}
  let OP=null;try{OP=JSON.parse(sessionStorage.getItem('kmdOpen')||'null')}catch{}
- MP=DEFM();if(OP){try{const t=TYS().find(t=>t.ad==OP.tekne),k=t&&(t.kabinler||[]).find(k=>k.ad==OP.kabin),x=k&&k.isler.find(x=>x.kod==OP.kod);if(x&&x.glb)MP=x.glb;if(x&&x.swood)SWU=x.swood;if(x){const key=upKey(OP.tekne,x.kod);if(UPK.has(key)){let r=await MDB.get(key);const yv=dpProje()?r&&r.ver:(YAY.g()[key]||{}).y;if(r&&r.ver!=yv)r=(r.eski||[]).find(e=>e.ver==yv);if(r){MP=URL.createObjectURL(r.glb);MPK='up:'+key;UPD=r;SWU='up'}}}}catch{}}
+ MP=DEFM();ARM=DEFM();if(OP){try{const t=TYS().find(t=>t.ad==OP.tekne),k=t&&(t.kabinler||[]).find(k=>k.ad==OP.kabin),x=k&&k.isler.find(x=>x.kod==OP.kod);if(x&&x.glb){MP=x.glb;ARM=x.glb}if(x&&x.swood)SWU=x.swood;if(x){const key=upKey(OP.tekne,x.kod);if(UPK.has(key)){let r=await MDB.get(key);const yv=dpProje()?r&&r.ver:(YAY.g()[key]||{}).y;if(r&&r.ver!=yv)r=(r.eski||[]).find(e=>e.ver==yv);if(r){MP=URL.createObjectURL(r.glb);MPK='up:'+key;UPD=r;SWU='up'}}}}catch{}}
  try{MLIB=(await(await fetch('data/ice68-malzeme.json',{cache:'no-cache'})).json()).malzemeler||{}}catch{MLIB={}}
  SWP={};let SWJ=null,SWD={};SWL=null;if(SWU){try{{const J=UPD?JSON.parse(UPD.json):await(await fetch(SWU.replace(/\.xml$/i,'-sw.json'),{cache:'no-cache'})).json();if(J.paneller){SWJ=J.paneller;SWD=J.diger||{};SWL=J.liste||null}SWP=Object.fromEntries(Object.entries(J.paneller||J).map(([q,v])=>[swQ(q),v]))}}catch{SWP={}}}
  let SW=null;if(SWJ){try{SW=swFromJson(SWJ,SWD)}catch(e){SW=null}}else if(SWU){try{SW=swParse(UPD?UPD.xml:await(await fetch(SWU,{cache:'no-cache'})).text())}catch(e){SW=null}}{const pkq=new URLSearchParams(location.search).get('pk');if(pkq)recvPkg(pkq)}
@@ -669,7 +669,7 @@ $$('#items [data-v]').forEach(b=>b.onclick=()=>go(b.dataset.v));$('#bk').onclick
 function init(){const I=data.info||{},tot=Object.keys(parts).length,s=Object.keys(parts).some(k=>done(k)>0);
  $('#bc').textContent=[I.Proje,I.Kabin,data.title].filter(Boolean).join('  ›  ');chip();
  $('#meta').innerHTML=['Kod','Kabin','Proje','Revizyon','Malzeme'].map(k=>`<div>${k}<b>${I[k]||'—'}</b></div>`).join('');$('#hth').src=snap(allMeshes,120);
- try{const q=qrcode(0,'M');q.addData(new URL('ar.html',location.href).href);q.make();$('#arqi').src=q.createDataURL(5,2)}catch{}noteRender();dpApply();anaUI();go('ov');try{if(DP&&(dpLogged()||ustaOk())&&!OP&&!sessionStorage.getItem('kmdAtmOff'))atmOpen()}catch{}setTimeout(()=>{const ks=Object.keys(parts);let i=0;(function n(){if(i<ks.length){thumb(ks[i++]);setTimeout(n,25)}})()},1200);const q=new URLSearchParams(location.search).get('p');if(q)pick(q)}
+ try{const q=qrcode(0,'M');q.addData(new URL('ar.html?m='+encodeURIComponent(ARM||DEFM()),location.href).href);q.make();$('#arqi').src=q.createDataURL(5,2)}catch{}noteRender();dpApply();anaUI();go('ov');try{if(DP&&(dpLogged()||ustaOk())&&!OP&&!sessionStorage.getItem('kmdAtmOff'))atmOpen()}catch{}setTimeout(()=>{const ks=Object.keys(parts);let i=0;(function n(){if(i<ks.length){thumb(ks[i++]);setTimeout(n,25)}})()},1200);const q=new URLSearchParams(location.search).get('p');if(q)pick(q)}
 /* ---- QR ---- */
 let stream=null;
 async function scan(cb,cont){$('#scanov').style.display='flex';$('#sct').textContent='QR kodu kameraya göster';const v=$('#cam');let cool=0;
