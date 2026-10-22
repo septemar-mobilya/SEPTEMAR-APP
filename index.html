@@ -248,7 +248,7 @@ function exBuild(){const V=THREE.Vector3,C=BB.getCenter(new V()),E=BB.getSize(ne
   else{const so=[0,1,2].sort((x,y)=>sz[x]-sz[y]);ax=so[0];if(sz[so[0]]>.5*sz[so[1]])ax=[0,1,2].sort((x,y)=>Math.abs(cc[y])/ee[y]-Math.abs(cc[x])/ee[x])[0];sg=cc[ax]>=0?1:-1}
   return{id,ks,ax,sg,d:Math.abs(cc[ax]),w:id=='#cek'?[.08,.6]:[[.35,.9],[0,.6],[.5,1]][ax],mag:id=='#cek'?1.05*sz[2]:0}});
  /* aynı eksen ve yöndeki birimleri merkezden dışa doğru sırala; aynı düzlemdekiler tek katman, her katman eşit aralıkla */
- for(const ax of[0,1,2])for(const sg of[-1,1]){const L=U.filter(u=>u.id!='#cek'&&u.ax==ax&&u.sg==sg).sort((a,b)=>a.d-b.d);let lay=-1,last=-1e9;L.forEach(u=>{if(u.d-last>.02*Em){lay++;last=u.d}u.mag=Em*(.12+.08*lay)})}
+ for(const ax of[0,1,2])for(const sg of[-1,1]){const L=U.filter(u=>u.id!='#cek'&&u.ax==ax&&u.sg==sg).sort((a,b)=>a.d-b.d);let lay=-1,last=-1e9;L.forEach(u=>{if(u.d-last>.02*Em){lay++;last=u.d}u.ly=lay});const nl=lay+1,st=nl>1?Math.min(.05,.2/(nl-1)):0;L.forEach(u=>{u.mag=Em*(.08+st*u.ly)})}
  /* çekmece çıktıktan sonra kendi parçaları da açılır: kılapa öne, yanlar dışa, arka geriye, taban aşağı, raylar yanlara */
  const cu=U.find(u=>u.id=='#cek');if(cu){cu.sub={};const f=cu.sg,bbC=new THREE.Box3();cu.ks.forEach(k=>bbC.union(parts[k].bb));const cx=bbC.getCenter(new V()).x;
   cu.ks.forEach(k=>{const p=parts[k],a=(p.anc||[]).join('|'),px=p.bb.getCenter(new V()).x,sx=px>=cx?1:-1,d=new V();
