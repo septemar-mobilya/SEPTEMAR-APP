@@ -182,7 +182,7 @@ function swApply(sw,pre){const P={},M={tanimsiz:{kod:'',ad:'Belirtilmedi',en:'',
    rows.forEach(w=>{const lng=Math.abs(w.len-big)<.8;const t=lng?'u':'k';if(uc[t]<2){uc[t]++;bn.push(t+uc[t])}});
    const spk=SWP[swQ(base)]||SWP[swQ(base.replace(/Mirror/g,''))],lam=(spk?[spk.top,spk.bot]:[r.top,r.bot]).map(x=>(x||'').trim()).filter(Boolean);
    const sbn=spk?['Front','Back','Left','Right'].map(q=>spk.kenar?.[q]).filter(w=>w&&w.ad):[];if(sbn.length){bn.length=0;uc.u=0;uc.k=0;sbn.forEach(w=>{const t=Math.abs(w.boy-big)<1?'u':'k';if(uc[t]<2){uc[t]++;bn.push(t+uc[t])}})}
-   P[k]={ad:r.ad.replace(/^\d+-\d+\s+/,'').replace(/_/g,' ').replace(/^(YATAK|BAŞLIK) /,'').replace(/^YATAK GÖVDE 5 ?/,'').trim()||r.ad,malzeme:(lam.length?mid(lam[0]):mid(r.mal)),yuz:lam.map(mid),cekirdek:mid(r.mal),tur:'parca',bant:bn,islem:IM[r.parkur.toUpperCase()]||'',yuzey:r.parkur.toUpperCase()==='YIĞMA'?'yigma':(lam.length&&!(spk&&/^VAR$/i.test(spk.desen||'')))?'kaplamali':'ham',
+   P[k]={ad:r.ad.replace(/^\d+-\d+\s+/,'').replace(/_/g,' ').replace(/^(YATAK|BAŞLIK) /,'').replace(/^YATAK GÖVDE 5 ?/,'').trim()||r.ad,malzeme:(lam.length?mid(lam[0]):mid(r.mal)),yuz:(lam.length?lam:(MLIB[(r.mal||'').trim()]?[(r.mal||'').trim()]:[])).map(mid),cekirdek:mid(r.mal),tur:'parca',bant:bn,islem:IM[r.parkur.toUpperCase()]||'',yuzey:r.parkur.toUpperCase()==='YIĞMA'?'yigma':(lam.length&&!(spk&&/^VAR$/i.test(spk.desen||'')))?'kaplamali':'ham',
     sw:{no:r.no,boy:r.boy,en:r.en,kal:r.kal,adet:r.adet,top:r.top,bot:r.bot,parkur:r.parkur,desen:r.desen,bant:rows}}}
   else{const an=parts[k].anc||[],kit=swKit(an),rr=!kit&&an.map(a=>sw.cut.get(swT(a.replace(/-\d+$/,'')))).find(Boolean);
    if(kit){P[k]={ad:swLeaf(base),malzeme:'tanimsiz',tur:'aksesuar',grp:kit,kit:1,sw:{yok:true}}}
