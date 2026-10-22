@@ -259,7 +259,7 @@ $('#ex').oninput=e=>explode(+e.target.value);$('#ex').onchange=fitAll;$('#clr').
 function pick(t){const ks=Object.keys(parts),k=ks.find(x=>x===t)||ks.find(x=>x.toLowerCase().includes(t.toLowerCase()));k?select(k):alert('Parça bulunamadı: '+t)}
 let exU=null;const sm01=t=>{t=Math.min(1,Math.max(0,t));return t*t*(3-2*t)};
 /* Düzenli patlatma: çekmece / arkalıklar / elektrik blok, diğerleri kendi kalınlık ekseninde katman katman */
-function exYatak(){const V=THREE.Vector3,ks=Object.keys(parts),isB=k=>/BAŞLIK/i.test(k+'|'+(parts[k].anc||[]).join('|')),bk=ks.filter(isB),gk=ks.filter(k=>!isB(k));
+function exYatak(){const V=THREE.Vector3,ks=Object.keys(parts),isB=k=>/BAŞLIK/i.test(k)||(parts[k].anc||[]).some(n=>/BAŞLIK/i.test(n)&&!/YATAK-BAŞLIK/i.test(n)),bk=ks.filter(isB),gk=ks.filter(k=>!isB(k));
  if(!bk.length||!gk.some(k=>/_UST_5(?![0-9])/.test(k)))return null;
  const bg=new THREE.Box3();gk.forEach(k=>bg.union(parts[k].bb));const C=bg.getCenter(new V()),S=bg.getSize(new V()),H=S.clone().multiplyScalar(.5),L=Math.max(S.x,S.z),bb=new THREE.Box3();bk.forEach(k=>bb.union(parts[k].bb));
  const sgH=bb.getCenter(new V()).z>=C.z?1:-1,G={baslik:bk};const add=(id,k)=>(G[id]??=[]).push(k);
