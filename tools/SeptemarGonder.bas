@@ -89,6 +89,30 @@ Function Ozel(d As Object, cpm As Object) As String
     Ozel = r
 End Function
 
+Function PrG(cpm As Object, gp As Object, ByVal nm As String) As String
+    Dim v As String
+    v = Pr(cpm, nm)
+    If v = "" Then v = Pr(gp, nm)
+    PrG = v
+End Function
+
+Function ListRow(ByVal pth As String, d As Object, cpm As Object) As String
+    Dim gp As Object, fn As String, dsn As String, su As String, ka As String, ku As String
+    Set gp = d.Extension.CustomPropertyManager("")
+    fn = Mid(pth, InStrRev(pth, "\") + 1)
+    If InStrRev(fn, ".") > 0 Then fn = Left(fn, InStrRev(fn, ".") - 1)
+    dsn = PrG(cpm, gp, "Desen_Takibi")
+    su = "YOK"
+    If PrG(cpm, gp, "SWOODCP_TopStockMaterialExtendPropertieDesen") = "True" Then su = "VAR"
+    If PrG(cpm, gp, "SWOODCP_BottomStockMaterialExtendPropertieDesen") = "True" Then su = "VAR"
+    ka = "": ku = ""
+    If dsn <> "VAR" Then
+        ka = PrG(cpm, gp, "SWOODLAMINATEBOTTOM_Material")
+        ku = PrG(cpm, gp, "SWOODLAMINATETOP_Material")
+    End If
+    ListRow = """ad"":""" & J(fn) & """,""adet"":#QTY#,""mal"":""" & J(PrG(cpm, gp, "SWOODCP_CoreStockMaterial")) & """,""boy"":" & N(PrG(cpm, gp, "SWOODCP_CoreStockLength")) & ",""en"":" & N(PrG(cpm, gp, "SWOODCP_CoreStockWidth")) & ",""kal"":" & N(PrG(cpm, gp, "SWOODCP_PanelThickness")) & ",""desen"":""" & J(dsn) & """,""su"":""" & su & """,""on"":""" & J(PrG(cpm, gp, "SWOODCP_EdgeFrontMaterial")) & """,""arka"":""" & J(PrG(cpm, gp, "SWOODCP_EdgeBackMaterial")) & """,""sol"":""" & J(PrG(cpm, gp, "SWOODCP_EdgeLeftMaterial")) & """,""sag"":""" & J(PrG(cpm, gp, "SWOODCP_EdgeRightMaterial")) & """,""kalt"":""" & J(ka) & """,""kust"":""" & J(ku) & """,""parkur"":""" & J(PrG(cpm, gp, "Makina_Parkuru")) & """"
+End Function
+
 Function GetL(d As Object, ByVal rol As String, ByVal mat As String) As String
     If d.Exists(rol & "|" & mat) Then GetL = d(rol & "|" & mat) Else GetL = ""
 End Function
@@ -101,6 +125,7 @@ Sub main()
     Dim tp As String, bt As String, cr As String, sp As Long, cnt As Long
     Dim dg As String, dgf As Boolean, dseen As Object, lf2 As String
     Dim op As String, pseen As Object, gp0 As Object
+    Dim lq As Object, ls As Object, lk As String, ex As Boolean, lj As String
     On Error GoTo EH
     Set swApp = Application.SldWorks
     Set doc = swApp.ActiveDoc
@@ -119,6 +144,8 @@ Sub main()
     pj = "": first = True: cnt = 0: dg = "": dgf = True
     Set dseen = CreateObject("Scripting.Dictionary")
     Set pseen = CreateObject("Scripting.Dictionary")
+    Set lq = CreateObject("Scripting.Dictionary")
+    Set ls = CreateObject("Scripting.Dictionary")
     op = ""
     For i = LBound(comps) To UBound(comps)
         Set c = comps(i)
@@ -128,6 +155,21 @@ Sub main()
         On Error GoTo EH
         If Not d Is Nothing Then
             Set cpm = d.Extension.CustomPropertyManager(c.ReferencedConfiguration)
+            If d.GetType = 1 Then
+                ex = False
+                On Error Resume Next
+                ex = c.ExcludeFromBOM
+                On Error GoTo EH
+                If Not ex Then
+                    lk = c.GetPathName & "|" & c.ReferencedConfiguration
+                    If lq.Exists(lk) Then
+                        lq(lk) = lq(lk) + 1
+                    Else
+                        lq.Add lk, 1
+                        ls.Add lk, ListRow(c.GetPathName, d, cpm)
+                    End If
+                End If
+            End If
             If Pr(cpm, "SWOODCP_PanelLength") <> "" Then
                 nm = c.Name2
                 leaf = Mid(nm, InStrRev(nm, "/") + 1)
@@ -170,9 +212,15 @@ Sub main()
         first = False
         mj = mj & """" & J(CStr(k)) & """:{""ust"":[" & GetL(dic, "ust", CStr(k)) & "],""alt"":[" & GetL(dic, "alt", CStr(k)) & "],""cekirdek"":[" & GetL(dic, "cekirdek", CStr(k)) & "]}"
     Next k
+    lj = "": first = True
+    For Each k In ls.Keys
+        If Not first Then lj = lj & ","
+        first = False
+        lj = lj & "{" & Replace(ls(k), "#QTY#", CStr(lq(k))) & "}"
+    Next k
     Set st = CreateObject("ADODB.Stream")
     st.Type = 2: st.Charset = "utf-8": st.Open
-    st.WriteText "{""paneller"":{" & pj & "},""malzemeler"":{" & mj & "},""diger"":{" & dg & "}}"
+    st.WriteText "{""paneller"":{" & pj & "},""malzemeler"":{" & mj & "},""diger"":{" & dg & "},""liste"":[" & lj & "]}"
     st.SaveToFile folder & kod & "-sw.json", 2
     st.Close
     MsgBox "JSON hazir (" & cnt & " panel, " & allm.Count & " malzeme):" & vbCrLf & folder & kod & "-sw.json" & vbCrLf & "GLB: Visualize ile cevir."
