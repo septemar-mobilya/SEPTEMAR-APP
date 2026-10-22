@@ -122,7 +122,7 @@ i.d{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:8
 <div class="ov" id="pw"><div class="bx2"><b id="pwt"></b><small>Yetkili kişi kendi şifresini girer. <b>Bu onay geri alınamaz.</b></small><input id="pwi" type="password" placeholder="Şifre" autocomplete="off" style="padding:10px;font-size:16px"><div id="pwe" style="color:#d61f1f;min-height:18px"></div><div class="row"><button class="p" id="pwo">Onayla</button><button id="pwc">İptal</button></div></div></div>
 <div class="ov" id="det" style="overflow:auto;justify-content:flex-start;padding:10px"><div style="display:flex;gap:8px"><button id="dx">Kapat</button><button class="p" id="dpng">PNG indir</button><button id="dloc">📍 Modelde göster</button><button id="dpr">🖨 Gerçek ölçekte yazdır</button></div><div id="dsv" style="background:#fff;width:min(96vw,720px);border-radius:10px;padding:8px"></div></div>
 <div class="ov" id="nte"><div class="bx2"><b>Önemli not</b><textarea id="ntx" rows="4" placeholder="Notu yazın…"></textarea><div class="row"><button class="p" id="ntOk">Kaydet</button><button id="ntNo">İptal</button></div></div></div>
-<div id="ana"><div class="alg"><a href="https://www.septemar.com/en/" target="_blank" rel="noopener"><img src="data/logo.png" alt="SEPTEMAR"></a></div><div id="anaL"></div><button id="anaK" class="ak" style="display:none">Komodin 505-91 · NB85 (mevcut ürün) →</button></div>
+<div id="ana"><div class="alg"><a href="https://www.septemar.com/en/" target="_blank" rel="noopener"><img src="data/logo.png" alt="SEPTEMAR"></a></div><div id="anaL"></div><button id="anaK" class="ak">Komodin 505-91 · NB85 (mevcut ürün) →</button></div>
 <div id="dpm"><div><h3 id="dpt"></h3><input id="dpi" type="password" inputmode="numeric" autocomplete="off" placeholder="PIN"><p id="dpe"></p><div class="r"><button id="dpc">İptal</button><button id="dpo" class="p">Giriş</button></div></div></div>
 <div id="tpl"><header><img class="tpLg" src="data/logo.png" alt="SEPTEMAR"><span class="tpSep"></span><b id="tpT"></b><span class="tpDp" id="tpDp"></span><span class="tpSep"></span><button id="tpB">Ana sayfa</button><button id="tpC" style="margin-left:auto" class="p">Çalışmaya devam et ›</button></header><div id="tpBody"><div id="tpV"></div><aside id="tpD"></aside></div></div>
 <div id="toast"></div>
@@ -223,6 +223,7 @@ async function boot(){
  if(SW)swApply(SW,OP&&OP.kod);
  init();
  if(OP){try{sessionStorage.removeItem('kmdOpen')}catch{}try{resumeWork(OP)}catch(e){}}
+ try{if(sessionStorage.getItem('kmdKom')){sessionStorage.removeItem('kmdKom');$('#anaK').click()}}catch{}
 }
 function snap(ms,n=112,bgc){const bb=new THREE.Box3();ms.forEach(m=>bb.expandByObject(m));const c=bb.getCenter(new THREE.Vector3()),r=bb.getSize(new THREE.Vector3()).length()||.1;
  const rt=new THREE.WebGLRenderTarget(n,n);rt.texture.colorSpace=THREE.SRGBColorSpace;const tc=new THREE.PerspectiveCamera(35,1,r/100,r*20);tc.position.copy(c).add(new THREE.Vector3(.8,.6,1).normalize().multiplyScalar(r*1.7));tc.lookAt(c);
@@ -1061,7 +1062,7 @@ V.onpointermove=e=>{const p=TZ.P.get(e.pointerId);if(!p){V.style.cursor=tpHit(e.
 V.onpointerup=V.onpointercancel=e=>{const had=TZ.P.has(e.pointerId);TZ.P.delete(e.pointerId);TZ.d0=0;if(had&&e.type=='pointerup'&&!TZ.moved&&TZ.P.size==0&&$('#tpS'))tpPick(tpHit(e.clientX,e.clientY));if(TZ.P.size==0)TZ.moved=false};
 V.addEventListener('wheel',e=>{e.preventDefault();tpZoom(e.deltaY<0?1.2:1/1.2,e.clientX,e.clientY)},{passive:false});
 addEventListener('resize',()=>{if($('#tpS')&&$('#tpl').style.display=='flex'){const was=TZ.s<=TZ.f*1.001;tpFit();if(was)TZ.s=TZ.f;tpApply()}})}
-$('#anaK').onclick=()=>{WK=null;wkApply();$('#ana').style.display='none';go('ov')};
+$('#anaK').onclick=()=>{try{sessionStorage.removeItem('kmdPil')}catch{}if(MP!==DEFM()){try{sessionStorage.removeItem('kmdOpen');sessionStorage.setItem('kmdKom','1')}catch{}location.reload();return}WK=null;wkApply();dpApply();$('#ana').style.display='none';go('ov')};
 if(/[?&](p|pk)=/.test(location.search))$('#ana').style.display='none';
 
 /* ---- USB QR / barkod okuyucu: klavye gibi çalışır, okutulan metni yazıp Enter gönderir ---- */
