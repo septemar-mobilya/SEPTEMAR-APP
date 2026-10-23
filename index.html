@@ -404,7 +404,9 @@ function radFit(m,t0,hp){const T=radTopo(m),{vid,vp,tn,em}=T,MIN=.003,MAX=.7,dot
  nb=t=>{const o=[];for(let e=0;e<3;e++){const a=vid[3*t+e],b=vid[3*t+(e+1)%3];if(a==b)continue;const l=em.get(a<b?a*1e7+b:b*1e7+a);if(l)for(const u of l)if(u!==t)o.push([u,a,b])}return o},
  cv=t=>nb(t).some(([u])=>{const a=ang(t,u);return a>=MIN&&a<=MAX});
  let s=t0;if(!cv(s)){let fr=[t0],seen=new Set([t0]),f=null;for(let r=0;r<4&&!f;r++){const nx=[];for(const t of fr)for(const[u]of nb(t))if(!seen.has(u)){seen.add(u);if(cv(u)){f=u;break}nx.push(u)}fr=nx}if(f==null)return null;s=f}
- const q=[s],vis=new Set([s]),cvv=new Set();while(q.length&&vis.size<20000){const t=q.pop();for(const[u,a,b]of nb(t)){const g=ang(t,u);if(g>=MIN&&g<=MAX){cvv.add(a);cvv.add(b);if(!vis.has(u)){vis.add(u);q.push(u)}}else if(g<MIN&&!vis.has(u)&&cv(u)){vis.add(u);q.push(u)}}}
+ const el=(a,b)=>Math.hypot(vp[3*a]-vp[3*b],vp[3*a+1]-vp[3*b+1],vp[3*a+2]-vp[3*b+2]),tl=t=>{let m=0;for(let e=0;e<3;e++)m=Math.max(m,el(vid[3*t+e],vid[3*t+(e+1)%3]));return m};
+ let Lc=0;const q=[s],vis=new Set([s]),cvv=new Set();while(q.length&&vis.size<20000){const t=q.pop(),N=nb(t),fl=[];for(const[u,a,b]of N){const g=ang(t,u);if(g>=MIN&&g<=MAX){Lc=Math.max(Lc,el(a,b));cvv.add(a);cvv.add(b);if(!vis.has(u)){vis.add(u);q.push(u)}}else if(g<MIN&&!vis.has(u))fl.push(u)}
+  for(const u of fl)if(!vis.has(u)&&tl(u)<=4*Lc&&cv(u)){vis.add(u);q.push(u)}}
  if(cvv.size<3)return null;const W=m.matrixWorld,wv=id=>new THREE.Vector3(vp[3*id],vp[3*id+1],vp[3*id+2]).applyMatrix4(W),P=[...cvv].map(wv);
  const C=[[0,0,0],[0,0,0],[0,0,0]];for(const t of vis){const n=new THREE.Vector3(tn[3*t],tn[3*t+1],tn[3*t+2]).transformDirection(W);const x=[n.x,n.y,n.z];for(let i=0;i<3;i++)for(let j=0;j<3;j++)C[i][j]+=x[i]*x[j]}
  const E=eig3(C),ax=E[0].v.clone().normalize(),ratio=E[0].l/Math.max(E[2].l,1e-12),u=new THREE.Vector3().crossVectors(ax,Math.abs(ax.y)<.9?new THREE.Vector3(0,1,0):new THREE.Vector3(1,0,0)).normalize(),v=new THREE.Vector3().crossVectors(ax,u),o=P[0].clone(),
