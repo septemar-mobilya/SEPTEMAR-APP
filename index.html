@@ -1133,7 +1133,7 @@ function tpPick(i){TZ.sel=i;const st=$('#tpS');if(st){st.classList.toggle('dim',
 let DPT=null,DP=null,dpFail=0,dpLock=0;
 function dpLogged(){try{return !!DP&&sessionStorage.getItem('kmdLog')==DP.id}catch{return false}}function dpUser(){try{return sessionStorage.getItem('kmdUser')||'—'}catch{return '—'}}
 const dpPlan=()=>!DP||DP.id=='yonetim'||!!DP.plan;
-const PILS=['ov','3d','tr','ur','nt','mt','kk'],pilOn=()=>{try{return sessionStorage.getItem('kmdPil')=='1'}catch{return false}},PIL0={tekne:'ICE68',kabin:'Tekne Sahibi Kamara',kod:'68-109'};
+const PILS=['ov','3d','tr','nt','rv','mt'],pilOn=()=>{try{return sessionStorage.getItem('kmdPil')=='1'}catch{return false}},PIL0={tekne:'ICE68',kabin:'Tekne Sahibi Kamara',kod:'68-109'};
 function pilotOpen(){try{sessionStorage.setItem('kmdPil','1');sessionStorage.setItem('kmdOpen',JSON.stringify(PIL0))}catch{}$('#ana').style.display='none';resumeWork(PIL0);dpApply()}
 const dpAllow=n=>pilOn()?(n=='ov'||PILS.includes(n)):(!DP||!DP.sayfalar||n=='ov'||DP.sayfalar.includes(n));
 function dpApply(){$$('#items [data-v]').forEach(b=>b.style.display=dpAllow(b.dataset.v)?'':'none');const t=$('#tpDp');if(t)t.textContent=DP&&DP.ad?'· '+DP.ad:''}
