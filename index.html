@@ -9,7 +9,7 @@ button{border:0;border-radius:8px;padding:8px 12px;font:inherit;background:#e8ec
 #logo{display:flex;align-items:center;gap:10px;color:#fff;padding:6px 12px 14px}#logo img{width:40px;height:40px;border-radius:50%;flex:none}#logo .lt{text-align:left;min-width:0}#logo b{display:block;letter-spacing:.16em;font-size:15px;font-weight:500}#logo small{font-size:7.5px;letter-spacing:.24em;opacity:.7;white-space:nowrap}
 #items{flex:1;overflow:auto;display:flex;flex-direction:column;gap:2px}
 #nav button{display:flex;align-items:center;gap:12px;background:none;color:#cfd8e6;text-align:left;padding:11px 12px;border-radius:8px;width:100%}
-#nav #items button.on{background:#1d3a63;color:#fff;box-shadow:inset 3px 0 #4aa3ff}#nav #bk{border:1px solid #3a4b66;margin-top:8px}#nav small.t{font-size:11px;opacity:.7;padding:8px 6px 0}
+#items [data-v=mt]{display:none!important}#nav #items button.on{background:#1d3a63;color:#fff;box-shadow:inset 3px 0 #4aa3ff}#nav #bk{border:1px solid #3a4b66;margin-top:8px}#nav small.t{font-size:11px;opacity:.7;padding:8px 6px 0}
 #main{display:grid;grid-template-rows:auto minmax(0,1fr);min-width:0;background:#eef1f5;border-radius:14px 0 0 14px;overflow:hidden}
 #hd{padding:10px 16px;background:#fff;border-bottom:1px solid #e1e6ee;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center}
 #bc{font-size:12px;color:#5b6676}#ttl{margin:0;font-size:24px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}#chip{font-size:12px;font-weight:500;background:#eef1f5;border-radius:99px;padding:4px 10px}
@@ -58,7 +58,7 @@ i.d{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:8
 #arl{display:none;background:#ff7a1a;color:#fff;border-radius:8px;padding:5px 10px;font-size:12px;white-space:nowrap}
 @media(min-width:700px){#arq{display:flex}}
 @media(max-width:699px){#arl{display:block}}
-#tl{position:absolute;left:8px;top:8px;z-index:3;display:flex;flex-direction:column;gap:4px;background:#2b323cdd;border-radius:10px;padding:4px}#tl button{background:none;color:#dfe5ee;border-radius:8px;padding:6px 4px;font-size:10px;display:flex;flex-direction:column;align-items:center;gap:2px;width:62px}#tl button.on{background:#3d4858;box-shadow:inset 3px 0 #4aa3ff;color:#fff}@media(min-width:700px){#tl{top:140px}}#stage.mini #tl{display:none}
+#tl{position:absolute;left:8px;top:8px;z-index:3;display:flex;flex-direction:row;gap:2px;background:#2b323cdd;border-radius:10px;padding:2px}#tl button{background:none;color:#dfe5ee;border-radius:8px;padding:3px 10px;font-size:11px;display:flex;flex-direction:row;align-items:center;gap:5px;width:auto;white-space:nowrap}#tl button svg{width:16px;height:16px}#tl button.on{background:#3d4858;box-shadow:inset 0 -2px #4aa3ff;color:#fff}@media(min-width:700px){#tl{left:124px;top:8px}}#stage.mini #tl{display:none}
 #stage.mini #arq{display:none}#pen{position:absolute;inset:0;z-index:2;display:none;touch-action:none;cursor:crosshair}
 .tk{display:inline-flex;width:20px;height:20px;border:2px solid #9aa5b5;border-radius:5px;align-items:center;justify-content:center;font-size:14px;line-height:1;color:#fff;vertical-align:middle;background:#fff}.tk.ok{background:#1c8f4a;border-color:#1c8f4a}
 .ac{position:relative}.ac .tk{position:absolute;top:6px;right:6px}.dl{font-size:11px;text-align:left;display:flex;flex-direction:column;gap:4px;margin-top:4px}.dl button{padding:5px 8px;font-size:12px;width:100%}
@@ -145,7 +145,7 @@ IC.nt='M5 4h14v16H5zM8 9h8M8 13h8M8 17h5';IC.rvi='M4 12a8 8 0 1 0 3-6M4 4v4h4';
 const NAV=[['ov','Genel Bakış','home'],['3d','3D Model','cube'],['pl','Fabrika','fac'],['tr','Teknik Resim','draw'],['ko','Kabindeki Konumu','pin'],['ur','Üretim Durumu','rule'],['kk','Kalite Kontrol','shield'],['pk','Paketleme','box'],['sv','Sevkiyat','truck'],['mt','Üretim Notları','clip'],['dk','İlgili Dokümanlar','doc'],['nt','Notlar','nt'],['rv','Revizyonlar','rvi']];
 $('#items').innerHTML=NAV.map(([v,t,i])=>`<button data-v="${v}" title="${t}">${svg(IC[i])}<span>${t}</span></button>`).join('');
 $('#tl').innerHTML=[['rot','Döndür','rot'],['pan','Kaydır','pan'],['fit','Yakınlaştır','zoom']].map(([t,l,i])=>`<button data-t="${t}">${svg(IC[i],20)}${l}</button>`).join('');
-$('#tb').innerHTML=[['view','Görünüm','cube'],['cut','Kesit','cut'],['olc','Ölçü','rule'],['not','Önemli Notlar','warn'],['lej','Malzeme Lejantı','pal'],['akp','Aksesuar Listesi','gear'],['mlt','Malzeme Listesi','list'],['tree','Parça Ağacı','tree']].map(([t,l,i])=>`<button data-t="${t}">${svg(IC[i],20)}${l}</button>`).join('');
+$('#tb').innerHTML=[['view','Görünüm','cube'],['cut','Kesit','cut'],['olc','Ölçü','rule'],['not','Önemli Notlar','warn'],['lej','Malzeme Lejantı','pal'],['akp','Aksesuar Listesi','gear'],['mlt','Malzeme Listesi','list'],['mtp','Üretim Notları','clip'],['tree','Parça Ağacı','tree']].map(([t,l,i])=>`<button data-t="${t}">${svg(IC[i],20)}${l}</button>`).join('');
 const stage=$('#stage'),scene=new THREE.Scene();scene.background=new THREE.Color(0xeef0f3);
 const cam=new THREE.PerspectiveCamera(40,1,.001,100);cam.position.set(1.2,.8,1.6);
 const ren=new THREE.WebGLRenderer({antialias:true,stencil:true});ren.localClippingEnabled=true;ren.setPixelRatio(Math.min(devicePixelRatio,1.5));stage.prepend(ren.domElement);
@@ -459,7 +459,7 @@ function popUI(){const p=$('#pop'),q=pl[ap];p.style.display=tool?'block':'none';
  if(tool=='not'){const L=nAll();p.innerHTML=`<b>Önemli Notlar</b> <small>(${L.length})</small><div class="row"><button id="nAdd" class="${noteAdd?'on':''}">${noteAdd?'Modele dokunun…':'＋ Not ekle'}</button><button id="nHide">${noteHide?'Notları göster':'Notları gizle'}</button>${NT.length?'<button id="nExp">JSON kopyala</button>':''}</div><small>${noteAdd?'Notu koymak istediğiniz yere modele dokunun.':'Ünlem işaretine dokunarak notu açıp kapatın.'}</small>`;
   $('#nAdd').onclick=()=>{noteAdd=!noteAdd;popUI()};$('#nHide').onclick=()=>{noteHide=!noteHide;dirty=true;popUI()};
   if($('#nExp'))$('#nExp').onclick=()=>{const t=JSON.stringify(NT);(navigator.clipboard?.writeText(t)||Promise.reject()).then(()=>alert('Notlar kopyalandı. komodin.json içindeki "notlar" alanına yapıştırırsanız tüm cihazlarda görünür.')).catch(()=>prompt('Kopyalayın:',t))}}}
-$$('#tb [data-t],#tl [data-t]').forEach(b=>b.onclick=()=>{const t=b.dataset.t;if(t=='rot'||t=='pan')return setMode(t);if(t=='fit')return focus(sel);
+$$('#tb [data-t],#tl [data-t]').forEach(b=>b.onclick=()=>{const t=b.dataset.t;if(t=='rot'||t=='pan')return setMode(t);if(t=='mtp')return go('mt');if(t=='fit')return focus(sel);
  if(t=='tree'){if(cur=='ov')return go('3d');stage.classList.remove('lej');stage.classList.toggle('side');return hl()}
  if(t=='lej'||t=='akp'||t=='mlt'){const w=t=='lej'?'ml':t=='akp'?'ak':'lt';if(cur=='ov')go('3d');if(stage.classList.contains('lej')&&lejT==w){stage.classList.remove('lej');return hl()}openLej(w);return hl()}
  const was=tool;resetTools();if(was!=t){tool=t;meas=t=='olc';pl.forEach(z=>{if(!z.v)z.v=mid(z.i)});popUI();hl();applyCut()}});
