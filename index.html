@@ -358,6 +358,32 @@ function addPt(h){dirty=true;if(pts.length>=2)clrM();if(h.cut){const d=new THREE
  const ah=Math.min(.03,len*.3);[[A.v,dir.clone().negate()],[B,dir]].forEach(([p,d])=>mkm(new THREE.ConeGeometry(ah*.32,ah,14),p.clone().addScaledVector(d,-ah/2)).quaternion.setFromUnitVectors(up,d));
  tags.push({v:A.v.clone().add(B).multiplyScalar(.5),s:`← ${(len*f).toFixed(1)} mm →`});
  $('#mres').innerHTML=`<b>1. yüzey:</b> ${lab(A)}<br><b>2. yüzey:</b> ${lab(B0)}<br><span style="font-size:20px;font-weight:700;color:#d61f1f">${(len*f).toFixed(1)} mm</span> (1. yüzeye 90° dik mesafe)`+(par?'':'<br><span style="color:#b45309">⚠ Yüzeyler paralel değil; 1. yüzeye dik mesafe gösteriliyor.</span>')}
+
+function kasa(P){let sx=0,sy=0,sxx=0,syy=0,sxy=0,sz=0,sxz=0,syz=0;const n=P.length,o=P[0];for(const[X,Y]of P){const x=X-o[0],y=Y-o[1],z=x*x+y*y;sx+=x;sy+=y;sxx+=x*x;syy+=y*y;sxy+=x*y;sz+=z;sxz+=x*z;syz+=y*z}
+ const M=[[sxx,sxy,sx],[sxy,syy,sy],[sx,sy,n]],r=[-sxz,-syz,-sz],det=m=>m[0][0]*(m[1][1]*m[2][2]-m[1][2]*m[2][1])-m[0][1]*(m[1][0]*m[2][2]-m[1][2]*m[2][0])+m[0][2]*(m[1][0]*m[2][1]-m[1][1]*m[2][0]),D=det(M);if(Math.abs(D)<1e-300)return null;
+ const s=[0,1,2].map(c=>det(M.map((row,i)=>row.map((x,j)=>j==c?r[i]:x)))/D),cx=-s[0]/2,cy=-s[1]/2,R=Math.sqrt(Math.max(0,cx*cx+cy*cy-s[2]));if(!isFinite(R)||R<=0)return null;return{cx:cx+o[0],cy:cy+o[1],R}}
+function arcAt(P,j){/* P: kapalı çevrim noktaları (2B), j: dokunulan segment (P[j]→P[j+1]) */
+ const n=P.length;if(n<4)return null;let seg=0;for(let k=0;k<n;k++)seg+=Math.hypot(P[(k+1)%n][0]-P[k][0],P[(k+1)%n][1]-P[k][1]);const avg=seg/n,closed=Math.hypot(P[0][0]-P[n-1][0],P[0][1]-P[n-1][1])<=3*avg,I=k=>closed?((k%n)+n)%n:(k<0||k>=n?-1:k),
+ turn=m=>{const a=I(m-1),b=I(m),c=I(m+1);if(a<0||b<0||c<0)return 0;const x1=P[b][0]-P[a][0],y1=P[b][1]-P[a][1],x2=P[c][0]-P[b][0],y2=P[c][1]-P[b][1];let d=Math.atan2(y2,x2)-Math.atan2(y1,x1);while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;return d},
+ sl=k=>{const a=I(k),b=I(k+1);return a<0||b<0?0:Math.hypot(P[b][0]-P[a][0],P[b][1]-P[a][1])},ok=m=>{const t=Math.abs(turn(m)),l1=sl(m-1),l2=sl(m);return t>=.002&&t<=.9&&l1>0&&l2>0&&Math.max(l1,l2)<=3*Math.min(l1,l2)};
+ let s=null;for(const o of[0,1]){const m=I(j+o);if(m>=0&&ok(m)){s=m;break}}if(s==null)return null;
+ const sg=Math.sign(turn(s));let lo=s-1,hi=s+1;const win=()=>{const w=[];for(let k=lo;k<=hi;k++)w.push(I(k));return w},pts=w=>w.map(k=>P[k]),
+ fit=w=>kasa(pts(w)),good=(w,f)=>f&&(R0==null||(f.R>=.88*R0&&f.R<=1.12*R0&&pts(w).every(p=>Math.abs(Math.hypot(p[0]-f.cx,p[1]-f.cy)-f.R)<=.02*R0)));
+ if(I(lo)<0||I(hi)<0)return null;let R0=null,f0=fit(win());if(!f0)return null;R0=f0.R;const L0=(sl(lo)+sl(lo+1))/2,lok=l=>l>=L0/3&&l<=L0*3;
+ let dr=false,dl=false;while(!(dr&&dl)){if(!dr){const c=I(hi+1);const ex=c>=0&&lok(sl(hi))&&hi+1-lo<n-1&&Math.sign(turn(hi))==sg&&Math.abs(turn(hi))>=.002;if(ex){hi++;const w=win(),f=fit(w);if(good(w,f))f0=f;else{hi--;dr=true}}else dr=true}
+  if(!dl){const c=I(lo-1);const ex=c>=0&&lok(sl(lo-1))&&hi-(lo-1)<n-1&&Math.sign(turn(lo))==sg&&Math.abs(turn(lo))>=.002;if(ex){lo--;const w=win(),f=fit(w);if(good(w,f))f0=f;else{lo++;dl=true}}else dl=true}}
+ const w=win(),f=fit(w);if(!f)return null;let a=Math.atan2(P[w[0]][1]-f.cy,P[w[0]][0]-f.cx),a0=a,sw=0;for(let k=1;k<w.length;k++){const b=Math.atan2(P[w[k]][1]-f.cy,P[w[k]][0]-f.cx);let d=b-a;while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;sw+=d;a=b}
+ return{R:f.R,cx:f.cx,cy:f.cy,n:w.length,a0,a1:a0+sw}}
+
+const rnum=x=>String(Math.round(x*10)/10);
+function radSection(c){const q=pl.filter(z=>z.on).map(z=>[Math.abs(c.point.getComponent(z.i)-z.v),z]).sort((a,b)=>a[0]-b[0])[0];if(!q)return;const Q=q[1],i=Q.i,v=Q.v,A=(i+1)%3,B=(i+2)%3,ot=pl.filter(z=>z.on&&z!==Q),bb=new THREE.Box3(),f=F/sc,tp=[c.point.getComponent(A),c.point.getComponent(B)],
+ tol=cam.position.distanceTo(c.point)*2*Math.tan(cam.fov*Math.PI/360)*(26/Math.max(1,stage.clientHeight));let best=null;
+ for(const[k,p]of Object.entries(parts)){if(hid.has(k))continue;let sg=[];p.meshes.forEach(m=>{if(!m.visible)return;bb.setFromObject(m);if(bb.min.getComponent(i)>v||bb.max.getComponent(i)<v)return;sg=sg.concat(sliceM(m,i,v))});if(!sg.length)continue;
+  for(const L of loopsOf(fl(sg,ot))){const n=L.length;if(n<3)continue;const P=L.map(x=>[x[A],x[B]]);for(let j=0;j<n;j++){const a=P[j],b=P[(j+1)%n],dx=b[0]-a[0],dy=b[1]-a[1],l2=dx*dx+dy*dy,t=l2?Math.max(0,Math.min(1,((tp[0]-a[0])*dx+(tp[1]-a[1])*dy)/l2)):0,d=Math.hypot(a[0]+t*dx-tp[0],a[1]+t*dy-tp[1]);if(!best||d<best.d)best={d,P,j,k}}}}
+ if(tags.length>=3)clrM();if(!best||best.d>tol){$('#mres').innerHTML='<span style="color:#b45309">⚠ Kesit çizgisine (kesit yüzeyinin siyah kenar çizgisine) dokunun.</span>';return}
+ const r=arcAt(best.P,best.j);if(!r){$('#mres').innerHTML='<span style="color:#b45309">⚠ Dokunduğunuz çizgi düz, burada yarıçap yok. Kavisli kenar çizgisine dokunun.</span>';return}
+ const cen=new THREE.Vector3();cen.setComponent(i,v).setComponent(A,r.cx).setComponent(B,r.cy);const u=new THREE.Vector3().setComponent(A,1),w=new THREE.Vector3().setComponent(B,1),Rm=r.R*f,sw=Math.abs(r.a1-r.a0)*180/Math.PI;
+ radShow(cen,r.R,null,u,w,r.a0,r.a1,'R'+rnum(Rm),`<b>Kesit yayı:</b> ${nm(best.k)}<br><span style="font-size:20px;font-weight:700;color:#d61f1f">R${rnum(Rm)}</span> mm (Ø ${rnum(2*Rm)}) · yay ${sw.toFixed(0)}°`+(r.n<4?'<br><span style="color:#b45309">⚠ Yay az noktadan oluşuyor, değer yaklaşık.</span>':''))}
 /* ---- yarıçap ölçme: dokunulan yuvarlak yüzeyin kavis çizgisinden R bulunur ---- */
 const RTC=new WeakMap();
 function radTopo(m){let T=RTC.get(m);if(T)return T;const g=m.geometry,P=g.attributes.position,ix=g.index,nI=ix?ix.count:P.count,ntri=nI/3|0;g.computeBoundingBox();const eps=Math.max(g.boundingBox.getSize(new THREE.Vector3()).length()*1e-6,1e-9),map=new Map(),vid=new Int32Array(nI),vp=[];
@@ -386,19 +412,19 @@ function radFit(m,t0){const T=radTopo(m),{vid,vp,tn,em}=T,MIN=.003,MAX=.7,dot=(x
  const mid=Math.atan2(pr.reduce((a,[x,y])=>a+Math.sin(Math.atan2(y-cy,x-cx)),0),pr.reduce((a,[x,y])=>a+Math.cos(Math.atan2(y-cy,x-cx)),0)),offs=pr.map(([x,y])=>{let d=Math.atan2(y-cy,x-cx)-mid;while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;return d}),o0=Math.min(...offs),o1=Math.max(...offs),zm=pr.reduce((a,p)=>a+p[2],0)/n;
  const cen=o.clone().addScaledVector(u,cx).addScaledVector(v,cy).addScaledVector(ax,zm);
  return{R,rms,span:(o1-o0)*180/Math.PI,ratio,cen,u,v,ax,mid,o0,o1}}
-function radShow(cen,R,pt,u,v,a0,a1,label,html,full){dirty=true;const f=F/sc,tube=(pts,r)=>{const g=new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),Math.max(24,pts.length*2),r,6,false),o=new THREE.Mesh(g,new THREE.MeshBasicMaterial({color:0xff1a1a,depthTest:false}));o.renderOrder=40;o.userData.mk=1;gz.add(o);return o},
+function radShow(cen,R,pt,u,v,a0,a1,label,html,full){dirty=true;const f=F/sc,dg=BB.getSize(new THREE.Vector3()).length(),tr=Math.min(dg*.0012,R*.06),sr=Math.min(dg*.003,R*.12),tube=(pts,r)=>{const g=new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),Math.max(24,pts.length*2),r,6,false),o=new THREE.Mesh(g,new THREE.MeshBasicMaterial({color:0xff1a1a,depthTest:false}));o.renderOrder=40;o.userData.mk=1;gz.add(o);return o},
   at=a=>cen.clone().addScaledVector(u,Math.cos(a)*R).addScaledVector(v,Math.sin(a)*R),N=48,arc=[];for(let i=0;i<=N;i++)arc.push(at(a0+(a1-a0)*i/N));
- tube(arc,.0035);const am=at((a0+a1)/2);tube([cen.clone(),am],.0022);const d=new THREE.Mesh(new THREE.SphereGeometry(.01,14,10),new THREE.MeshBasicMaterial({color:0x1a5cff,depthTest:false}));d.position.copy(cen);d.renderOrder=41;d.userData.mk=1;gz.add(d);
- tags.length=0;tags.push({v:cen.clone().add(am).multiplyScalar(.5),s:label});$('#mres').innerHTML=html}
-function radMeasure(h){const f=F/sc;if(rmode=='3'){pts.length>=3&&clrM();const p=h.point.clone(),d=new THREE.Mesh(new THREE.SphereGeometry(.009,12,8),new THREE.MeshBasicMaterial({color:0xff1a1a,depthTest:false}));d.position.copy(p);d.renderOrder=41;d.userData.mk=1;gz.add(d);dirty=true;pts.push({v:p});
+ tube(arc,tr);const am=at((a0+a1)/2);tube([cen.clone(),am],tr*.6);const d=new THREE.Mesh(new THREE.SphereGeometry(sr,14,10),new THREE.MeshBasicMaterial({color:0x1a5cff,depthTest:false}));d.position.copy(cen);d.renderOrder=41;d.userData.mk=1;gz.add(d);
+ tags.push({v:cen.clone().add(am).multiplyScalar(.5),s:label});$('#mres').innerHTML=html}
+function radMeasure(h){const f=F/sc;if(rmode=='3'){(pts.length>=3||tags.length>=3)&&clrM();const p=h.point.clone(),d=new THREE.Mesh(new THREE.SphereGeometry(.009,12,8),new THREE.MeshBasicMaterial({color:0xff1a1a,depthTest:false}));d.position.copy(p);d.renderOrder=41;d.userData.mk=1;gz.add(d);dirty=true;pts.push({v:p});
   if(pts.length<3){$('#mres').innerHTML=`<b>${pts.length}. nokta</b> alındı. Kavis çizgisi üzerinde <b>${pts.length+1}. noktaya</b> dokunun.`;return}
   const[a,b,c]=pts.map(x=>x.v),ab=b.clone().sub(a),ac=c.clone().sub(a),n=new THREE.Vector3().crossVectors(ab,ac),n2=n.lengthSq();if(n2<1e-16){clrM();$('#mres').innerHTML='<span style="color:#b45309">⚠ Üç nokta bir doğru üzerinde, yarıçap hesaplanamadı. Yeniden deneyin.</span>';return}
   const cc=a.clone().add(new THREE.Vector3().crossVectors(ab.clone().multiplyScalar(ac.lengthSq()).sub(ac.clone().multiplyScalar(ab.lengthSq())),n).multiplyScalar(1/(2*n2))),R=cc.distanceTo(a),u=a.clone().sub(cc).normalize(),v=new THREE.Vector3().crossVectors(n.clone().normalize(),u);
   const ang=p=>{const d=p.clone().sub(cc);return Math.atan2(d.dot(v),d.dot(u))},al=[0,ang(b),ang(c)].map(x=>{while(x>Math.PI)x-=2*Math.PI;while(x<-Math.PI)x+=2*Math.PI;return x}),a0=Math.min(...al),a1=Math.max(...al);
-  radShow(cc,R,a,u,v,a0,a1,`R ${(R*f).toFixed(1)} mm`,`<b>3 nokta ile yarıçap</b><br><span style="font-size:20px;font-weight:700;color:#d61f1f">R ${(R*f).toFixed(1)} mm</span> (Ø ${(2*R*f).toFixed(1)} mm)`);return}
- const m=h.object,r=radFit(m,h.faceIndex);clrM();if(!r){$('#mres').innerHTML='<span style="color:#b45309">⚠ Burada yuvarlak bir yüzey bulunamadı (düz yüzey). Kavisli kenara/yüzeye dokunun ya da “3 Nokta” modunu kullanın.</span>';return}
+  radShow(cc,R,a,u,v,a0,a1,'R'+rnum(R*f),`<b>3 nokta ile yarıçap</b><br><span style="font-size:20px;font-weight:700;color:#d61f1f">R ${(R*f).toFixed(1)} mm</span> (Ø ${(2*R*f).toFixed(1)} mm)`);return}
+ const m=h.object,r=radFit(m,h.faceIndex);if(tags.length>=3)clrM();if(!r){$('#mres').innerHTML='<span style="color:#b45309">⚠ Burada yuvarlak bir yüzey bulunamadı (düz yüzey). Kavisli kenara/yüzeye dokunun ya da “3 Nokta” modunu kullanın.</span>';return}
  const Rm=r.R*f,w=[];if(r.span<8)w.push('Kavis çok küçük bir açıda, sonuç belirsiz olabilir');if(r.rms/r.R>.03)w.push('Yüzey tam silindirik değil, değer yaklaşık');if(r.ratio>.2)w.push('Yüzey birden fazla yönde eğri (küre/karma), değer yaklaşık');
- radShow(r.cen,r.R,null,r.u,r.v,r.mid+r.o0,r.mid+r.o1,`R ${Rm.toFixed(1)} mm`,`<b>Parça:</b> ${nm(m.userData.k)}<br><span style="font-size:20px;font-weight:700;color:#d61f1f">R ${Rm.toFixed(1)} mm</span> (Ø ${(2*Rm).toFixed(1)} mm) · yay ${r.span.toFixed(0)}°`+(w.length?`<br><span style="color:#b45309">⚠ ${w.join('. ')}.</span>`:''))}
+ radShow(r.cen,r.R,null,r.u,r.v,r.mid+r.o0,r.mid+r.o1,'R'+rnum(Rm),`<b>Parça:</b> ${nm(m.userData.k)}<br><span style="font-size:20px;font-weight:700;color:#d61f1f">R ${Rm.toFixed(1)} mm</span> (Ø ${(2*Rm).toFixed(1)} mm) · yay ${r.span.toFixed(0)}°`+(w.length?`<br><span style="color:#b45309">⚠ ${w.join('. ')}.</span>`:''))}
 /* ---- araç çubuğu ---- */
 function resetTools(){detLocOff();noteAdd=false;setPen(false);showPl=true;tool=null;meas=false;$('#pop').style.display='none';clrM();const was=pl.some(q=>q.on);pl.forEach(q=>q.on=false);if(was)applyCut();hl()}
 let lejT='',SWL=null;function openLej(w){lejT=w;stage.classList.remove('side');stage.classList.add('lej');$('#lej').classList.toggle('wide',w=='lt');if(w=='ak'){$('#lej').innerHTML=PG.ak();PB.ak()}else if(w=='lt')lejLT();else lejUI();hl()}
@@ -434,7 +460,7 @@ addEventListener('pointermove',e=>{if(!drag)return;ray(e);const q=pl[ap],d1=new 
 addEventListener('pointerup',e=>{if(drag){drag=false;ctl.enabled=true;applyCut(true);return}if(!dn||e.target!==ren.domElement||Math.hypot(e.clientX-dn[0],e.clientY-dn[1])>6)return;ray(e);
  const a=pl.filter(q=>q.on),hs=rc.intersectObjects(allMeshes,false).filter(h=>h.object.visible&&mats(h.object)[0].opacity>.5&&!a.some(q=>q.p.distanceToPoint(h.point)<0));
  if(noteAdd&&cur=='3d'){if(hs[0])noteNew(hs[0]);return}
- if(meas){if(rmode){if(hs[0])radMeasure(hs[0]);return}const c=cutHit(a,hs[0]);if(c)addPt(c);else if(hs[0])addPt(hs[0]);return}
+ if(meas){if(rmode){const cc=a.length?cutHit(a,hs[0]):null;if(cc){if(rmode=='3')radMeasure({point:cc.point.clone()});else radSection(cc)}else if(hs[0])radMeasure(hs[0]);return}const c=cutHit(a,hs[0]);if(c)addPt(c);else if(hs[0])addPt(hs[0]);return}
  if(cur!='3d')return;if(hs[0])select(hs[0].object.userData.k,{tap:true});else if(sel.length)select([],{tap:true})});
 /* ---- kalem ve detay resmi ---- */
 const pen=$('#pen'),pc2=pen.getContext('2d');let ps=[];
