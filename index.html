@@ -153,7 +153,7 @@ scene.add(new THREE.HemisphereLight(0xffffff,0x8892a0,1.2));const dl=new THREE.D
 const ctl=new OrbitControls(cam,ren.domElement);ctl.enableDamping=true;ctl.zoomToCursor=true;ctl.mouseButtons.MIDDLE=THREE.MOUSE.ROTATE;
 let dirty=true,lastR=0;
 const fitSz=()=>{dirty=true;const w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)return;ren.setSize(w,h);cam.aspect=w/h;cam.updateProjectionMatrix()};new ResizeObserver(fitSz).observe(stage);
-let data={},parts={},sel=[],F=1,sc=1,BB=new THREE.Box3(),paint=false,dur={},allMeshes=[],cur='',mode='rot',tool=null,meas=false,pts=[],exv=0,TH={};try{dur=JSON.parse(localStorage.durum||'{}')}catch{}
+let zbx=false,data={},parts={},sel=[],F=1,sc=1,BB=new THREE.Box3(),paint=false,dur={},allMeshes=[],cur='',mode='rot',tool=null,meas=false,pts=[],exv=0,TH={};try{dur=JSON.parse(localStorage.durum||'{}')}catch{}
 const gz=new THREE.Group();scene.add(gz);const hid=new Set(),gho=new Set();let dimOn=true;
 const nm=k=>data.parts?.[k]?.ad||['NB85-MİSAFİR KABİN 202 ','505-91 MİSAFİR KABİN 202 KOMODİN_','NB85-MİSAFİR KABİN YATAK KOMODİN ','Yatak Komodin_','Yatak Komodin'].reduce((a,p)=>a.replace(p,''),k).replace(/_/g,' ').trim();
 const ACC=/BLUM|FASTMOUNT_PC|Lutron|SOCKET|Charger|FARŞ|Radyus|C\.RAY/i,PRT=/ÇEKMECE_v3|KARKAS/i;let tr={};try{tr=JSON.parse(localStorage.tur||'{}')}catch{}
@@ -445,7 +445,7 @@ function lejLT(){const L=$('#lej'),R=SWL;if(!R||!R.length){L.innerHTML='<h4>Malz
 function lejUI(){const M=data.malzemeler||{},U=new Set,g={};Object.values(data.parts||{}).forEach(p=>(p.yuz||[]).forEach(i=>U.add(i)));Object.keys(parts).forEach(k=>(data.parts?.[k]?.yuz||[]).forEach(id=>(g[id]??=[]).push(k)));
  const L=$('#lej');L.innerHTML=`<h4>Malzeme Lejantı</h4><button id="paint">${paint=='mat'?'Gerçek görünüme dön':'Modeli renklendir'}</button><div class="mg">${Object.entries(M).filter(([id,m])=>m.lib&&U.has(id)&&!ASTX(m)).map(([id,m])=>`<div class="mc" data-m="${id}">${m.gorsel?`<img src="${m.gorsel}">`:`<div class="ph" style="background:${m.renk}"></div>`}<b>${m.kod}-${m.ad.toLocaleUpperCase('tr')}</b><em>${m.en?m.en.toLocaleUpperCase('en'):''}</em></div>`).join('')}</div>`;
  L.querySelectorAll('[data-m]').forEach(li=>li.onclick=()=>select(g[li.dataset.m]||[]));$('#paint',L).onclick=e=>{paint=paint=='mat'?false:'mat';repaint();e.target.textContent=paint=='mat'?'Gerçek görünüme dön':'Modeli renklendir'}}
-function hl(){$$('#tb [data-t],#tl [data-t]').forEach(b=>{const t=b.dataset.t;b.classList.toggle('on',t==tool||t==mode||(t=='tree'&&stage.classList.contains('side')&&cur!='ov')||(t=='lej'&&stage.classList.contains('lej')&&lejT=='ml')||(t=='akp'&&stage.classList.contains('lej')&&lejT=='ak')||(t=='mlt'&&stage.classList.contains('lej')&&lejT=='lt'))})}
+function hl(){$$('#tb [data-t],#tl [data-t]').forEach(b=>{const t=b.dataset.t;b.classList.toggle('on',t==tool||t==mode||(t=='fit'&&zbx)||(t=='tree'&&stage.classList.contains('side')&&cur!='ov')||(t=='lej'&&stage.classList.contains('lej')&&lejT=='ml')||(t=='akp'&&stage.classList.contains('lej')&&lejT=='ak')||(t=='mlt'&&stage.classList.contains('lej')&&lejT=='lt'))})}
 function setMode(m){mode=m;ctl.mouseButtons.LEFT=m=='pan'?THREE.MOUSE.PAN:THREE.MOUSE.ROTATE;ctl.touches.ONE=m=='pan'?THREE.TOUCH.PAN:THREE.TOUCH.ROTATE;hl()}
 function popUI(){const p=$('#pop'),q=pl[ap];p.style.display=tool&&tool!='view'?'block':'none';p.classList.toggle('vc',!!tool&&tool!='view');
  if(tool=='view'){p.innerHTML=`<b>Görünüm</b><div style="margin:6px 0">Modelde bir yüze dokunun: o yüze dik bakılır (üst yüz → üst görünüm, yan yüz → yan görünüm).</div><div class="row"><button data-vw="i">İzometrik</button></div>`;
@@ -459,7 +459,7 @@ function popUI(){const p=$('#pop'),q=pl[ap];p.style.display=tool&&tool!='view'?'
  if(tool=='not'){const L=nAll();p.innerHTML=`<b>Önemli Notlar</b> <small>(${L.length})</small><div class="row"><button id="nAdd" class="${noteAdd?'on':''}">${noteAdd?'Modele dokunun…':'＋ Not ekle'}</button><button id="nHide">${noteHide?'Notları göster':'Notları gizle'}</button>${NT.length?'<button id="nExp">JSON kopyala</button>':''}</div><small>${noteAdd?'Notu koymak istediğiniz yere modele dokunun.':'Ünlem işaretine dokunarak notu açıp kapatın.'}</small>`;
   $('#nAdd').onclick=()=>{noteAdd=!noteAdd;popUI()};$('#nHide').onclick=()=>{noteHide=!noteHide;dirty=true;popUI()};
   if($('#nExp'))$('#nExp').onclick=()=>{const t=JSON.stringify(NT);(navigator.clipboard?.writeText(t)||Promise.reject()).then(()=>alert('Notlar kopyalandı. komodin.json içindeki "notlar" alanına yapıştırırsanız tüm cihazlarda görünür.')).catch(()=>prompt('Kopyalayın:',t))}}}
-$$('#tb [data-t],#tl [data-t]').forEach(b=>b.onclick=()=>{const t=b.dataset.t;if(t=='rot'||t=='pan')return setMode(t);if(t=='mtp')return go('mt');if(t=='fit')return focus(sel);
+$$('#tb [data-t],#tl [data-t]').forEach(b=>b.onclick=()=>{const t=b.dataset.t;if(t=='rot'||t=='pan')return setMode(t);if(t=='mtp')return go('mt');if(t=='fit'){zbx=!zbx;ren.domElement.style.cursor=zbx?'zoom-in':'';return hl()}
  if(t=='tree'){if(cur=='ov')return go('3d');stage.classList.remove('lej');stage.classList.toggle('side');return hl()}
  if(t=='lej'||t=='akp'||t=='mlt'){const w=t=='lej'?'ml':t=='akp'?'ak':'lt';if(cur=='ov')go('3d');if(stage.classList.contains('lej')&&lejT==w){stage.classList.remove('lej');return hl()}openLej(w);return hl()}
  const was=tool;resetTools();if(was!=t){tool=t;meas=t=='olc';pl.forEach(z=>{if(!z.v)z.v=mid(z.i)});popUI();hl();applyCut()}});
@@ -467,6 +467,20 @@ const rc=new THREE.Raycaster();let dn=null,drag=false;const ray=e=>{const r=ren.
 ren.domElement.addEventListener('pointerdown',e=>{dn=[e.clientX,e.clientY];if(tool=='cut'&&hd3.visible){ray(e);if(rc.intersectObject(hd3).length){drag=true;ctl.enabled=false}}},true);
 addEventListener('pointermove',e=>{if(!drag)return;ray(e);const q=pl[ap],d1=new THREE.Vector3().setComponent(q.i,1),d2=rc.ray.direction,w0=hd3.position.clone().sub(rc.ray.origin),b=d1.dot(d2),den=1-b*b;if(den<1e-6)return;
  const s=(b*d2.dot(w0)-d1.dot(w0))/den;q.v=Math.min(BB.max.getComponent(q.i),Math.max(BB.min.getComponent(q.i),q.v+s));applyCut();const c=$('#cv');if(c)c.value=Math.round((q.v-BB.min.getComponent(q.i))/sc*F)});
+
+/* ---- sağ tuşla kare çizip yakınlaştır ---- */
+{const el=ren.domElement,bx=document.createElement('div');bx.style.cssText='position:fixed;border:2px dashed #1a64d6;background:#1a64d622;display:none;z-index:6;pointer-events:none';document.body.appendChild(bx);let z0=null,anim=0;
+ 
+ el.addEventListener('pointerdown',e=>{if(!zbx||e.button!=0)return;e.stopImmediatePropagation();e.preventDefault();z0=[e.clientX,e.clientY];ctl.enabled=false;try{el.setPointerCapture(e.pointerId)}catch{}},true);
+ el.addEventListener('pointermove',e=>{if(!z0)return;const x=Math.min(z0[0],e.clientX),y=Math.min(z0[1],e.clientY);Object.assign(bx.style,{display:'block',left:x+'px',top:y+'px',width:Math.abs(e.clientX-z0[0])+'px',height:Math.abs(e.clientY-z0[1])+'px'})},true);
+ el.addEventListener('pointerup',e=>{if(!z0||e.button!=0)return;e.stopImmediatePropagation();const a=z0;z0=null;bx.style.display='none';ctl.enabled=true;
+  const r=el.getBoundingClientRect(),x0=Math.min(a[0],e.clientX),x1=Math.max(a[0],e.clientX),y0=Math.min(a[1],e.clientY),y1=Math.max(a[1],e.clientY);if(x1-x0<8||y1-y0<8)return;
+  const cx=(x0+x1)/2,cy=(y0+y1)/2;rc.setFromCamera(new THREE.Vector2((cx-r.left)/r.width*2-1,-(cy-r.top)/r.height*2+1),cam);
+  const hs=rc.intersectObjects(allMeshes,false).filter(h=>h.object.visible&&mats(h.object)[0].opacity>.5);let P;if(hs[0])P=hs[0].point.clone();else{const fw=cam.getWorldDirection(new THREE.Vector3());P=rc.ray.origin.clone().addScaledVector(rc.ray.direction,Math.max(cam.position.distanceTo(ctl.target),1)/Math.max(rc.ray.direction.dot(fw),.2))}
+  const k=Math.max((x1-x0)/r.width,(y1-y0)/r.height),dir=cam.getWorldDirection(new THREE.Vector3()),d0=cam.position.distanceTo(P),d1=Math.max(d0*k*1.05,ctl.minDistance||0.01);
+  const pf=cam.position.clone(),tf=ctl.target.clone(),pt=P.clone().addScaledVector(dir,-d1),t0=performance.now(),id=++anim;
+  const st=()=>{if(id!=anim)return;const u=Math.min(1,(performance.now()-t0)/350),w=u*u*(3-2*u);cam.position.lerpVectors(pf,pt,w);ctl.target.lerpVectors(tf,P,w);ctl.update();if(u<1)requestAnimationFrame(st)};st()},true);
+}
 addEventListener('pointerup',e=>{if(drag){drag=false;ctl.enabled=true;applyCut(true);return}if(!dn||e.target!==ren.domElement||Math.hypot(e.clientX-dn[0],e.clientY-dn[1])>6)return;ray(e);
  const a=pl.filter(q=>q.on),hs=rc.intersectObjects(allMeshes,false).filter(h=>h.object.visible&&mats(h.object)[0].opacity>.5&&!a.some(q=>q.p.distanceToPoint(h.point)<0));
  if(noteAdd&&cur=='3d'){if(hs[0])noteNew(hs[0]);return}
