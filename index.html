@@ -150,7 +150,7 @@ const stage=$('#stage'),scene=new THREE.Scene();scene.background=new THREE.Color
 const cam=new THREE.PerspectiveCamera(40,1,.001,100);cam.position.set(1.2,.8,1.6);
 const ren=new THREE.WebGLRenderer({antialias:true,stencil:true});ren.localClippingEnabled=true;ren.setPixelRatio(Math.min(devicePixelRatio,1.5));stage.prepend(ren.domElement);
 scene.add(new THREE.HemisphereLight(0xffffff,0x8892a0,1.2));const dl=new THREE.DirectionalLight(0xffffff,1.6);dl.position.set(2,3,2);scene.add(dl);
-const ctl=new OrbitControls(cam,ren.domElement);ctl.enableDamping=true;
+const ctl=new OrbitControls(cam,ren.domElement);ctl.enableDamping=true;ctl.zoomToCursor=true;ctl.mouseButtons.MIDDLE=THREE.MOUSE.ROTATE;
 let dirty=true,lastR=0;
 const fitSz=()=>{dirty=true;const w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)return;ren.setSize(w,h);cam.aspect=w/h;cam.updateProjectionMatrix()};new ResizeObserver(fitSz).observe(stage);
 let data={},parts={},sel=[],F=1,sc=1,BB=new THREE.Box3(),paint=false,dur={},allMeshes=[],cur='',mode='rot',tool=null,meas=false,pts=[],exv=0,TH={};try{dur=JSON.parse(localStorage.durum||'{}')}catch{}
