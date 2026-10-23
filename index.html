@@ -447,7 +447,7 @@ function lejUI(){const M=data.malzemeler||{},U=new Set,g={};Object.values(data.p
  L.querySelectorAll('[data-m]').forEach(li=>li.onclick=()=>select(g[li.dataset.m]||[]));$('#paint',L).onclick=e=>{paint=paint=='mat'?false:'mat';repaint();e.target.textContent=paint=='mat'?'Gerçek görünüme dön':'Modeli renklendir'}}
 function hl(){$$('#tb [data-t],#tl [data-t]').forEach(b=>{const t=b.dataset.t;b.classList.toggle('on',t==tool||t==mode||(t=='fit'&&zbx)||(t=='tree'&&stage.classList.contains('side')&&cur!='ov')||(t=='lej'&&stage.classList.contains('lej')&&lejT=='ml')||(t=='akp'&&stage.classList.contains('lej')&&lejT=='ak')||(t=='mlt'&&stage.classList.contains('lej')&&lejT=='lt'))})}
 function setMode(m){mode=m;ctl.mouseButtons.LEFT=m=='pan'?THREE.MOUSE.PAN:THREE.MOUSE.ROTATE;ctl.touches.ONE=m=='pan'?THREE.TOUCH.PAN:THREE.TOUCH.ROTATE;hl()}
-function popUI(){const p=$('#pop'),q=pl[ap];p.style.display=tool&&tool!='view'?'block':'none';p.classList.toggle('vc',!!tool&&tool!='view');p.classList.toggle('hz',tool=='cut');
+function popUI(){const p=$('#pop'),q=pl[ap];p.style.display=tool&&tool!='view'?'block':'none';p.classList.toggle('vc',!!tool&&tool!='view');p.classList.toggle('hz',!!tool&&tool!='view');
  if(tool=='view'){p.innerHTML=`<b>Görünüm</b><div style="margin:6px 0">Modelde bir yüze dokunun: o yüze dik bakılır (üst yüz → üst görünüm, yan yüz → yan görünüm).</div><div class="row"><button data-vw="i">İzometrik</button></div>`;
   p.querySelectorAll('[data-vw]').forEach(b=>b.onclick=()=>{const d=Math.max(cam.position.distanceTo(ctl.target),1);ctl.target.set(0,0,0);cam.position.set(.6,.45,.8).normalize().multiplyScalar(d)});
   }
