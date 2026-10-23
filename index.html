@@ -267,12 +267,13 @@ let exU=null;const sm01=t=>{t=Math.min(1,Math.max(0,t));return t*t*(3-2*t)};
 function exYatak(){const V=THREE.Vector3,ks=Object.keys(parts),isB=k=>/BAŞLIK/i.test(k)||(parts[k].anc||[]).some(n=>/BAŞLIK/i.test(n)&&!/YATAK-BAŞLIK/i.test(n)),bk=ks.filter(isB),gk=ks.filter(k=>!isB(k));
  if(!bk.length||!gk.some(k=>/_UST_5(?![0-9])/.test(k)))return null;
  const bg=new THREE.Box3();gk.forEach(k=>bg.union(parts[k].bb));const C=bg.getCenter(new V()),S=bg.getSize(new V()),H=S.clone().multiplyScalar(.5),L=Math.max(S.x,S.z),bb=new THREE.Box3();bk.forEach(k=>bb.union(parts[k].bb));
- const sgH=bb.getCenter(new V()).z>=C.z?1:-1,G={baslik:bk};const add=(id,k)=>(G[id]??=[]).push(k);
+ const sgH=bb.getCenter(new V()).z>=C.z?1:-1,G={baslik:bk},yb=bg.min.y+.28*S.y;const add=(id,k)=>(G[id]??=[]).push(k);
  for(const k of gk){const a=k+'|'+(parts[k].anc||[]).join('|'),c=parts[k].bb.getCenter(new V());
   if(/_UST_5(?![0-9])/.test(k))add('slab',k);else if(/ŞİLTE_3/i.test(a)&&!/MENFEZ/i.test(a))add('sheet',k);
+  else if(/baza/i.test(a)||(c.y<yb&&!/travers/i.test(k)))add('baza',k);
   else if(/TRAVERS köse|travers/i.test(k)){const nx=(c.x-C.x)/H.x,nz=(c.z-C.z)/H.z;if(/TRAVERS köse/i.test(k)||Math.abs(nx)>.7)add(nx<0?'L':'R',k);else if(nz*-sgH>.7)add('F',k)}}
  const U=[],mk=(id,ax,sg,mag,w)=>{const kk=G[id];if(!kk||!kk.length)return;const b=new THREE.Box3();kk.forEach(k=>b.union(parts[k].bb));U.push({id,ks:kk,bb:b,c:b.getCenter(new V()),s:b.getSize(new V()),ax,sg,d:0,w,mag})};
- mk('slab',1,1,.30*L,[0,.3]);mk('sheet',1,1,.60*L,[.1,.5]);mk('baslik',2,sgH,.40*L,[.3,.65]);mk('L',0,-1,.24*L,[.45,.8]);mk('R',0,1,.24*L,[.55,.9]);mk('F',2,-sgH,.24*L,[.65,1]);
+ mk('slab',1,1,.30*L,[0,.3]);mk('sheet',1,1,.60*L,[.1,.5]);mk('baslik',2,sgH,.40*L,[.3,.65]);mk('L',0,-1,.24*L,[.45,.8]);mk('R',0,1,.24*L,[.55,.9]);mk('F',2,-sgH,.24*L,[.65,1]);mk('baza',1,-1,.30*L,[0,.3]);
  return U}
  function exBuild(){const Y=exYatak();if(Y)return Y;const V=THREE.Vector3,C=BB.getCenter(new V()),E=BB.getSize(new V()),Em=Math.max(E.x,E.y,E.z),g={};
  for(const[k,p]of Object.entries(parts)){const a=(p.anc||[]).join('|');let id=k;if(/ÇEKMECE/i.test(a+'|'+k))id='#cek';else{const m=/FASTMOUNTLU.ARKALIK.(\d)/i.exec(a+'|'+k);if(m)id='#ark'+m[1];else if(/ELEKTR/i.test(a))id='#elk'}(g[id]??=[]).push(k)}
@@ -301,7 +302,7 @@ function montaj(){if(mAnim){montajStop();return}if(cur!='3d')go('3d');exU??=exBu
  const V=THREE.Vector3,ks=Object.keys(parts).filter(k=>!hid.has(k));if(!ks.length)return;const YAT=exU.some(u=>u.id=='slab'),bb=new THREE.Box3();ks.forEach(k=>bb.union(parts[k].bb));const C=bb.getCenter(new V()),S=bb.getSize(new V()),L=Math.max(S.x,S.z),um={};
  const SK=new Set();if(YAT)exU.forEach((u,i)=>u.ks.forEach(k=>{if(/GÖVDE_travers_\d/i.test(k)&&!/travers3/i.test(k)){SK.add(k);return}um[k]=i}));
  const off=k=>{if(SK.has(k))return new V(0,.22*L,0);if(YAT&&um[k]!=null){const u=exU[um[k]],d=new V();d.setComponent(u.ax,u.sg*u.mag);return d}const p=parts[k],s=p.bb.getSize(new V()),c=p.bb.getCenter(new V()).sub(C),a=s.x<=s.y&&s.x<=s.z?0:s.y<=s.z?1:2,d=new V();d.setComponent(a,(a==1||c.getComponent(a)>=0?1:-1)*.22*L);return d};
- const body=ks.filter(k=>um[k]==null).sort((a,b)=>parts[a].bb.min.y-parts[b].bb.min.y||parts[a].bb.min.x-parts[b].bb.min.x||parts[a].bb.min.z-parts[b].bb.min.z),steps=body.length?[body.map(k=>[k,new V(0,.3*L,0)])]:[];
+ const body=ks.filter(k=>um[k]==null).sort((a,b)=>parts[a].bb.min.y-parts[b].bb.min.y||parts[a].bb.min.x-parts[b].bb.min.x||parts[a].bb.min.z-parts[b].bb.min.z),steps=body.length?[body.map(k=>[k,new V(0,.3*L,0)])]:[];if(YAT){const u=exU.find(u=>u.id=='baza');if(u){const g=u.ks.filter(k=>!hid.has(k)&&um[k]===exU.indexOf(u)).map(k=>[k,new V(0,.3*L,0)]);if(g.length)steps.unshift(g)}}
  if(YAT)for(const I of[[5],[4,3],[2],[1],[0]]){const g=[];I.forEach(i=>{const u=exU[i];if(u)u.ks.filter(k=>!hid.has(k)&&um[k]===i).forEach(k=>g.push([k,off(k)]))});if(g.length)steps.push(g)}
  const n=steps.length,gap=n<12?900:Math.min(90,Math.max(14,14000/n)),dur=n<12?1100:700;let last=performance.now();mAnim={raf:0,t:0,p:false};const pb=$('#mps');if(pb){pb.style.display='';pb.textContent='⏸ Durakla'}const sp=$('#msp');if(sp){sp.style.display='';sp.value=String(MSP);sp.onchange=()=>{MSP=+sp.value||1;try{localStorage.mspd=MSP}catch{}}}allMeshes.forEach(m=>{m.visible=false;m.userData.mShown=false});const b=$('#mnt');if(b)b.textContent='■ Durdur';
  const tick=()=>{if(!mAnim)return;const now=performance.now();if(!mAnim.p)mAnim.t+=(now-last)*MSP;last=now;const t=mAnim.t;let done=true;steps.forEach((st,i)=>{const ts=i*gap;if(t<ts){done=false;return}const k=Math.min(1,(t-ts)/dur);if(k<1)done=false;const e=1-Math.pow(1-k,3);st.forEach(([key,d])=>parts[key].meshes.forEach(m=>{m.userData.mShown=true;m.visible=true;m.position.copy(m.parent.worldToLocal(m.userData.w0.clone().addScaledVector(d,1-e)))}))});dirty=true;if(done)montajStop();else mAnim.raf=requestAnimationFrame(tick)};
