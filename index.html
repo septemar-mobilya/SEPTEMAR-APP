@@ -144,13 +144,13 @@ const svg=(d,s=22)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="n
 IC.nt='M5 4h14v16H5zM8 9h8M8 13h8M8 17h5';IC.rvi='M4 12a8 8 0 1 0 3-6M4 4v4h4';
 const NAV=[['ov','Genel Bakış','home'],['3d','3D Model','cube'],['pl','Fabrika','fac'],['tr','Teknik Resim','draw'],['ko','Kabindeki Konumu','pin'],['ur','Üretim Durumu','rule'],['kk','Kalite Kontrol','shield'],['pk','Paketleme','box'],['sv','Sevkiyat','truck'],['mt','Üretim Notları','clip'],['dk','İlgili Dokümanlar','doc'],['nt','Notlar','nt'],['rv','Revizyonlar','rvi']];
 $('#items').innerHTML=NAV.map(([v,t,i])=>`<button data-v="${v}" title="${t}">${svg(IC[i])}<span>${t}</span></button>`).join('');
-$('#tl').innerHTML=[['rot','Döndür','rot'],['pan','Kaydır','pan'],['fit','Yakınlaştır','zoom'],['view','Görünüm','cube']].map(([t,l,i])=>`<button data-t="${t}">${svg(IC[i],20)}${l}</button>`).join('');
+$('#tl').innerHTML=[['rot','Döndür','rot'],['pan','Kaydır','pan'],['fit','Yakınlaştır','zoom'],['fitall','Sığdır','zoom'],['view','Görünüm','cube']].map(([t,l,i])=>`<button data-t="${t}">${svg(IC[i],20)}${l}</button>`).join('');
 $('#tb').innerHTML=[['cut','Kesit','cut'],['olc','Ölçü','rule'],['not','Önemli Notlar','warn'],['lej','Malzeme Lejantı','pal'],['akp','Aksesuar Listesi','gear'],['mlt','Malzeme Listesi','list'],['mtp','Üretim Notları','clip'],['tree','Parça Ağacı','tree']].map(([t,l,i])=>`<button data-t="${t}">${svg(IC[i],20)}${l}</button>`).join('');
 const stage=$('#stage'),scene=new THREE.Scene();scene.background=new THREE.Color(0xeef0f3);
 const cam=new THREE.PerspectiveCamera(40,1,.001,100);cam.position.set(1.2,.8,1.6);
 const ren=new THREE.WebGLRenderer({antialias:true,stencil:true});ren.localClippingEnabled=true;ren.setPixelRatio(Math.min(devicePixelRatio,1.5));stage.prepend(ren.domElement);
 scene.add(new THREE.HemisphereLight(0xffffff,0x8892a0,1.2));const dl=new THREE.DirectionalLight(0xffffff,1.6);dl.position.set(2,3,2);scene.add(dl);
-const ctl=new OrbitControls(cam,ren.domElement);ctl.enableDamping=true;ctl.zoomToCursor=true;ctl.mouseButtons.MIDDLE=THREE.MOUSE.ROTATE;
+const ctl=new OrbitControls(cam,ren.domElement);ctl.enableDamping=true;ctl.zoomToCursor=false;ren.domElement.addEventListener('wheel',()=>{ctl.zoomToCursor=true},true);ren.domElement.addEventListener('pointerdown',e=>{if(e.pointerType!='mouse')ctl.zoomToCursor=false},true);ctl.mouseButtons.MIDDLE=THREE.MOUSE.ROTATE;
 let dirty=true,lastR=0;
 const fitSz=()=>{dirty=true;const w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)return;ren.setSize(w,h);cam.aspect=w/h;cam.updateProjectionMatrix()};new ResizeObserver(fitSz).observe(stage);
 let zbx=false,data={},parts={},sel=[],F=1,sc=1,BB=new THREE.Box3(),paint=false,dur={},allMeshes=[],cur='',mode='rot',tool=null,meas=false,pts=[],exv=0,TH={};try{dur=JSON.parse(localStorage.durum||'{}')}catch{}
@@ -459,7 +459,7 @@ function popUI(){const p=$('#pop'),q=pl[ap];p.style.display=tool&&tool!='view'?'
  if(tool=='not'){const L=nAll();p.innerHTML=`<b>Önemli Notlar</b> <small>(${L.length})</small><div class="row"><button id="nAdd" class="${noteAdd?'on':''}">${noteAdd?'Modele dokunun…':'＋ Not ekle'}</button><button id="nHide">${noteHide?'Notları göster':'Notları gizle'}</button>${NT.length?'<button id="nExp">JSON kopyala</button>':''}</div><small>${noteAdd?'Notu koymak istediğiniz yere modele dokunun.':'Ünlem işaretine dokunarak notu açıp kapatın.'}</small>`;
   $('#nAdd').onclick=()=>{noteAdd=!noteAdd;popUI()};$('#nHide').onclick=()=>{noteHide=!noteHide;dirty=true;popUI()};
   if($('#nExp'))$('#nExp').onclick=()=>{const t=JSON.stringify(NT);(navigator.clipboard?.writeText(t)||Promise.reject()).then(()=>alert('Notlar kopyalandı. komodin.json içindeki "notlar" alanına yapıştırırsanız tüm cihazlarda görünür.')).catch(()=>prompt('Kopyalayın:',t))}}}
-$$('#tb [data-t],#tl [data-t]').forEach(b=>b.onclick=()=>{const t=b.dataset.t;if(t=='rot'||t=='pan')return setMode(t);if(t=='mtp')return go('mt');if(t=='fit'){zbx=!zbx;ren.domElement.style.cursor=zbx?'zoom-in':'';return hl()}
+$$('#tb [data-t],#tl [data-t]').forEach(b=>b.onclick=()=>{const t=b.dataset.t;if(t=='rot'||t=='pan')return setMode(t);if(t=='mtp')return go('mt');if(t=='fitall'){zbx=false;ren.domElement.style.cursor='';hl();return fitAll()}if(t=='fit'){zbx=!zbx;ren.domElement.style.cursor=zbx?'zoom-in':'';return hl()}
  if(t=='tree'){if(cur=='ov')return go('3d');stage.classList.remove('lej');stage.classList.toggle('side');return hl()}
  if(t=='lej'||t=='akp'||t=='mlt'){const w=t=='lej'?'ml':t=='akp'?'ak':'lt';if(cur=='ov')go('3d');if(stage.classList.contains('lej')&&lejT==w){stage.classList.remove('lej');return hl()}openLej(w);return hl()}
  const was=tool;resetTools();if(was!=t){tool=t;meas=t=='olc';pl.forEach(z=>{if(!z.v)z.v=mid(z.i)});popUI();hl();applyCut()}});
@@ -471,7 +471,7 @@ addEventListener('pointermove',e=>{if(!drag)return;ray(e);const q=pl[ap],d1=new 
 /* ---- sağ tuşla kare çizip yakınlaştır ---- */
 {const el=ren.domElement,bx=document.createElement('div');bx.style.cssText='position:fixed;border:2px dashed #1a64d6;background:#1a64d622;display:none;z-index:6;pointer-events:none';document.body.appendChild(bx);let z0=null,anim=0;
  
- el.addEventListener('pointerdown',e=>{if(!zbx||e.button!=0)return;e.stopImmediatePropagation();e.preventDefault();z0=[e.clientX,e.clientY];ctl.enabled=false;try{el.setPointerCapture(e.pointerId)}catch{}},true);
+ el.addEventListener('pointerdown',e=>{if(zbx&&z0&&e.pointerType!='mouse'){z0=null;bx.style.display='none';ctl.enabled=true;return}if(!zbx||e.button!=0)return;if(e.pointerType!='mouse'&&!e.isPrimary)return;e.stopImmediatePropagation();e.preventDefault();z0=[e.clientX,e.clientY];ctl.enabled=false;try{el.setPointerCapture(e.pointerId)}catch{}},true);
  el.addEventListener('pointermove',e=>{if(!z0)return;const x=Math.min(z0[0],e.clientX),y=Math.min(z0[1],e.clientY);Object.assign(bx.style,{display:'block',left:x+'px',top:y+'px',width:Math.abs(e.clientX-z0[0])+'px',height:Math.abs(e.clientY-z0[1])+'px'})},true);
  el.addEventListener('pointerup',e=>{if(!z0||e.button!=0)return;e.stopImmediatePropagation();const a=z0;z0=null;bx.style.display='none';ctl.enabled=true;
   const r=el.getBoundingClientRect(),x0=Math.min(a[0],e.clientX),x1=Math.max(a[0],e.clientX),y0=Math.min(a[1],e.clientY),y1=Math.max(a[1],e.clientY);if(x1-x0<8||y1-y0<8)return;
