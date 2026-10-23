@@ -493,6 +493,7 @@ function setPen(on){penOn=on;pen.style.display=on?'block':'none';if(on){pen.widt
 const pp=e=>{const r=pen.getBoundingClientRect();return[e.clientX-r.left,e.clientY-r.top]};
 pen.addEventListener('pointerdown',e=>{pc2.clearRect(0,0,pen.width,pen.height);ps=[pp(e)];pen.setPointerCapture(e.pointerId)});
 pen.addEventListener('pointermove',e=>{if(!ps.length)return;const p=pp(e),l=ps[ps.length-1];ps.push(p);pc2.strokeStyle='#e11';pc2.lineWidth=3;pc2.lineCap='round';pc2.beginPath();pc2.moveTo(l[0],l[1]);pc2.lineTo(p[0],p[1]);pc2.stroke()});
+pen.addEventListener('wheel',e=>{e.preventDefault();ren.domElement.dispatchEvent(new WheelEvent('wheel',{deltaX:e.deltaX,deltaY:e.deltaY,deltaMode:e.deltaMode,clientX:e.clientX,clientY:e.clientY,ctrlKey:e.ctrlKey,bubbles:true,cancelable:true}))},{passive:false});
 pen.addEventListener('pointerup',()=>{if(ps.length<8){ps=[];return}const cx=ps.reduce((a,p)=>a+p[0],0)/ps.length,cy=ps.reduce((a,p)=>a+p[1],0)/ps.length,r=ps.reduce((a,p)=>a+Math.hypot(p[0]-cx,p[1]-cy),0)/ps.length;ps=[];pc2.clearRect(0,0,pen.width,pen.height);if(r<14)return;
  pc2.strokeStyle='#e11';pc2.lineWidth=3;pc2.beginPath();pc2.arc(cx,cy,r,0,7);pc2.stroke();setTimeout(()=>{makeDetail(cx,cy,r,penIso?{iso:true}:{})},60)});
 function loopsOf(sg){const key=(x,y,z)=>Math.round(x*1e6)+','+Math.round(y*1e6)+','+Math.round(z*1e6),adj=new Map(),P=new Map(),add=(a,b)=>{(adj.get(a)||adj.set(a,[]).get(a)).push(b)};
