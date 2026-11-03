@@ -502,7 +502,18 @@
        "kod": "68-152",
        "ad": "MD-UD-BD Merdiven Kovası İmalatı",
        "grup": "Merdiven Kovası",
-       "tip": "merdiven"
+       "tip": "merdiven",
+       "modeller": [
+        {
+         "ad": "MD LOBİ DUVAR PANELLERİ"
+        },
+        {
+         "ad": "UD LOBİ DUVAR PANELLERİ"
+        },
+        {
+         "ad": "BD LOBİ DUVAR PANELLERİ"
+        }
+       ]
       }
      ]
     }
