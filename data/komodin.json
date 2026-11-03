@@ -505,13 +505,74 @@
        "tip": "merdiven",
        "modeller": [
         {
+         "grup": "DUVAR PANELLERİ",
+         "kod": "68-191",
          "ad": "MD LOBİ DUVAR PANELLERİ"
         },
         {
+         "grup": "DUVAR PANELLERİ",
+         "kod": "68-156",
          "ad": "UD LOBİ DUVAR PANELLERİ"
         },
         {
+         "grup": "DUVAR PANELLERİ",
+         "kod": "68-188",
          "ad": "BD LOBİ DUVAR PANELLERİ"
+        },
+        {
+         "grup": "TAVAN-GRİD-KARKAS",
+         "kod": "68-189",
+         "ad": "MD LOBİ TAVAN-GRİD-KARKAS"
+        },
+        {
+         "grup": "TAVAN-GRİD-KARKAS",
+         "kod": "68-154",
+         "ad": "UD LOBİ TAVAN-GRİD-KARKAS"
+        },
+        {
+         "grup": "TAVAN-GRİD-KARKAS",
+         "kod": "68-186",
+         "ad": "BD LOBİ TAVAN-GRİD-KARKAS"
+        },
+        {
+         "grup": "TAVAN-GRİD-KARKAS",
+         "kod": "68-154",
+         "ad": "UD KORİDOR TAVAN-GRİD-KARKAS"
+        },
+        {
+         "grup": "TAVAN-GRİD-KARKAS",
+         "kod": "68-186",
+         "ad": "BD KORİDOR TAVAN-GRİD-KARKAS"
+        },
+        {
+         "grup": "YANGIN KAPI FLAPLARI",
+         "kod": "68-153",
+         "ad": "MD LOBİ BAŞ KAPI"
+        },
+        {
+         "grup": "YANGIN KAPI FLAPLARI",
+         "kod": "68-153",
+         "ad": "UD LOBİ BAŞ KAPI"
+        },
+        {
+         "grup": "YANGIN KAPI FLAPLARI",
+         "kod": "68-153",
+         "ad": "BD LOBİ BAŞ KAPI"
+        },
+        {
+         "grup": "YANGIN KAPI FLAPLARI",
+         "kod": "68-153",
+         "ad": "MD LOBİ KIÇ KAPI"
+        },
+        {
+         "grup": "YANGIN KAPI FLAPLARI",
+         "kod": "68-153",
+         "ad": "UD LOBİ KIÇ KAPI"
+        },
+        {
+         "grup": "YANGIN KAPI FLAPLARI",
+         "kod": "68-153",
+         "ad": "BD LOBİ KIÇ KAPI"
         }
        ]
       }
