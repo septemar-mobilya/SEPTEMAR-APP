@@ -343,7 +343,7 @@ function outlines(){dirty=true;const bb=new THREE.Box3();pl.forEach(q=>{const o=
  o.geometry.dispose();o.geometry=new THREE.BufferGeometry();o.geometry.setAttribute('position',new THREE.Float32BufferAttribute(seg,3))})}
 let olT=0,lastOl=0;function schedOl(f){clearTimeout(olT);const n=performance.now();if(f||n-lastOl>110){lastOl=n;outlines()}else olT=setTimeout(()=>{lastOl=performance.now();outlines()},130)}
 function applyCut(f){dirty=true;schedOl(f);{const a0=pl.filter(q=>q.on).map(q=>q.p);fm.forEach(m=>{m.material.clippingPlanes=a0.length?a0:null;m.material.needsUpdate=true})}const a=pl.filter(q=>q.on);
- pl.forEach(q=>{q.p.normal.set(0,0,0).setComponent(q.i,q.s);q.p.constant=-q.s*q.v;if(q.on&&!q.sg)mkStencil(q);q.sg?.forEach(g=>g.visible=q.on);q.cap.visible=q.on;q.quad.visible=q.on&&showPl;
+ pl.forEach(q=>{q.p.normal.set(0,0,0).setComponent(q.i,q.s);q.p.constant=-q.s*q.v;if(q.on&&!q.sg)mkStencil(q);if(q.sg){const bx=new THREE.Box3();allMeshes.forEach((m,j)=>{let v=q.on;if(v){bx.setFromObject(m);v=bx.min.getComponent(q.i)<=q.v+1e-4&&bx.max.getComponent(q.i)>=q.v-1e-4}q.sg[j].visible=v})}q.cap.visible=q.on;q.quad.visible=q.on&&showPl;
   q.cap.material.clippingPlanes=a.filter(o=>o!==q).map(o=>o.p);q.cap.material.needsUpdate=true;q.cap.position.set(0,0,0).setComponent(q.i,q.v);q.quad.position.copy(q.cap.position)});
  allMeshes.forEach(m=>mats(m).forEach(x=>{x.clippingPlanes=a.length?a.map(q=>q.p):null;x.needsUpdate=true}));
  const q=pl[ap];hd3.visible=!!q.on&&tool=='cut'&&showPl;if(q.on)hd3.position.copy(BB.getCenter(new THREE.Vector3())).setComponent(q.i,q.v)}
