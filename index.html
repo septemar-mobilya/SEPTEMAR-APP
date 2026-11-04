@@ -223,6 +223,12 @@ async function boot(){
   (parts[k]??={meshes:[]}).meshes.push(o);parts[k].anc??=(()=>{const a=[];for(let x=o.parent;x&&x!==root;x=x.parent)a.push(N(x));return a})();allMeshes.push(o);o.userData.k=k;
   o.material=Array.isArray(o.material)?o.material.map(x=>x.clone()):o.material.clone();mats(o).forEach(x=>{x.userData.c0=x.color&&x.color.clone();x.userData.m0=x.map});o.userData.w0=o.getWorldPosition(new THREE.Vector3())});
  for(const p of Object.values(parts)){const bb=new THREE.Box3();p.meshes.forEach(m=>bb.expandByObject(m));p.bb=bb.clone();p.dir=bb.getCenter(new THREE.Vector3()).normalize();p.dim=bb.getSize(new THREE.Vector3()).toArray().map(v=>Math.round(v/sc*F*10)/10).sort((a,b)=>b-a)}
+ if(allMeshes.length>800){/* ağır model: şeffaflık geçişini ve parlak kaplamaları kapat, hareket sırasında küçük parçaları gizle */
+  allMeshes.forEach(o=>mats(o).forEach(x=>{if(x.transmission>0){x.transmission=0;x.transparent=true;x.opacity=Math.min(x.opacity,.28);x.depthWrite=false}if(x.sheen)x.sheen=0;if(x.thickness)x.thickness=0;x.needsUpdate=true}));
+  ren.setPixelRatio(Math.min(devicePixelRatio,1));ren.setSize(stage.clientWidth,stage.clientHeight);
+  const bz=new THREE.Box3(),sv=new THREE.Vector3(),small=allMeshes.filter(o=>{bz.setFromObject(o);bz.getSize(sv);return Math.max(sv.x,sv.y,sv.z)<.03});let hidden=[],tm=0;
+  ctl.addEventListener('start',()=>{clearTimeout(tm);if(hidden.length)return;hidden=small.filter(o=>o.visible);hidden.forEach(o=>o.visible=false);dirty=true});
+  ctl.addEventListener('end',()=>{clearTimeout(tm);tm=setTimeout(()=>{hidden.forEach(o=>{o.visible=true});hidden=[];dirty=true},350)})}
  if(SW)swApply(SW,OP&&OP.kod);
  init();
  if(OP){try{sessionStorage.removeItem('kmdOpen')}catch{}try{resumeWork(OP)}catch(e){}}
