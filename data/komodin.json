@@ -573,6 +573,21 @@
          "grup": "YANGIN KAPI FLAPLARI",
          "kod": "68-153",
          "ad": "BD LOBİ KIÇ KAPI"
+        },
+        {
+         "grup": "ASANSÖR GİYDİRME",
+         "kod": "",
+         "ad": "MD ASANSÖR GİYDİRME"
+        },
+        {
+         "grup": "ASANSÖR GİYDİRME",
+         "kod": "",
+         "ad": "UD ASANSÖR GİYDİRME"
+        },
+        {
+         "grup": "ASANSÖR GİYDİRME",
+         "kod": "",
+         "ad": "BD ASANSÖR GİYDİRME"
         }
        ],
        "glb": "models/68-152.glb"
