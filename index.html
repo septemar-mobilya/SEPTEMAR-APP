@@ -168,7 +168,7 @@ function demo(){const g=new THREE.Group(),W=(c,m=.6,mt=0)=>new THREE.MeshStandar
  [['01_Sol Yan',[.018,.5,.4],[-.241,0,0],0],['02_Sağ Yan',[.018,.5,.4],[.241,0,0],0],['03_Üst Panel',[.5,.018,.4],[0,.241,0],0],['04_Alt Panel',[.5,.018,.4],[0,-.241,0],0],['05_Arka Panel',[.464,.464,.008],[0,0,-.196],0],['08_Çekmece Ön Üst',[.46,.2,.02],[0,.12,.2],0],['09_Çekmece Ön Alt',[.46,.2,.02],[0,-.1,.2],0]].forEach(([n,s,p])=>{const g0=new THREE.Group();g0.name='KOMODIN-'+n;const m=new THREE.Mesh(new THREE.BoxGeometry(...s),W(0xb08a5a));m.position.set(...p);g0.add(m);g.add(g0)});return g}
 let ALT=0,ARM='',MP='',SWU='',UPK=new Set(),UPD=null,MPK='';const DEFM=()=>data.model||'models/komodin.glb';
 /* ---- SWOOD raporu (XML) → parça verisi ---- */
-const swM=s=>String(s==null?'':s).trim().replace(/\s+/g,' ').toLocaleUpperCase('tr-TR').replace(/İ/g,'I'),swT=s=>String(s==null?'':s).trim().replace(/\s+/g,' ').toLocaleUpperCase('tr-TR'),swN=v=>{const n=parseFloat(v);return isFinite(n)?n:0};
+const swM=s=>String(s==null?'':s).trim().replace(/\s+/g,' ').toLocaleUpperCase('tr-TR').replace(/İ/g,'I').replace(/(TRAVERS KÖSE)_.*$/,'$1'),swT=s=>String(s==null?'':s).trim().replace(/\s+/g,' ').toLocaleUpperCase('tr-TR'),swN=v=>{const n=parseFloat(v);return isFinite(n)?n:0};
 function swParse(txt){const d=new DOMParser().parseFromString(txt,'application/xml'),cut=new Map(),eb=new Map();
  [...d.getElementsByTagName('GENERIC')].forEach(g=>{const f={};[...g.children].forEach(c=>f[c.tagName]=c.textContent);const dst=f.SHEET_DESTINATION;
   if(dst==='KESİM_LİSTESİ'){const r={no:f.STR18||'',ad:f.STR2||f.STR1||'',mal:(f.STR3||'').trim(),boy:swN(f.STR4),en:swN(f.STR5),kal:swN(f.STR6),adet:swN(f.STR7)||swN(f.QTY)||1,top:f.STR12&&f.STR12!='X'?f.STR12.trim():'',bot:f.STR13&&f.STR13!='X'?f.STR13.trim():'',parkur:(f.STR25||'').trim(),desen:(f.STR24||'').trim()};cut.set(swT(r.ad),r)}
@@ -254,7 +254,7 @@ function info(){const el=$('#info');if(noteSide){uretRender();return}stage.class
  if(SWL&&SWL.length){if(!sel.length){el.innerHTML='<h3>Parça seçilmedi</h3>Modelden bir parçaya dokunun.';return}
   if(sel.length>1){el.innerHTML=`<h3>${sel.length} parça seçili</h3>`;return}
   const k=sel[0],a=swT(k.replace(/-\d+$/,'')),r=SWL.find(x=>swM(x.ad)==swM(a)),n=v=>{const x=parseFloat(v);return isFinite(x)?String(x):'0'},R=(l,v)=>`<div><span>${l}</span><b>${esc(v)}</b></div>`,O=(l,v)=>v?R(l,v):'';
-  if(!r){el.innerHTML=`<h3>${nm(k)}</h3><div class="mu">Bu parça malzeme listesinde yok.</div>`;return}
+  if(!r){el.innerHTML=`<h3>${nm(k)}</h3><div class="refl"><span>REF NO:</span><b>—</b></div><div class="mu">Bu parça PDF malzeme listesinde yok.</div>`;return}
   el.innerHTML=`<h3>${esc(r.ad)}</h3>`+`<div class="refl"><span>REF NO:</span><b>${r.ref!=null?r.ref:SWL.indexOf(r)+1}</b>${r.grup?`<em>${esc(r.grup)}</em>`:''}</div>`+R('Malzeme',r.mal||'—')+R('Adet',r.adet)+`<div class="o3"><div><small>Net boy</small><b>${n(r.boy)}</b></div><div><small>Net genişlik</small><b>${n(r.en)}</b></div><div><small>Kalınlık</small><b>${n(r.kal)}</b></div></div>`+R('Desen takibi',r.desen||'—')+R('Su yönü',r.su||'—')+O('Kaplama (üst)',((data.parts?.[k]||{}).sw||{}).top)+O('Kaplama (alt)',((data.parts?.[k]||{}).sw||{}).bot)+O('Bantlı kenar (ön)',r.on)+O('Bantlı kenar (arka)',r.arka)+O('Bantlı kenar (sol)',r.sol)+O('Bantlı kenar (sağ)',r.sag)+O('Makina parkuru',r.parkur);return}
  if(!sel.length){el.innerHTML='<h3>Parça seçilmedi</h3>Listeden seç veya QR okut.';return}
  if(sel.length>1){el.innerHTML=`<h3>${sel.length} parça seçili</h3>`;return}
