@@ -467,6 +467,7 @@
        "tip": "yatak",
        "glb": "models/68-109.glb",
        "swood": "data/68-109.xml",
+       "etiket": "MASTER YTK",
        "plan": {
         "kabin": "Tekne Sahibi Kamara",
         "gorsel": "data/plan-68-109.jpg",
