@@ -471,7 +471,14 @@
         "kabin": "Tekne Sahibi Kamara",
         "gorsel": "data/plan-68-109.jpg",
         "viewBox": "0 0 1517 883",
-        "kutular": [],
+        "kutular": [
+         {
+          "x": 577,
+          "y": 63,
+          "w": 370,
+          "h": 464
+         }
+        ],
         "not": "Yatağın yeri"
        },
        "olcu": {
