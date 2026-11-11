@@ -805,7 +805,7 @@ function go(n,o={}){if(noteSide){noteSide=false;stage.classList.remove('ntm')}if
  if(!d3){$('#pg').innerHTML=PG[n]();$('#pg').scrollTop=0;PB[n]?.();if(n=='ov')$('#ovs').appendChild(stage)}
  chip();exUI();info();list($('#q').value);hl();notiUp();kisiUp();setTimeout(fitSz,0)}
 function setFull(on){if(on&&cur!='3d')go('3d');$('#v3').classList.toggle('full',on);$('#fs').textContent=on?'✕':'⛶';if(on)document.documentElement.requestFullscreen?.().catch(()=>{});else if(document.fullscreenElement)document.exitFullscreen?.();setTimeout(fitSz,60)}
-$('#fs').onclick=()=>{if(ltFull){ltFull=false;lejHalf();return}setFull(!$('#v3').classList.contains('full'))};document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&$('#v3').classList.contains('full'))setFull(false)});
+$('#fs').onclick=()=>{if(ltFull){ltFull=false;stage.classList.remove('lej');hl();lejHalf();return}setFull(!$('#v3').classList.contains('full'))};document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&$('#v3').classList.contains('full'))setFull(false)});
 $$('#items [data-v]').forEach(b=>b.onclick=()=>b.dataset.v=='3d'?toMain():go(b.dataset.v));$('#bk').onclick=toHome;$('#logo').onclick=toHome;$('#logo').style.cursor='pointer';
 function init(){const I=data.info||{},tot=Object.keys(parts).length,s=Object.keys(parts).some(k=>done(k)>0);
  $('#bc').textContent=[I.Proje,I.Kabin,data.title].filter(Boolean).join('  ›  ');chip();
