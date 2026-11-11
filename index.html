@@ -795,7 +795,7 @@ ak:()=>{const e=Object.values(accGroups());$$('.ac').forEach(c=>c.onclick=ev=>{i
  ml:()=>{const g={};Object.keys(parts).forEach(k=>(data.parts?.[k]?.yuz||[]).forEach(id=>(g[id]??=[]).push(k)));$$('[data-m]').forEach(li=>li.onclick=()=>select(g[li.dataset.m]||[]));$('#paint').onclick=()=>{paint=paint=='mat'?false:'mat';repaint();if(paint)go('3d');else go('ml')}},
 
  ur:()=>{const sv=(id,v)=>{AA[id]=Math.max(0,Math.min(100,Math.round(v)));try{localStorage.asama=JSON.stringify(AA)}catch{}go('ur')};$$('[data-d]').forEach(b=>b.onclick=()=>sv(b.dataset.s,pc(b.dataset.s)+ +b.dataset.d));$$('[data-n]').forEach(i=>i.onchange=()=>sv(i.dataset.n,+i.value))}};
-function go(n,o={}){if(noteSide){noteSide=false;stage.classList.remove('ntm')}if(!dpAllow(n))n='ov';if(n!='3d'&&bandK)bandOff(true);try{speechSynthesis.cancel()}catch{}resetTools();cur=n;try{mtabUI()}catch{}$$('#items [data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v==n));const d3=n=='3d';$('#v3').classList.remove('full');$('#fs').textContent='⛶';$('#slot').appendChild(stage);
+function go(n,o={}){if(noteSide){noteSide=false;stage.classList.remove('ntm')}if(n=='ov'&&dpAllow('3d'))n='3d';if(!dpAllow(n))n='ov';if(n!='3d'&&bandK)bandOff(true);try{speechSynthesis.cancel()}catch{}resetTools();cur=n;try{mtabUI()}catch{}$$('#items [data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v==n));const d3=n=='3d';$('#v3').classList.remove('full');$('#fs').textContent='⛶';$('#slot').appendChild(stage);
  $('#v3').style.display=d3?'grid':'none';$('#pg').style.display=d3?'none':'block';stage.classList.remove('side');stage.classList.remove('lej');stage.classList.toggle('mini',n=='ov');
  if(!d3){$('#pg').innerHTML=PG[n]();$('#pg').scrollTop=0;PB[n]?.();if(n=='ov')$('#ovs').appendChild(stage)}
  chip();exUI();info();list($('#q').value);hl();notiUp();kisiUp();setTimeout(fitSz,0)}
@@ -1158,7 +1158,7 @@ const dpPlan=()=>!DP||DP.id=='yonetim'||!!DP.plan;
 const PILS=['ov','3d','tr','ko','nt','rv','mt'],pilOn=()=>{try{return sessionStorage.getItem('kmdPil')=='1'}catch{return false}},PIL0={tekne:'ICE68',kabin:'Tekne Sahibi Kamara',kod:'68-109'},PIL1={tekne:'ICE68',kabin:'MD-UD-BD Merdiven Kovası',kod:'68-152'};
 function pilotOpen(P=PIL0){try{sessionStorage.setItem('kmdPil','1');sessionStorage.setItem('kmdOpen',JSON.stringify(P))}catch{}$('#ana').style.display='none';resumeWork(P);dpApply()}
 const dpAllow=n=>pilOn()?(n=='ov'||PILS.includes(n)):(!DP||!DP.sayfalar||n=='ov'||DP.sayfalar.includes(n));
-function dpApply(){$$('#items [data-v]').forEach(b=>b.style.display=dpAllow(b.dataset.v)?'':'none');const t=$('#tpDp');if(t)t.textContent=DP&&DP.ad?'· '+DP.ad:''}
+function dpApply(){$$('#items [data-v]').forEach(b=>b.style.display=dpAllow(b.dataset.v)&&!(b.dataset.v=='ov'&&dpAllow('3d'))?'':'none');const t=$('#tpDp');if(t)t.textContent=DP&&DP.ad?'· '+DP.ad:''}
 function dpSet(d){DP=d;try{d?sessionStorage.setItem('kmdDept',d.id):sessionStorage.removeItem('kmdDept')}catch{}try{['kmdLog','kmdUser','kmdUsta','kmdPY','kmdEkip','kmdPend'].forEach(k=>sessionStorage.removeItem(k))}catch{}dpApply();anaUI();atmClose()}
 function dpAsk(d){if(DPT&&DPT.pin===false){dpSet(d.id=='yonetim'?{id:'yonetim',ad:'Yönetim',sayfalar:null}:d);return}const m=$('#dpm'),i=$('#dpi'),e=$('#dpe');$('#dpt').textContent=d.ad;i.value='';e.textContent='';m.style.display='flex';setTimeout(()=>i.focus(),50);
  const done=()=>m.style.display='none';
