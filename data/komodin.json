@@ -467,6 +467,13 @@
        "tip": "yatak",
        "glb": "models/68-109.glb",
        "swood": "data/68-109.xml",
+       "plan": {
+        "kabin": "Tekne Sahibi Kamara",
+        "gorsel": "data/plan-68-109.jpg",
+        "viewBox": "0 0 1517 883",
+        "kutular": [],
+        "not": "Yatağın yeri"
+       },
        "olcu": {
         "silte": "68-109 YATAK_YATAK GÖVDE_5_UST_5"
        },
