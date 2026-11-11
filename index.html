@@ -820,7 +820,10 @@ const bed=(v,o={})=>{
   out+=`<polygon points="${[[x0,y0],[x1,y0],[x1,y1],[x0,y1]].map(p=>P(p[0],p[1],z1)).join(' ')}" fill="${top}" stroke="#0003" stroke-width=".5" stroke-linejoin="round"/>`;
  }
  return out};
-const ptr=(d,x,y,press,op=1)=>op<=.01?'':`<g transform="translate(${x.toFixed(1)},${y.toFixed(1)})" opacity="${op.toFixed(2)}">${d=='tb'?`<circle r="${press?7:11}" fill="#1d6fd8" fill-opacity="${press?.55:.25}" stroke="#1d6fd8" stroke-width="1.6"/><g transform="rotate(-28) scale(${press?.94:1})" filter="url(#gds)"><rect x="-5" y="-1" width="10" height="30" rx="5" fill="#f4cfae" stroke="#b78a63" stroke-width="1"/><rect x="-5" y="22" width="10" height="9" rx="3" fill="#f4cfae" stroke="#b78a63" stroke-width="1"/></g>`:`<g transform="scale(${press?.82:1})"><path d="M0 0v15l4-3.4 3.2 7 3-1.4-3.2-6.8 5-.4z" fill="#fff" stroke="#111" stroke-width="1.1" filter="url(#gds)"/></g>`}</g>`;
+const fng=(len,rot)=>`<g transform="rotate(${rot})"><path d="M-6 7a6 6 0 0 1 12 0V${len}h-12z" fill="url(#gsk)" stroke="#d9a982" stroke-width=".8"/><ellipse cx="0" cy="6.5" rx="3.3" ry="4" fill="#fff" opacity=".5"/></g>`;
+const halo=(x,y,press)=>`<circle cx="${x}" cy="${y}" r="${press?8:12}" fill="#1d6fd8" fill-opacity="${press?.5:.2}" stroke="#1d6fd8" stroke-width="1.5"/>`;
+const ptr=(d,x,y,press,op=1)=>op<=.01?'':d=='tb'?`<g opacity="${op.toFixed(2)}">${halo(x.toFixed(1),y.toFixed(1),press)}<g transform="translate(${(x+(press?0:4)).toFixed(1)},${(y+(press?0:9)).toFixed(1)}) scale(${press?.96:1.06})" filter="url(#gds)"><g transform="rotate(-18)"><ellipse cx="2" cy="40" rx="14" ry="14" fill="url(#gsk)" stroke="#d9a982" stroke-width=".8"/><ellipse cx="-13" cy="34" rx="5" ry="9" transform="rotate(20 -13 34)" fill="url(#gsk)" stroke="#d9a982" stroke-width=".8"/></g>${fng(34,-18)}</g></g>`:`<g transform="translate(${x.toFixed(1)},${y.toFixed(1)})" opacity="${op.toFixed(2)}"><g transform="scale(${press?.82:1})"><path d="M0 0v15l4-3.4 3.2 7 3-1.4-3.2-6.8 5-.4z" fill="#fff" stroke="#111" stroke-width="1.1" filter="url(#gds)"/></g></g>`;
+const ptr2=(x1,x2,y,press,op=1)=>{if(op<=.01)return'';const m=(x1+x2)/2,w=Math.abs(x2-x1)/2+16;return `<g opacity="${op.toFixed(2)}">${halo(x1.toFixed(1),y,press)}${halo(x2.toFixed(1),y,press)}<g filter="url(#gds)" transform="translate(0,${press?0:7})"><ellipse cx="${m.toFixed(1)}" cy="${y+38}" rx="${w.toFixed(1)}" ry="15" fill="url(#gsk)" stroke="#d9a982" stroke-width=".8"/><g transform="translate(${x1.toFixed(1)},${y})">${fng(28,26)}</g><g transform="translate(${x2.toFixed(1)},${y})">${fng(38,-12)}</g></g></g>`};
 const rip=(x,y,t,t0)=>{const u=(t-t0)/.55;return u<0||u>1?'':`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${(4+u*14).toFixed(1)}" fill="none" stroke="#1d6fd8" stroke-width="2" opacity="${(1-u).toFixed(2)}"/>`};
 const path=(t,k)=>{if(t<=k[0][0])return[k[0][1],k[0][2]];for(let i=1;i<k.length;i++)if(t<=k[i][0]){const u=E(t,k[i-1][0],k[i][0]);return[L(k[i-1][1],k[i][1],u),L(k[i-1][2],k[i][2],u)]}const e=k[k.length-1];return[e[1],e[2]]};
 const pr=(t,a)=>t>=a&&t<a+.32;
@@ -840,14 +843,14 @@ const topics=[
   const v={yaw:32+360*A,sc:.72*(1+.5*z),ox:cx+48*pn,oy:108};
   const wA=win(t,.3,4,.3),wB=win(t,4.3,8,.3),wC=win(t,8.3,11.7,.3),bl=.55+.45*Math.sin(t*10);
   let o=`<clipPath id="gc${k}"><rect x="${pc?0:6}" y="34" width="${pc?238:308}" height="150"/></clipPath><g clip-path="url(#gc${k})">${bed(v)}</g>`;
-  o+=pill('DÖNDÜR · '+(pc?'sol tuş basılı sürükle':'tek parmak sürükle'),pc?10:44,pc?212:232,wA)+pill('KAYDIR · '+(pc?'sağ tuş basılı sürükle':'iki parmak birlikte sürükle'),pc?10:44,pc?212:232,wB)+pill('YAKINLAŞTIR · '+(pc?'fare tekerleği':'iki parmağı aç / kapat'),pc?10:44,pc?212:232,wC);
+  o+=pill('DÖNDÜR · '+(pc?'sol tuş basılı sürükle':'tek parmak sürükle'),pc?10:44,pc?212:232,wA)+pill('KAYDIR · '+(pc?'sağ tuş basılı sürükle':'baş + işaret parmağı birlikte sürükle'),pc?10:44,pc?212:232,wB)+pill('YAKINLAŞTIR · '+(pc?'fare tekerleği':'baş + işaret parmağını aç / kapat'),pc?10:44,pc?212:232,wC);
   const xa=L(50,190,A)+(pc?0:0),xb=L(80,200,pn*1+0);
-  const fy=150;
+  const fy=126;
   if(pc){
    o+=`<g transform="translate(0,30)"><rect x="250" y="30" width="42" height="62" rx="21" fill="#fff" stroke="#8d97a8" stroke-width="1.5"/><line x1="250" y1="58" x2="292" y2="58" stroke="#8d97a8" stroke-width="1.2"/><line x1="271" y1="30" x2="271" y2="58" stroke="#8d97a8" stroke-width="1.2"/><path d="M251 57V51a20 20 0 0 1 20-20v26z" fill="#1d6fd8" opacity="${(wA*bl).toFixed(2)}"/><path d="M271 31a20 20 0 0 1 20 20v6h-20z" fill="#1d6fd8" opacity="${(wB*bl).toFixed(2)}"/><rect x="267" y="38" width="8" height="15" rx="4" fill="#1d6fd8" opacity="${(wC*bl).toFixed(2)}"/><rect x="267" y="38" width="8" height="15" rx="4" fill="none" stroke="#8d97a8" stroke-width="1.2"/><path d="M271 20l-4 5h8zM271 68l-4-5h8z" fill="#1d6fd8" opacity="${wC.toFixed(2)}"/><text x="271" y="108" text-anchor="middle" font-size="7" fill="#6a7890">FARE</text></g>`;
    o+=ptr('pc',xa,fy,true,wA)+ptr('pc',L(80,200,pn),fy,true,wB)+ptr('pc',118,fy,false,wC);
   }else{
-   o+=ptr('tb',xa,fy,true,wA)+ptr('tb',L(80,200,pn)-14,fy,true,wB)+ptr('tb',L(80,200,pn)+14,fy,true,wB)+ptr('tb',cx-(12+34*z),fy,true,wC)+ptr('tb',cx+(12+34*z),fy,true,wC);
+   o+=ptr('tb',xa,fy+2.5*Math.sin(t*3),true,wA)+ptr2(L(80,200,pn)-14,L(80,200,pn)+14,fy,true,wB)+ptr2(cx-(12+34*z),cx+(12+34*z),fy,true,wC);
   }
   return o}},
 {t:'Kesit al',sub:'Modeli istediğin yerden kes',s:['<b>Aç:</b> alttaki <b>Kesit</b> düğmesine bas.','<b>Kes:</b> yatağın ucuna bas ve sürükle. Kesit düzlemi parmağınla (fareyle) birlikte ilerler, model gerçekten o düzlemden kesilir. Belirli bir yüze basarsan kesit tam o yüzeyden alınır. Tek kesit vardır; başka yüze basarsan düzlem oraya geçer.','<b>Araçlar:</b> üstteki siyah çubukta <b>2D detay al</b>, <b>3D detay al</b>, <b>Ölçülendir</b> ve <b>Ters çevir</b> var.','<b>Kapat:</b> düzlemi göz simgesiyle gizleyebilirsin. Kesiti kapatmak için Kesit düğmesine tekrar bas.'],D:9.5,
