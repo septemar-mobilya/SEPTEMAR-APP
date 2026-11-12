@@ -534,7 +534,7 @@ function radShow(cen,R,dotAng,u,v,a0,a1,html){dirty=true;if(RCL.length>=3)clrM()
   at=a=>cen.clone().addScaledVector(u,Math.cos(a)*R).addScaledVector(v,Math.sin(a)*R),N=48,arc=[];for(let i=0;i<=N;i++)arc.push(at(a0+(a1-a0)*i/N));
  const o=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(arc),64,tr,6,false),new THREE.MeshBasicMaterial({color:0xff1a1a,depthTest:false}));o.renderOrder=40;o.userData.mk=1;gz.add(o);
  const dp=at(angClamp(a0,a1,dotAng)),d=new THREE.Mesh(new THREE.SphereGeometry(sr,14,10),new THREE.MeshBasicMaterial({color:0x111111,depthTest:false}));d.position.copy(dp);d.renderOrder=41;d.userData.mk=1;gz.add(d);
- const Rm=R*f,C=cen.clone().sub(BB.min).multiplyScalar(f),rows=[['Yarıçap:','<b style="color:#d61f1f">R'+rnum(Rm)+'mm</b>'],['Çap:',(2*Rm).toFixed(3)+'mm'],['Merkez:',`${Math.round(C.x)}mm,${Math.round(C.y)}mm,${Math.round(C.z)}mm`]],
+ const Rm=R*f,C=cen.clone().sub(BB.min).multiplyScalar(f),rows=[['Yarıçap:','<b style="color:#d61f1f">R'+rnum(Rm)+'mm</b>']],
   el=document.createElement('div');el.style.cssText='position:absolute;border:1px solid #666;background:#fff;font:15px/1.4 system-ui,sans-serif;color:#111;box-shadow:0 1px 5px #0004;white-space:nowrap';
  el.innerHTML='<table style="border-collapse:collapse">'+rows.map(([a,b])=>`<tr><td style="background:#d9d9d9;padding:2px 8px;border:1px solid #888">${a}</td><td style="padding:2px 8px;border:1px solid #888">${b}</td></tr>`).join('')+'</table>';
  rclEnsure().appendChild(el);RCL.push({el,v:dp});$('#mres').innerHTML=html}
@@ -564,7 +564,7 @@ let RLAST=null;function radMeasure(h){const f=F/sc;if(rmode=='3'){(pts.length>=3
  const rG=radFit(m,h.faceIndex,h.point,1),rL=radFit(m,h.faceIndex,h.point);
  let r=rG;if(rL&&(!rG||(rL.R<rG.R/3&&rL.rms/rL.R<.03)||(rL.tris.length>=12&&rL.rms/rL.R<(rG.rms/rG.R)*.75&&rL.R<rG.R*1.02)))r=rL;
  const add=x=>{if(ok(x)&&!C.some(c=>Math.abs(c.R-x.R)<.1*x.R))C.push({r:x,R:x.R})};add(r);add(rG);add(rL&&rL.tris.length>=6&&rL.rms/rL.R<.05?rL:null);
- if(!C.length)return false;
+ if(!C.length)return false;C.length=1;
  const same=RLAST&&RLAST.m===m&&RLAST.p.distanceTo(h.point)<.012;RLAST={m,p:h.point.clone(),i:same?(RLAST.i+1)%C.length:0};clrM();const c=C[RLAST.i],more=C.length>1?`<br><small>Başka yüzey mi? Aynı yere tekrar dokunun (${RLAST.i+1}/${C.length}).</small>`:'';
  if(c.q){const q=c.q,Rm=q.R*f;radShow(q.cen,q.R,q.dotA,q.u,q.v,q.a0,q.a1,`<b>Parça:</b> ${nm(m.userData.k)}<br><span style="font-size:20px;font-weight:700;color:#d61f1f">R ${Rm.toFixed(1)} mm</span> (Ø ${(2*Rm).toFixed(1)} mm)`+(q.n<6?'<br><span style="color:#b45309">⚠ Yay az noktadan oluşuyor, değer yaklaşık.</span>':'')+more);if(q.tris.length)radHL(m,q.tris);return true}
  if(c.e){const re=c.e,Rm=re.R*f;radShow(re.cen,re.R,re.dotA,re.u,re.v,re.a0,re.a1,`<b>Kenar yayı:</b> ${nm(m.userData.k)}<br><span style="font-size:20px;font-weight:700;color:#d61f1f">R ${Rm.toFixed(1)} mm</span> (Ø ${(2*Rm).toFixed(1)} mm)`+(re.n<6?'<br><span style="color:#b45309">⚠ Yay az noktadan oluşuyor, değer yaklaşık.</span>':'')+more);return true}
