@@ -496,6 +496,35 @@ function radFit(m,t0,hp,nog){const T=radTopo(m),{vid,vp,tn,em}=T,MIN=.003,MAX=.7
  const mid=Math.atan2(pr.reduce((a,[x,y])=>a+Math.sin(Math.atan2(y-cy,x-cx)),0),pr.reduce((a,[x,y])=>a+Math.cos(Math.atan2(y-cy,x-cx)),0)),offs=pr.map(([x,y])=>{let d=Math.atan2(y-cy,x-cx)-mid;while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;return d}),o0=Math.min(...offs),o1=Math.max(...offs),zm=pr.reduce((a,p)=>a+p[2],0)/n;
  const zs=pr.map(p=>p[2]),zlo=Math.min(...zs),zhi=Math.max(...zs),tz=hp?hp.clone().sub(o).dot(ax):zm,ze=Math.abs(tz-zlo)<=Math.abs(tz-zhi)?zlo:zhi,cen=o.clone().addScaledVector(u,cx).addScaledVector(v,cy).addScaledVector(ax,ze),hd=hp?hp.clone().sub(o):null,dotA=hd?Math.atan2(hd.dot(v)-cy,hd.dot(u)-cx):mid+(o0+o1)/2;
  return{R,rms,span:(o1-o0)*180/Math.PI,ratio,cen,u,v,ax,mid,o0,o1,dotA,tris:[...vis]}}
+function radProf(m,h,f){/* dokunulan yerde yüzeyin eksenini bulur, eksene dik kesit alır, kesit çizgisinde dokunulan noktayı içeren en uzun daire yayını uydurur */
+ const T=radTopo(m),{vid,vp,tn,em}=T,W=m.matrixWorld,nT=vid.length/3|0,cache=new Map(),G=id=>{let x=cache.get(id);if(!x){x=new THREE.Vector3(vp[3*id],vp[3*id+1],vp[3*id+2]).applyMatrix4(W);cache.set(id,x)}return x},p=h.point,t0=h.faceIndex;
+ const tc=new Float32Array(nT);for(let t=0;t<nT;t++){const a=G(vid[3*t]),b=G(vid[3*t+1]),c=G(vid[3*t+2]);tc[t]=Math.hypot((a.x+b.x+c.x)/3-p.x,(a.y+b.y+c.y)/3-p.y,(a.z+b.z+c.z)/3-p.z)}
+ let best=null;
+ for(const rho of [4,8,16,32,64,130]){const RH=rho/f,C3=[[0,0,0],[0,0,0],[0,0,0]];let cnt=0;for(let t=0;t<nT;t++)if(tc[t]<RH){cnt++;const n=new THREE.Vector3(tn[3*t],tn[3*t+1],tn[3*t+2]).transformDirection(W),x=[n.x,n.y,n.z];for(let i=0;i<3;i++)for(let j=0;j<3;j++)C3[i][j]+=x[i]*x[j]}
+  if(cnt<4)continue;const E=eig3(C3);if(E[0].l/Math.max(E[2].l,1e-12)>.06||E[1].l/Math.max(E[2].l,1e-12)<.04)continue;
+  const ax=E[0].v.clone().normalize(),u=new THREE.Vector3().crossVectors(ax,Math.abs(ax.y)<.9?new THREE.Vector3(0,1,0):new THREE.Vector3(1,0,0)).normalize(),v=new THREE.Vector3().crossVectors(ax,u),dd=id=>G(id).clone().sub(p).dot(ax);
+  /* kesit çizgisi: üçgenden üçgene yürü */
+  const cross=t=>{const o=[];for(let e=0;e<3;e++){const a=vid[3*t+e],b=vid[3*t+(e+1)%3],da=dd(a),db=dd(b);if((da>=0)!==(db>=0))o.push([a,b,da,db])}return o},
+   pt=(a,b,da,db)=>{const k=da/(da-db);return G(a).clone().lerp(G(b),k)};
+  const c0=cross(t0);if(c0.length!=2)continue;
+  const walk=(t,ex)=>{const out=[];let cur=t,e=ex;for(let i=0;i<600;i++){const [a,b,da,db]=e;out.push(pt(a,b,da,db));const key=a<b?a*1e7+b:b*1e7+a,l=em.get(key);if(!l||l.length!=2)break;const nx=l[0]==cur?l[1]:l[0],cr=cross(nx);if(cr.length!=2)break;const o=cr.find(q=>!((q[0]==a&&q[1]==b)||(q[0]==b&&q[1]==a)));if(!o)break;cur=nx;e=o;if(nx==t0)break}return out},
+   A=walk(t0,c0[0]),B=walk(t0,c0[1]).reverse(),P3=[...B,p.clone(),...A],i0=B.length;
+  if(P3.length<5)continue;
+  const P2=P3.map(q=>{const d=q.clone().sub(p);return[d.dot(u),d.dot(v)]}),fit=(lo,hi)=>{const Q=P2.slice(lo,hi+1),k=kasa(Q);return k};
+  const ok=(lo,hi)=>{const k=fit(lo,hi);if(!k||!isFinite(k.R)||k.R<=0)return null;const Q=P2.slice(lo,hi+1);let mx=0;for(const[x,y]of Q)mx=Math.max(mx,Math.abs(Math.hypot(x-k.cx,y-k.cy)-k.R));return mx<=.03*k.R&&k.R<2000/f?k:null};
+  let lo=Math.max(0,i0-2),hi=Math.min(P2.length-1,i0+2),k=ok(lo,hi);if(!k)continue;
+  for(let g=0;g<400;g++){let moved=false;if(lo>0&&ok(lo-1,hi)){lo--;moved=true}if(hi<P2.length-1&&ok(lo,hi+1)){hi++;moved=true}if(!moved)break}
+  k=ok(lo,hi);if(!k)continue;
+  const angs=P2.slice(lo,hi+1).map(([x,y])=>Math.atan2(y-k.cy,x-k.cx)),a0r=angs[0];let un=[0];for(let i=1;i<angs.length;i++){let d=angs[i]-angs[i-1];while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;un.push(un[i-1]+d)}
+  const span=Math.abs(un[un.length-1])*180/Math.PI;if(span<18||hi-lo<4)continue;
+  const sc2={rho,R:k.R,cx:k.cx,cy:k.cy,span,u,v,ax,a0:a0r+Math.min(...un),a1:a0r+Math.max(...un),dotA:Math.atan2(-k.cy,-k.cx),n:hi-lo+1,o:p};
+  /* aday seçimi: en küçük çevrede, yeterince uzun ve temiz yay */
+  if(!best||(span>=best.span*1.0&&best.span<40))best=sc2;if(best===sc2&&span>=40)break}
+ if(!best)return null;const b=best,cen=p.clone().addScaledVector(b.u,b.cx).addScaledVector(b.v,b.cy);
+ /* yüz: eksene dik daire üzerinde kalan üçgenler */
+ const rd=id=>{const d=G(id).clone().sub(cen),z=d.dot(b.ax);return Math.abs(Math.hypot(d.x-b.ax.x*z,d.y-b.ax.y*z,d.z-b.ax.z*z)-b.R)<=.09*b.R},ang=id=>{const d=G(id).clone().sub(cen);return Math.atan2(d.dot(b.v),d.dot(b.u))},inR=a=>{let d=a-(b.a0+b.a1)/2;while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;return Math.abs(d)<=(b.a1-b.a0)/2+.35},ti=t=>[0,1,2].every(e=>{const id=vid[3*t+e];return rd(id)&&inR(ang(id))});
+ const vis=new Set(),q=[];vis.add(t0);q.push(t0);while(q.length&&vis.size<20000){const t=q.pop();for(let e=0;e<3;e++){const a=vid[3*t+e],c=vid[3*t+(e+1)%3],l=em.get(a<c?a*1e7+c:c*1e7+a);if(l)for(const u of l)if(!vis.has(u)&&ti(u)){vis.add(u);q.push(u)}}}
+ return{R:b.R,cen,u:b.u,v:b.v,a0:b.a0,a1:b.a1,dotA:b.dotA,span:b.span,tris:[...vis],n:b.n,rho:b.rho}}
 function radHL(m,tris){const T=radTopo(m),{vid,vp}=T,pos=new Float32Array(tris.length*9),W=m.matrixWorld,v=new THREE.Vector3();tris.forEach((t,i)=>{for(let e=0;e<3;e++){const id=vid[3*t+e];v.set(vp[3*id],vp[3*id+1],vp[3*id+2]).applyMatrix4(W);pos[9*i+3*e]=v.x;pos[9*i+3*e+1]=v.y;pos[9*i+3*e+2]=v.z}});const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));const o=new THREE.Mesh(g,new THREE.MeshBasicMaterial({color:0xff3b3b,transparent:true,opacity:.6,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:-3,polygonOffsetUnits:-3}));o.renderOrder=39;o.userData.mk=1;gz.add(o);dirty=true}
 var RCL=[];
 function rclEnsure(){let c=$('#rcl');if(!c){c=document.createElement('div');c.id='rcl';c.style.cssText='position:absolute;inset:0;z-index:5;pointer-events:none;overflow:hidden';c.innerHTML='<svg id="rsv" style="position:absolute;inset:0;width:100%;height:100%"></svg>';stage.appendChild(c)}return c}
@@ -530,12 +559,14 @@ let RLAST=null;function radMeasure(h){const f=F/sc;if(rmode=='3'){(pts.length>=3
   const ang=p=>{const d=p.clone().sub(cc);return Math.atan2(d.dot(v),d.dot(u))},al=[0,ang(b),ang(c)].map(x=>{while(x>Math.PI)x-=2*Math.PI;while(x<-Math.PI)x+=2*Math.PI;return x}),a0=Math.min(...al),a1=Math.max(...al);
   radShow(cc,R,ang(c),u,v,a0,a1,`<b>3 nokta ile yarıçap</b><br><span style="font-size:20px;font-weight:700;color:#d61f1f">R ${(R*f).toFixed(1)} mm</span> (Ø ${(2*R*f).toFixed(1)} mm)`);return}
  const m=h.object,C=[],ok=x=>x&&x.R*f<=800&&x.ratio<=.2;
- {const re=radEdge(m,h.point);if(re)C.push({e:re,R:re.R})}
+ {const rp=radProf(m,h,f);if(rp&&rp.R*f<=800)C.push({q:rp,R:rp.R})}
+ {const re=radEdge(m,h.point);if(re&&!C.some(c=>Math.abs(c.R-re.R)<.1*re.R))C.push({e:re,R:re.R})}
  const rG=radFit(m,h.faceIndex,h.point,1),rL=radFit(m,h.faceIndex,h.point);
  let r=rG;if(rL&&(!rG||(rL.R<rG.R/3&&rL.rms/rL.R<.03)||(rL.tris.length>=12&&rL.rms/rL.R<(rG.rms/rG.R)*.75&&rL.R<rG.R*1.02)))r=rL;
  const add=x=>{if(ok(x)&&!C.some(c=>Math.abs(c.R-x.R)<.1*x.R))C.push({r:x,R:x.R})};add(r);add(rG);add(rL&&rL.tris.length>=6&&rL.rms/rL.R<.05?rL:null);
  if(!C.length)return false;
  const same=RLAST&&RLAST.m===m&&RLAST.p.distanceTo(h.point)<.012;RLAST={m,p:h.point.clone(),i:same?(RLAST.i+1)%C.length:0};clrM();const c=C[RLAST.i],more=C.length>1?`<br><small>Başka yüzey mi? Aynı yere tekrar dokunun (${RLAST.i+1}/${C.length}).</small>`:'';
+ if(c.q){const q=c.q,Rm=q.R*f;radShow(q.cen,q.R,q.dotA,q.u,q.v,q.a0,q.a1,`<b>Parça:</b> ${nm(m.userData.k)}<br><span style="font-size:20px;font-weight:700;color:#d61f1f">R ${Rm.toFixed(1)} mm</span> (Ø ${(2*Rm).toFixed(1)} mm)`+(q.n<6?'<br><span style="color:#b45309">⚠ Yay az noktadan oluşuyor, değer yaklaşık.</span>':'')+more);if(q.tris.length)radHL(m,q.tris);return true}
  if(c.e){const re=c.e,Rm=re.R*f;radShow(re.cen,re.R,re.dotA,re.u,re.v,re.a0,re.a1,`<b>Kenar yayı:</b> ${nm(m.userData.k)}<br><span style="font-size:20px;font-weight:700;color:#d61f1f">R ${Rm.toFixed(1)} mm</span> (Ø ${(2*Rm).toFixed(1)} mm)`+(re.n<6?'<br><span style="color:#b45309">⚠ Yay az noktadan oluşuyor, değer yaklaşık.</span>':'')+more);return true}
  r=c.r;const Rm=r.R*f,w=[];if(r.span<8)w.push('Kavis çok küçük bir açıda, sonuç belirsiz olabilir');if(r.rms/r.R>.03)w.push('Yüzey tam silindirik değil, değer yaklaşık');
  radShow(r.cen,r.R,r.dotA,r.u,r.v,r.mid+r.o0,r.mid+r.o1,`<b>Parça:</b> ${nm(m.userData.k)}<br><span style="font-size:20px;font-weight:700;color:#d61f1f">R ${Rm.toFixed(1)} mm</span> (Ø ${(2*Rm).toFixed(1)} mm)`+(w.length?`<br><span style="color:#b45309">⚠ ${w.join('. ')}.</span>`:'')+more);if(r.tris)radHL(m,r.tris);return true}
