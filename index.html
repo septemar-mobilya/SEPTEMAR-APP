@@ -275,6 +275,7 @@ async function boot(){
  SWP={};let SWJ=null,SWD={};SWL=null;if(SWU){try{{const J=UPD?JSON.parse(UPD.json):await(await fetch(SWU.replace(/\.xml$/i,'-sw.json'),{cache:'no-cache'})).json();if(J.paneller){SWJ=J.paneller;SWD=J.diger||{};SWL=J.liste||null}SWP=Object.fromEntries(Object.entries(J.paneller||J).map(([q,v])=>[swQ(q),v]))}}catch{SWP={}}}
  if(SWU&&!UPD){try{const LJ=await(await fetch(SWU.replace(/\.xml$/i,'-liste.json'),{cache:'no-cache'})).json();if(Array.isArray(LJ)&&LJ.length)SWL=LJ}catch{}}
  let SW=null;if(SWJ){try{SW=swFromJson(SWJ,SWD)}catch(e){SW=null}}else if(SWU){try{SW=swParse(UPD?UPD.xml:await(await fetch(SWU,{cache:'no-cache'})).text())}catch(e){SW=null}}{const pkq=new URLSearchParams(location.search).get('pk');if(pkq)recvPkg(pkq)}
+ RADJ=null;try{const rt=UPD&&UPD.rad?UPD.rad:await(await fetch(MP.replace(/\.glb$/i,'.radius.json'),{cache:'no-cache'})).text(),J=JSON.parse(rt);if(J&&J.parcalar)RADJ=Object.fromEntries(Object.entries(J.parcalar).map(([k,v])=>[k,v.filter(x=>x&&x.R>0)]))}catch{RADJ=null}
  let root;try{root=(await mkGL().loadAsync(MP)).scene}catch(e){root=demo();$('#tag').style.display='block'}
  const model=new THREE.Group();model.add(root);scene.add(model);
  const b=new THREE.Box3().setFromObject(model),M=Math.max(...b.getSize(new THREE.Vector3()).toArray());F=M<20?1000:1;sc=1/M;model.scale.setScalar(sc);model.updateMatrixWorld(true);
@@ -530,11 +531,11 @@ var RCL=[];
 function rclEnsure(){let c=$('#rcl');if(!c){c=document.createElement('div');c.id='rcl';c.style.cssText='position:absolute;inset:0;z-index:5;pointer-events:none;overflow:hidden';c.innerHTML='<svg id="rsv" style="position:absolute;inset:0;width:100%;height:100%"></svg>';stage.appendChild(c)}return c}
 function rclUpd(W,H){if(!RCL||!RCL.length)return;const sv=$('#rsv');let ln='';for(const c of RCL){const p=c.v.clone().project(cam);if(p.z>=1){c.el.style.display='none';continue}const x=(p.x*.5+.5)*W,y=(-p.y*.5+.5)*H;c.el.style.display='block';const bw=c.el.offsetWidth,bh=c.el.offsetHeight;let bx=x+60,by=y-60-bh;if(bx+bw>W-4)bx=x-60-bw;if(by<4)by=y+50;c.el.style.left=bx+'px';c.el.style.top=by+'px';ln+=`<line x1="${x.toFixed(1)}" y1="${y.toFixed(1)}" x2="${(bx<x?bx+bw:bx).toFixed(1)}" y2="${(by<y?by+bh:by).toFixed(1)}" stroke="#222" stroke-width="1"/>`}if(sv)sv.innerHTML=ln}
 const angClamp=(a0,a1,a)=>{const s=a1-a0,m2=(x,y)=>((x%y)+y)%y;let t=s>=0?m2(a-a0,2*Math.PI):-m2(a0-a,2*Math.PI);if(Math.abs(t)>Math.abs(s))t=(Math.abs(t)-Math.abs(s)<2*Math.PI-Math.abs(t))?s:0;return a0+t};
-function radShow(cen,R,dotAng,u,v,a0,a1,html){dirty=true;if(RCL.length>=3)clrM();const f=F/sc,dg=BB.getSize(new THREE.Vector3()).length(),tr=Math.min(dg*.0016,R*.07),sr=Math.min(dg*.0035,R*.12),
+function radShow(cen,R,dotAng,u,v,a0,a1,html,Rl){dirty=true;if(RCL.length>=3)clrM();const f=F/sc,dg=BB.getSize(new THREE.Vector3()).length(),tr=Math.min(dg*.0016,R*.07),sr=Math.min(dg*.0035,R*.12),
   at=a=>cen.clone().addScaledVector(u,Math.cos(a)*R).addScaledVector(v,Math.sin(a)*R),N=48,arc=[];for(let i=0;i<=N;i++)arc.push(at(a0+(a1-a0)*i/N));
  const o=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(arc),64,tr,6,false),new THREE.MeshBasicMaterial({color:0xff1a1a,depthTest:false}));o.renderOrder=40;o.userData.mk=1;gz.add(o);
  const dp=at(angClamp(a0,a1,dotAng)),d=new THREE.Mesh(new THREE.SphereGeometry(sr,14,10),new THREE.MeshBasicMaterial({color:0x111111,depthTest:false}));d.position.copy(dp);d.renderOrder=41;d.userData.mk=1;gz.add(d);
- const Rm=R*f,C=cen.clone().sub(BB.min).multiplyScalar(f),rows=[['Yarıçap:','<b style="color:#d61f1f">R'+rnum(Rm)+'mm</b>']],
+ const Rm=Rl!=null?Rl*f:R*f,C=cen.clone().sub(BB.min).multiplyScalar(f),rows=[['Yarıçap:','<b style="color:#d61f1f">R'+rnum(Rm)+'mm</b>']],
   el=document.createElement('div');el.style.cssText='position:absolute;border:1px solid #666;background:#fff;font:15px/1.4 system-ui,sans-serif;color:#111;box-shadow:0 1px 5px #0004;white-space:nowrap';
  el.innerHTML='<table style="border-collapse:collapse">'+rows.map(([a,b])=>`<tr><td style="background:#d9d9d9;padding:2px 8px;border:1px solid #888">${a}</td><td style="padding:2px 8px;border:1px solid #888">${b}</td></tr>`).join('')+'</table>';
  rclEnsure().appendChild(el);RCL.push({el,v:dp});$('#mres').innerHTML=html}
@@ -552,6 +553,10 @@ function radEdge(m,hp){const T=radTopo(m),{vid,vp,tn,em}=T,W=m.matrixWorld,wv=id
   P2=P3.map(p=>{const d=p.clone().sub(o);return[d.dot(u),d.dot(v)]}),r=arcAt(P2,j);if(!r||r.n<4||!isFinite(r.R))return null;
  const cen=o.clone().addScaledVector(u,r.cx).addScaledVector(v,r.cy),hd=hp.clone().sub(o),dotA=Math.atan2(hd.dot(v)-r.cy,hd.dot(u)-r.cx);return{R:r.R,cen,u,v,a0:r.a0,a1:r.a1,dotA,n:r.n}}
 const rHint=()=>{const r=$('#mres');if(r)r.innerHTML='<b>Yuvarlak</b> kenara/yüze dokunun → yarıçap (R). <b>Mesafe</b> için iki noktaya dokunun.'};
+let RADJ=null;
+function radSnap(m,Rm){/* SolidWorks'ten gelen gerçek R listesi: parça adına göre eşleştir, ölçüye en yakın yarıçapı ver */
+ if(!RADJ)return null;const nz=x=>String(x||'').replace(/\//g,'_').toLowerCase(),k=nz(m.userData.k||m.name);let best=null,bl=0;for(const n in RADJ){const q=nz(n);if(q.length>bl&&(k==q||k.endsWith('_'+q)||k.endsWith(q))){best=RADJ[n];bl=q.length}}
+ if(!best)return null;let o=null,d=1e9;for(const x of best){const e=Math.abs(x.R-Rm);if(e<d){d=e;o=x}}if(!o||d>Math.max(.12*Rm,3))return null;return{R:o.R,t:o.t}}
 let RLAST=null;function radMeasure(h){const f=F/sc;if(rmode=='3'){(pts.length>=3||RCL.length>=3)&&clrM();const p=h.point.clone(),d=new THREE.Mesh(new THREE.SphereGeometry(.009,12,8),new THREE.MeshBasicMaterial({color:0xff1a1a,depthTest:false}));d.position.copy(p);d.renderOrder=41;d.userData.mk=1;gz.add(d);dirty=true;pts.push({v:p});
   if(pts.length<3){$('#mres').innerHTML=`<b>${pts.length}. nokta</b> alındı. Kavis çizgisi üzerinde <b>${pts.length+1}. noktaya</b> dokunun.`;return}
   const[a,b,c]=pts.map(x=>x.v),ab=b.clone().sub(a),ac=c.clone().sub(a),n=new THREE.Vector3().crossVectors(ab,ac),n2=n.lengthSq();if(n2<1e-16){clrM();$('#mres').innerHTML='<span style="color:#b45309">⚠ Üç nokta bir doğru üzerinde, yarıçap hesaplanamadı. Yeniden deneyin.</span>';return}
@@ -566,10 +571,12 @@ let RLAST=null;function radMeasure(h){const f=F/sc;if(rmode=='3'){(pts.length>=3
  const add=x=>{if(ok(x)&&!C.some(c=>Math.abs(c.R-x.R)<.1*x.R))C.push({r:x,R:x.R})};add(r);add(rG);add(rL&&rL.tris.length>=6&&rL.rms/rL.R<.05?rL:null);
  if(!C.length)return false;C.length=1;
  const same=RLAST&&RLAST.m===m&&RLAST.p.distanceTo(h.point)<.012;RLAST={m,p:h.point.clone(),i:same?(RLAST.i+1)%C.length:0};clrM();const c=C[RLAST.i],more=C.length>1?`<br><small>Başka yüzey mi? Aynı yere tekrar dokunun (${RLAST.i+1}/${C.length}).</small>`:'';
- if(c.q){const q=c.q,Rm=q.R*f;radShow(q.cen,q.R,q.dotA,q.u,q.v,q.a0,q.a1,`<b>Parça:</b> ${nm(m.userData.k)}<br><span style="font-size:20px;font-weight:700;color:#d61f1f">R ${Rm.toFixed(1)} mm</span> (Ø ${(2*Rm).toFixed(1)} mm)`+(q.n<6?'<br><span style="color:#b45309">⚠ Yay az noktadan oluşuyor, değer yaklaşık.</span>':'')+more);if(q.tris.length)radHL(m,q.tris);return true}
- if(c.e){const re=c.e,Rm=re.R*f;radShow(re.cen,re.R,re.dotA,re.u,re.v,re.a0,re.a1,`<b>Kenar yayı:</b> ${nm(m.userData.k)}<br><span style="font-size:20px;font-weight:700;color:#d61f1f">R ${Rm.toFixed(1)} mm</span> (Ø ${(2*Rm).toFixed(1)} mm)`+(re.n<6?'<br><span style="color:#b45309">⚠ Yay az noktadan oluşuyor, değer yaklaşık.</span>':'')+more);return true}
- r=c.r;const Rm=r.R*f,w=[];if(r.span<8)w.push('Kavis çok küçük bir açıda, sonuç belirsiz olabilir');if(r.rms/r.R>.03)w.push('Yüzey tam silindirik değil, değer yaklaşık');
- radShow(r.cen,r.R,r.dotA,r.u,r.v,r.mid+r.o0,r.mid+r.o1,`<b>Parça:</b> ${nm(m.userData.k)}<br><span style="font-size:20px;font-weight:700;color:#d61f1f">R ${Rm.toFixed(1)} mm</span> (Ø ${(2*Rm).toFixed(1)} mm)`+(w.length?`<br><span style="color:#b45309">⚠ ${w.join('. ')}.</span>`:'')+more);if(r.tris)radHL(m,r.tris);return true}
+ const snap=x=>radSnap(m,x.R*f),fin=(x,kind,warn,geo,tris)=>{const S=snap(x),Rm=S?S.R:x.R*f,hd=S?`<small style="color:#15803d">✓ SolidWorks değeri</small>`:`<small style="color:#b45309">≈ Modelden tahmin${RADJ?' (SolidWorks listesinde eşleşme yok)':''}, çizimle doğrulayın</small>`;
+  radShow(geo[0],geo[1],geo[2],geo[3],geo[4],geo[5],geo[6],`<b>${kind}</b> ${nm(m.userData.k)}<br><span style="font-size:20px;font-weight:700;color:#d61f1f">R ${Rm.toFixed(1)} mm</span> (Ø ${(2*Rm).toFixed(1)} mm)<br>${hd}`+(S?'':warn)+more,Rm/f);if(tris&&tris.length)radHL(m,tris);return true};
+ if(c.q){const q=c.q;return fin(q,'Parça:',q.n<6?'<br><span style="color:#b45309">⚠ Yay az noktadan oluşuyor.</span>':'',[q.cen,q.R,q.dotA,q.u,q.v,q.a0,q.a1],q.tris)}
+ if(c.e){const re=c.e;return fin(re,'Kenar yayı:',re.n<6?'<br><span style="color:#b45309">⚠ Yay az noktadan oluşuyor.</span>':'',[re.cen,re.R,re.dotA,re.u,re.v,re.a0,re.a1],null)}
+ r=c.r;const w=[];if(r.span<8)w.push('Kavis çok küçük bir açıda');if(r.rms/r.R>.03)w.push('Yüzey tam silindirik değil');
+ return fin(r,'Parça:',w.length?`<br><span style="color:#b45309">⚠ ${w.join('. ')}.</span>`:'',[r.cen,r.R,r.dotA,r.u,r.v,r.mid+r.o0,r.mid+r.o1],r.tris)}
 /* ---- araç çubuğu ---- */
 function resetTools(){detLocOff();noteAdd=false;setPen(false);showPl=true;tool=null;meas=false;$('#pop').style.display='none';$('#pop').classList.remove('hz','vc');clrM();const was=pl.some(q=>q.on);pl.forEach(q=>q.on=false);if(was)applyCut();hl()}
 let lejT='',SWL=null,lejTop=false,lejBl=new Set();function openLej(w){if(w=='lt'&&!(stage.classList.contains('lej')&&lejT=='lt')){lejTop=false;lejBl=new Set();ltHalf=true;ltFull=false}lejT=w;stage.classList.remove('side');stage.classList.add('lej');$('#lej').classList.toggle('wide',w=='lt');if(w=='ak'){$('#lej').innerHTML=PG.ak();PB.ak()}else if(w=='lt')lejLT();else lejUI();lejHalf();hl();if(w=='lt'&&sel.length)setTimeout(()=>{const r=$('#lej tbody tr.bl');if(r)r.scrollIntoView({block:'center'})},80)}
@@ -1420,14 +1427,14 @@ async function upPick(i,degis){const k=TZ.K[TZ.sel],x=k&&k.isler[i];if(!x)return
  if(degis&&!confirm(x.kod+' için yüklü model değiştirilecek.\nEski sürüm saklanır, gerekirse geri alınabilir.\nDevam edilsin mi?'))return;
  const f=document.createElement('input');f.type='file';f.multiple=true;f.accept='.glb,.json,.xml';f.onchange=async()=>{try{await upSave(key,x.kod,[...f.files])}catch(e){upMsg('Yükleme başarısız: '+(e&&e.message||e))}};f.click()}
 async function upSave(key,kod,fl){const b={},nm=n=>n.toLowerCase();
- for(const f of fl){const e=(f.name.match(/\.(glb|json|xml)$/i)||[])[1];if(!e){upMsg('Tanınmayan dosya: '+f.name+'\nSadece .glb, .json ve .xml yüklenir.');return}if(b[e.toLowerCase()]){upMsg('İki tane .'+e+' dosyası seçildi.\nHer türden bir tane seçin.');return}b[e.toLowerCase()]=f}
+ for(const f of fl){if(/\.radius\.json$/i.test(f.name)){b.rad=f;continue}const e=(f.name.match(/\.(glb|json|xml)$/i)||[])[1];if(!e){upMsg('Tanınmayan dosya: '+f.name+'\nSadece .glb, .json ve .xml yüklenir.');return}if(b[e.toLowerCase()]){upMsg('İki tane .'+e+' dosyası seçildi.\nHer türden bir tane seçin.');return}b[e.toLowerCase()]=f}
  const eks=['glb','json','xml'].filter(e=>!b[e]);if(eks.length){upMsg('Eksik dosya: '+eks.map(e=>'.'+e).join(', ')+'\nÜç dosyayı birlikte seçin (GLB, JSON, XML).');return}
  const yanl=Object.values(b).filter(f=>!nm(f.name).startsWith(kod.toLowerCase()));if(yanl.length){upMsg('Bu iş emri '+kod+'.\nDosya adı '+kod+' ile başlamıyor:\n'+yanl.map(f=>f.name).join('\n')+'\nYanlış modeli seçmiş olabilirsiniz.');return}
  const head=new Uint8Array(await b.glb.slice(0,4).arrayBuffer());if(String.fromCharCode(...head)!='glTF'){upMsg('.glb dosyası geçerli değil: '+b.glb.name);return}
  const jt=await b.json.text(),xt=await b.xml.text();let J;try{J=JSON.parse(jt)}catch{upMsg('.json dosyası okunamadı: '+b.json.name);return}
  const np=Object.keys(J.paneller||J).length;if(!np){upMsg('.json içinde panel verisi yok.');return}
  let SWt;try{SWt=swParse(xt)}catch{SWt=null}if(!SWt){upMsg('.xml SWOOD raporu okunamadı: '+b.xml.name);return}
- const ex=await MDB.get(key),ver=(ex?ex.ver:0)+1,rec={ver,tarih:Date.now(),ad:{glb:b.glb.name,json:b.json.name,xml:b.xml.name},glb:b.glb,json:jt,xml:xt,eski:ex?[{ver:ex.ver,tarih:ex.tarih,ad:ex.ad,glb:ex.glb,json:ex.json,xml:ex.xml},...(ex.eski||[])]:[]};
+ const ex=await MDB.get(key),ver=(ex?ex.ver:0)+1,rec={ver,tarih:Date.now(),ad:{glb:b.glb.name,json:b.json.name,xml:b.xml.name},glb:b.glb,json:jt,xml:xt,rad:b.rad?await b.rad.text():null,eski:ex?[{ver:ex.ver,tarih:ex.tarih,ad:ex.ad,glb:ex.glb,json:ex.json,xml:ex.xml},...(ex.eski||[])]:[]};
  await MDB.put(key,rec);UPK.add(key);thumbMake(b.glb).then(d=>{const t=THB.g();t[key]=d;THB.s(t);atmRe()}).catch(()=>{});{const y=YAY.g();y[key]={y:(y[key]&&y[key].y)||0,s:ver};YAY.s(y)}MTAR.set(key,rec);upMsg(kod+' modeli yüklendi (sürüm '+ver+', '+np+' panel).',1);try{tpDrawer()}catch{}atmRe()}
 
 /* ---- Planlama: İş Atama (şimdilik bu cihazın tarayıcısında; sunucu seçilince yalnızca ATS katmanı değişir) ---- */
