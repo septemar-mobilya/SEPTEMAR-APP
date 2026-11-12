@@ -1139,6 +1139,7 @@ const ARSUBS=[
 
 ARSUBS.unshift({b:'📱 Okut ve yerleştir',x:'Ekrandaki karekodu telefonunun kamerasıyla okut. Telefonda AR açılınca kamerayı boş zemine tut, yüzey bulunca dokun: model oraya yerleşir.',D:16,draw:(t,d,k)=>{const f=win(t,6.4,7.6,.5);return (t<7?ARSUBS[1].draw(t,d,k):ARSUBS[2].draw(t-7,d,k))+(f>.01?`<rect width="320" height="190" fill="#fff" opacity="${f.toFixed(2)}"/>`:'')}});
 const ARS2=ARSUBS.filter((q,i)=>i!=1&&i!=2);
+{const C0=topics.find(x=>x.k=='cut'),cd=C0.draw;C0.draw=(t,d,k)=>cd(Math.min(t,5.6),d,k);C0.D=6.6;}
 {const MS=['cut','olc','not','lej','akp','mlt','mtp','tree'];topics.forEach(T=>{if(MS.includes(T.k)&&T.subs&&T.draw&&!T.subs.main){T.subs.unshift({b:T.t,x:T.sub+'.',D:T.D,draw:T.draw});T.subs.main=1}});}
 {const P=topics.find(x=>x.k=='pat'),pd=P.draw;P.subs=[{b:'Patlat',x:'Alttaki Patlat çubuğunu sağa çek: parçalar birbirinden ayrılır. Geri çekince yerine döner.',D:6.9,draw:(t,d,k)=>pd(t,d,k)},{b:'Montaj animasyonu',x:'▶ Montaj animasyonu düğmesine basınca parçalar sırayla yerine oturur; montaj sırasını izlersin.',D:4,draw:(t,d,k)=>pd(t+7,d,k)}]}
 {const DON=topics.find(x=>x.k=='don');const dw=(b,x,off,D)=>({b,x,D,draw:(t,d,k)=>DON.draw(t+off,d,k)});
