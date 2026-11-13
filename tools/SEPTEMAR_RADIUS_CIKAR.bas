@@ -16,6 +16,7 @@ Private Const SURUM As String = "r2.2"
 Private gSeen As Object      ' dosya|konf -> ham yuz/kenar verisi (parca koordinatinda)
 Private gMU As Object
 Private gAtlanan As Long
+Private gYuz As Object
 
 Private Function JS(ByVal s As String) As String
     Dim i As Long, c As Long, o As String
@@ -123,14 +124,15 @@ SonrakiKenar:
     Set ParcaKenarlari = res
 End Function
 
-' parcanin silindir/torus/kure yuzleri (yedek veri) - JSON parcasi
-Private Function ParcaYuzleri(ByVal pd As Object, ByVal xf As Object) As String
+' parcanin silindir/torus/kure yuzleri (ham, parca koordinatinda) - Collection(Array(tip,R,R2,cx,cy,cz,ax,ay,az))
+Private Function ParcaYuzHam(ByVal pd As Object) As Collection
+    Dim res As New Collection
     Dim bodies As Variant, b As Variant, faces As Variant, f As Variant
-    Dim surf As Object, p As Variant, key As String, d As Object, k As Variant, r As String
+    Dim surf As Object, p As Variant, key As String, d As Object
     Set d = CreateObject("Scripting.Dictionary")
     On Error Resume Next
     bodies = pd.GetBodies2(0, True)
-    If IsEmpty(bodies) Then Exit Function
+    If IsEmpty(bodies) Then Set ParcaYuzHam = res: Exit Function
     For Each b In bodies
         faces = b.GetFaces
         If Not IsEmpty(faces) Then
@@ -140,26 +142,34 @@ Private Function ParcaYuzleri(ByVal pd As Object, ByVal xf As Object) As String
                     If surf.IsCylinder Then
                         p = surf.CylinderParams
                         key = "C|" & N(p(6) * 1000#)
-                        If Not d.Exists(key) Then d.Add key, "{""t"":""C"",""R"":" & N(p(6) * 1000#) & ",""c"":" & Pt(xf, p(0), p(1), p(2)) & ",""a"":" & Dr(xf, p(3), p(4), p(5)) & "}"
+                        If Not d.Exists(key) Then d.Add key, 1: res.Add Array("C", p(6), 0, p(0), p(1), p(2), p(3), p(4), p(5))
                     ElseIf surf.IsTorus Then
                         p = surf.TorusParams
                         key = "T|" & N(p(6) * 1000#) & "|" & N(p(7) * 1000#)
-                        If Not d.Exists(key) Then d.Add key, "{""t"":""T"",""R"":" & N(p(7) * 1000#) & ",""R2"":" & N(p(6) * 1000#) & ",""c"":" & Pt(xf, p(0), p(1), p(2)) & ",""a"":" & Dr(xf, p(3), p(4), p(5)) & "}"
+                        If Not d.Exists(key) Then d.Add key, 1: res.Add Array("T", p(7), p(6), p(0), p(1), p(2), p(3), p(4), p(5))
                     ElseIf surf.IsSphere Then
                         p = surf.SphereParams
                         key = "S|" & N(p(3) * 1000#)
-                        If Not d.Exists(key) Then d.Add key, "{""t"":""S"",""R"":" & N(p(3) * 1000#) & ",""c"":" & Pt(xf, p(0), p(1), p(2)) & "}"
+                        If Not d.Exists(key) Then d.Add key, 1: res.Add Array("S", p(3), 0, p(0), p(1), p(2), 0, 0, 1)
                     End If
                 End If
             Next f
         End If
     Next b
     On Error GoTo 0
-    For Each k In d.Keys
+    Set ParcaYuzHam = res
+End Function
+
+Private Function YuzJson(ByVal fl As Collection, ByVal xf As Object) As String
+    Dim a As Variant, j As Long, r As String
+    For j = 1 To fl.Count
+        a = fl(j)
         If Len(r) > 0 Then r = r & ","
-        r = r & d(k)
-    Next k
-    ParcaYuzleri = r
+        r = r & "{""t"":""" & a(0) & """,""R"":" & N(a(1) * 1000#)
+        If a(0) = "T" Then r = r & ",""R2"":" & N(a(2) * 1000#)
+        r = r & ",""c"":" & Pt(xf, a(3), a(4), a(5)) & "}"
+    Next j
+    YuzJson = r
 End Function
 
 Sub main()
@@ -181,9 +191,11 @@ Sub main()
 
     Set gMU = swApp.GetMathUtility
     Set gSeen = CreateObject("Scripting.Dictionary")
+    Set gYuz = CreateObject("Scripting.Dictionary")
     comps = md.GetComponents(False)
     If IsEmpty(comps) Then MsgBox "Montajda bilesen yok.", vbExclamation: Exit Sub
 
+    MsgBox "Basladi (" & SURUM & "): " & (UBound(comps) - LBound(comps) + 1) & " bilesen taraniyor. Bitince bir mesaj gelecek; SolidWorks bir sure yanit vermeyebilir.", vbInformation, "SEPTEMAR RADIUS CIKAR"
     sb = "{""v"":2,""makro"":""" & SURUM & """,""montaj"":""" & JS(md.GetTitle) & """,""birim"":""mm"",""parcalar"":[" & vbLf
     ilk = True
     For i = LBound(comps) To UBound(comps)
@@ -204,7 +216,8 @@ Sub main()
                             gSeen.Add key, ed
                         End If
                         Set xf = c.Transform2
-                        ys = ParcaYuzleri(pd, xf)
+                        If Not gYuz.Exists(key) Then gYuz.Add key, ParcaYuzHam(pd)
+                        ys = YuzJson(gYuz(key), xf)
                         If ed.Count > 0 Or Len(ys) > 0 Then
                             If Not ilk Then sb = sb & "," & vbLf
                             ilk = False
