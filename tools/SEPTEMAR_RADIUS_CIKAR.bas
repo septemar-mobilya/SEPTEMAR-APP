@@ -11,6 +11,8 @@ Attribute VB_Name = "SEPTEMAR_RADIUS_CIKAR"
 '==============================================================================
 Option Explicit
 
+Private Const SURUM As String = "r2.2"
+
 Private gSeen As Object      ' dosya|konf -> ham yuz/kenar verisi (parca koordinatinda)
 Private gMU As Object
 Private gAtlanan As Long
@@ -159,8 +161,6 @@ Private Function ParcaYuzleri(ByVal pd As Object, ByVal xf As Object) As String
     Next k
     ParcaYuzleri = r
 End Function
-
-Public Const SURUM As String = "r2.2"
 
 Sub main()
     Dim swApp As Object, md As Object, comps As Variant, c As Object
