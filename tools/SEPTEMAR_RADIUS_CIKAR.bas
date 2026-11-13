@@ -61,7 +61,7 @@ Private Function ParcaKenarlari(ByVal pd As Object) As Collection
     Dim bodies As Variant, b As Variant, edges As Variant, e As Variant
     Dim cv As Object, p As Variant, sp As Variant, ep As Variant, mp As Variant
     Dim seen As Object, key As String
-    Dim t0 As Double, t1 As Double, isCl As Boolean, isPer As Boolean
+    Dim t0 As Double, t1 As Double, isCl As Boolean, isPer As Boolean, cpd As Object
     Set seen = CreateObject("Scripting.Dictionary")
     On Error Resume Next
     bodies = pd.GetBodies2(0, True)
@@ -75,7 +75,14 @@ Private Function ParcaKenarlari(ByVal pd As Object) As Collection
                 If Not cv Is Nothing Then
                     If cv.IsCircle Then
                         p = cv.CircleParams    ' cx,cy,cz, ax,ay,az, R
-                        cv.GetEndParams t0, t1, isCl, isPer
+                        Set cpd = Nothing
+                        Set cpd = e.GetCurveParams2        ' kenarin KIRPILMIS (gercek) baslangic/bitis parametreleri
+                        If Not cpd Is Nothing Then
+                            t0 = cpd.StartParam
+                            t1 = cpd.EndParam
+                        Else
+                            cv.GetEndParams t0, t1, isCl, isPer
+                        End If
                         sp = cv.Evaluate2(t0, 0)
                         ep = cv.Evaluate2(t1, 0)
                         mp = cv.Evaluate2((t0 + t1) / 2#, 0)
