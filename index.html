@@ -714,6 +714,13 @@ addEventListener('pointermove',e=>{if(!drag)return;ray(e);const q=pl[ap],d1=new 
   const k=Math.max((x1-x0)/r.width,(y1-y0)/r.height),dir=cam.getWorldDirection(new THREE.Vector3()),d0=cam.position.distanceTo(P),d1=Math.max(d0*k*1.05,ctl.minDistance||0.01);
   const pf=cam.position.clone(),tf=ctl.target.clone(),pt=P.clone().addScaledVector(dir,-d1),t0=performance.now(),id=++anim;
   const st=()=>{if(id!=anim)return;const u=Math.min(1,(performance.now()-t0)/350),w=u*u*(3-2*u);cam.position.lerpVectors(pf,pt,w);ctl.target.lerpVectors(tf,P,w);ctl.update();if(u<1)requestAnimationFrame(st)};st()},true);
+ /* çift tıklama / çift dokunma: o noktaya hızlı yakınlaş */
+ let td=null,tl=null;el.addEventListener('pointerdown',e=>{td=e.isPrimary?[e.clientX,e.clientY,e.timeStamp]:null},true);
+ el.addEventListener('pointerup',e=>{if(!td||!e.isPrimary||(e.pointerType=='mouse'&&e.button!=0))return;const now=e.timeStamp;if(Math.hypot(e.clientX-td[0],e.clientY-td[1])>8||now-td[2]>350){tl=null;return}
+  if(!tl||now-tl[2]>420||Math.hypot(e.clientX-tl[0],e.clientY-tl[1])>(e.pointerType=='mouse'?10:34)){tl=[e.clientX,e.clientY,now];return}tl=null;if(meas||noteAdd||zbx)return;
+  const r=el.getBoundingClientRect();rc.setFromCamera(new THREE.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1),cam);const h=rc.intersectObjects(allMeshes,false).find(z=>z.object.visible&&mats(z.object)[0].opacity>.5);if(!h)return;
+  const P=h.point.clone(),d0=cam.position.distanceTo(P),d1=Math.max(d0*.4,ctl.minDistance||.01),pf=cam.position.clone(),tf=ctl.target.clone(),pt=P.clone().addScaledVector(rc.ray.direction,-d1),t0=performance.now(),id=++anim;PIV=null;
+  const st=()=>{if(id!=anim)return;const u=Math.min(1,(performance.now()-t0)/300),w=u*u*(3-2*u);cam.position.lerpVectors(pf,pt,w);ctl.target.lerpVectors(tf,P,w);ctl.update();dirty=true;if(u<1)requestAnimationFrame(st)};st()},true);
 }
 addEventListener('pointerup',e=>{if(drag){drag=false;ctl.enabled=true;applyCut(true);return}if(!dn||e.target!==ren.domElement||Math.hypot(e.clientX-dn[0],e.clientY-dn[1])>6)return;ray(e);
  const a=pl.filter(q=>q.on),hs=rc.intersectObjects(allMeshes,false).filter(h=>h.object.visible&&mats(h.object)[0].opacity>.5&&!a.some(q=>q.p.distanceToPoint(h.point)<0));
