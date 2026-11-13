@@ -555,7 +555,7 @@ function radEdge(m,hp){const T=radTopo(m),{vid,vp,tn,em}=T,W=m.matrixWorld,wv=id
 const rHint=()=>{const r=$('#mres');if(r)r.innerHTML='Köşedeki <b>yay çizgisine</b> dokunun → gerçek yarıçap (R). <b>Mesafe</b> için iki noktaya dokunun.'};
 let RADJ=null;
 function radSnap(m,Rm){/* SolidWorks'ten gelen gerçek R listesi: parça adına göre eşleştir, ölçüye en yakın yarıçapı ver */
- if(!RADJ)return null;const nz=x=>String(x||'').replace(/\//g,'_').toLowerCase(),k=nz(m.userData.k||m.name);let best=null,bl=0;for(const n in RADJ){const q=nz(n);if(q.length>bl&&(k==q||k.endsWith('_'+q)||k.endsWith(q))){best=RADJ[n];bl=q.length}}
+ if(!RADJ)return null;const nz=x=>String(x||'').replace(/\//g,'_').toLowerCase(),k=nz(m.userData.k||m.name);let best=null,bl=0;for(const n in RADJ){const q=nz(n.split('/').pop());if(q.length>bl&&(k==q||k.endsWith('_'+q)||k.endsWith(q))){best=RADJ[n];bl=q.length}}
  if(!best)return null;let o=null,d=1e9;for(const x of best){const e=Math.abs(x.R-Rm);if(e<d){d=e;o=x}}if(!o||d>Math.max(.12*Rm,3))return null;return{R:o.R,t:o.t}}
 let RLAST=null;function radMeasure(h){const f=F/sc;if(rmode=='3'){(pts.length>=3||RCL.length>=3)&&clrM();const p=h.point.clone(),d=new THREE.Mesh(new THREE.SphereGeometry(.009,12,8),new THREE.MeshBasicMaterial({color:0xff1a1a,depthTest:false}));d.position.copy(p);d.renderOrder=41;d.userData.mk=1;gz.add(d);dirty=true;pts.push({v:p});
   if(pts.length<3){$('#mres').innerHTML=`<b>${pts.length}. nokta</b> alındı. Kavis çizgisi üzerinde <b>${pts.length+1}. noktaya</b> dokunun.`;return}
@@ -580,7 +580,7 @@ let RLAST=null;function radMeasure(h){const f=F/sc;if(rmode=='3'){(pts.length>=3
 /* ---- SolidWorks'ten gelen kenar yayları: çizgi olarak göster, dokununca gerçek R ---- */
 let RADX=null,EDG=null,EG=null,ETF=null,ETRY=false,EHV=null;
 function edgeInit(){ETRY=true;if(!RADX||!BB)return;const f=F/sc,nz=x=>String(x||'').replace(/\//g,'_').toLowerCase(),keys=Object.keys(parts),M=[];
- for(const p of RADX.parcalar){if(!p.b)continue;const q=nz(p.n);let kk=null;for(const k of keys){const z=nz(k);if(z==q||z.endsWith('_'+q)){kk=k;break}}if(!kk||!parts[kk].bb)continue;M.push({sw:new THREE.Vector3((p.b[0]+p.b[3])/2,(p.b[1]+p.b[4])/2,(p.b[2]+p.b[5])/2),sz:parts[kk].bb.getCenter(new THREE.Vector3())})}
+ for(const p of RADX.parcalar){if(!p.b)continue;const q=nz(p.n.split('/').pop());let kk=null;for(const k of keys){const z=nz(k);if(z==q||z.endsWith('_'+q)){kk=k;break}}if(!kk||!parts[kk].bb)continue;M.push({sw:new THREE.Vector3((p.b[0]+p.b[3])/2,(p.b[1]+p.b[4])/2,(p.b[2]+p.b[5])/2),sz:parts[kk].bb.getCenter(new THREE.Vector3())})}
  if(M.length<2)return;
  const rots=[];const P=[[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]];for(const pm of P)for(let sx=-1;sx<=1;sx+=2)for(let sy=-1;sy<=1;sy+=2)for(let sz=-1;sz<=1;sz+=2){const R=new THREE.Matrix4().makeScale(0,0,0),el=R.elements,sg=[sx,sy,sz];el[15]=1;for(let r=0;r<3;r++)el[pm[r]*4+r]=sg[r];const d=R.determinant();if(d>0)rots.push(R)}
  let best=null;for(const R of rots){const T=M.map(m=>m.sz.clone().sub(m.sw.clone().divideScalar(f).applyMatrix4(R)));const mean=T.reduce((a,b)=>a.add(b),new THREE.Vector3()).divideScalar(T.length);const res=T.reduce((a,b)=>a+b.distanceTo(mean),0)/T.length*f;if(!best||res<best.res)best={R,T:mean,res}}
@@ -597,7 +597,7 @@ function edgePick(e){if(!EDG||!EDG.length)return null;const r=ren.domElement.get
  /* görünürlük: önünde yüzey varsa seçme */
  const o=cam.position,dir=best.q.clone().sub(o),dl=dir.length();rc.set(o,dir.normalize());const h=rc.intersectObjects(allMeshes,false).filter(z=>z.object.visible&&mats(z.object)[0].opacity>.5);if(h[0]&&h[0].distance<dl-10/f)return null;return best}
 function edgeShow(b){const d=b.d,f=F/sc,Rs=d.R/f;clrM();const s=Math.sign(d.sg)||1,w=d.ws.clone().multiplyScalar(1),sw=Math.abs(d.sg);
- radShow(d.cs,Rs,sw/2,d.us,w,0,sw,`<b>Kenar yayı:</b> ${nm(d.n.replace(/\//g,'_'))}<br><span style="font-size:20px;font-weight:700;color:#d61f1f">R ${d.R.toFixed(1)} mm</span> (Ø ${(2*d.R).toFixed(1)} mm)<br><small style="color:#15803d">✓ SolidWorks değeri</small> <small>· Yay ${d.L.toFixed(1)} mm · ${d.A.toFixed(1)}°</small>`,Rs)}
+ radShow(d.cs,Rs,sw/2,d.us,w,0,sw,`<b>Kenar yayı:</b> ${nm(d.n.split('/').pop())}<br><span style="font-size:20px;font-weight:700;color:#d61f1f">R ${d.R.toFixed(1)} mm</span> (Ø ${(2*d.R).toFixed(1)} mm)<br><small style="color:#15803d">✓ SolidWorks değeri</small> <small>· Yay ${d.L.toFixed(1)} mm · ${d.A.toFixed(1)}°</small>`,Rs)}
 setInterval(()=>{if(RADX&&!ETRY&&Object.keys(parts).length)edgeInit();if(EG){const v=!!meas&&tool=='olc';if(EG.visible!=v){EG.visible=v;dirty=true}if(!v&&EHV){scene.remove(EHV);EHV=null;dirty=true}}},250);
 ren.domElement.addEventListener('pointermove',e=>{if(!EG||!EG.visible||e.pointerType!='mouse'||drag)return;const b=edgePick(e);if(EHV){scene.remove(EHV);EHV=null}if(b){const cur=new THREE.CatmullRomCurve3(b.d.pts);EHV=new THREE.Mesh(new THREE.TubeGeometry(cur,48,.0016,6,false),new THREE.MeshBasicMaterial({color:0xff8a00,depthTest:false,transparent:true}));EHV.renderOrder=40;scene.add(EHV)}dirty=true});
 

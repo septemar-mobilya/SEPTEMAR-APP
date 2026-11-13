@@ -59,8 +59,9 @@ End Function
 Private Function ParcaKenarlari(ByVal pd As Object) As Collection
     Dim res As New Collection
     Dim bodies As Variant, b As Variant, edges As Variant, e As Variant
-    Dim cv As Object, p As Variant, sp As Variant, ep As Variant, mp As Variant, pr As Variant
-    Dim seen As Object, key As String, t0 As Double, t1 As Double
+    Dim cv As Object, p As Variant, sp As Variant, ep As Variant, mp As Variant
+    Dim seen As Object, key As String
+    Dim t0 As Double, t1 As Double, isCl As Boolean, isPer As Boolean
     Set seen = CreateObject("Scripting.Dictionary")
     On Error Resume Next
     bodies = pd.GetBodies2(0, True)
@@ -74,10 +75,10 @@ Private Function ParcaKenarlari(ByVal pd As Object) As Collection
                 If Not cv Is Nothing Then
                     If cv.IsCircle Then
                         p = cv.CircleParams    ' cx,cy,cz, ax,ay,az, R
-                        pr = cv.GetEndParams   ' start,end,isClosed,isPeriodic
-                        sp = cv.Evaluate2(pr(0), 0)
-                        ep = cv.Evaluate2(pr(1), 0)
-                        mp = cv.Evaluate2((pr(0) + pr(1)) / 2#, 0)
+                        cv.GetEndParams t0, t1, isCl, isPer
+                        sp = cv.Evaluate2(t0, 0)
+                        ep = cv.Evaluate2(t1, 0)
+                        mp = cv.Evaluate2((t0 + t1) / 2#, 0)
                         key = N(p(0)) & "|" & N(p(1)) & "|" & N(p(2)) & "|" & N(p(6)) & "|" & N(sp(0)) & "|" & N(sp(1)) & "|" & N(sp(2)) & "|" & N(ep(0)) & "|" & N(ep(1)) & "|" & N(ep(2))
                         If Not seen.Exists(key) Then
                             seen.Add key, 1
