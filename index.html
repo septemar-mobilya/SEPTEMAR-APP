@@ -565,7 +565,7 @@ function radEdge(m,hp){const T=radTopo(m),{vid,vp,tn,em}=T,W=m.matrixWorld,wv=id
  const E=eig3(C);if(E[0].l>.02*E[2].l)return null;const nz=E[0].v.clone().normalize(),u=new THREE.Vector3().crossVectors(nz,Math.abs(nz.y)<.9?new THREE.Vector3(0,1,0):new THREE.Vector3(1,0,0)).normalize(),v=new THREE.Vector3().crossVectors(nz,u),
   P2=P3.map(p=>{const d=p.clone().sub(o);return[d.dot(u),d.dot(v)]}),r=arcAt(P2,j);if(!r||r.n<4||!isFinite(r.R))return null;
  const cen=o.clone().addScaledVector(u,r.cx).addScaledVector(v,r.cy),hd=hp.clone().sub(o),dotA=Math.atan2(hd.dot(v)-r.cy,hd.dot(u)-r.cx);return{R:r.R,cen,u,v,a0:r.a0,a1:r.a1,dotA,n:r.n}}
-const rHint=()=>{const r=$('#mres');if(r)r.innerHTML='<b>Yay</b> kenarına dokunun → yarıçap. <b>Düz</b> kenara dokunun → uzunluk. <b>Yüzeye</b> dokunun, sonra ikinci yüzeye → aradaki mesafe.'};
+const rHint=()=>{const r=$('#mres');if(r)r.innerHTML='<b>Yay</b> kenarına dokunun → yarıçap. <b>Düz</b> kenara dokunun → uzunluk. <b>Düz yüzeye</b> dokunun, sonra ikinci düz yüzeye → aradaki mesafe.'};
 let RADJ=null;
 function radSnap(m,Rm){/* SolidWorks'ten gelen gerçek R listesi: parça adına göre eşleştir, ölçüye en yakın yarıçapı ver */
  if(!RADJ)return null;const nz=x=>String(x||'').replace(/\//g,'_').toLowerCase(),k=nz(m.userData.k||m.name);let best=null,bl=0;for(const n in RADJ){const q=nz(n.split('/').pop());if(q.length>bl&&(k==q||k.endsWith('_'+q)||k.endsWith(q))){best=RADJ[n];bl=q.length}}
@@ -581,6 +581,9 @@ function cylFace(h){const m=h.object,g=m.geometry,I=g.index,P=g.attributes.posit
  const hp=h.point.clone().multiplyScalar(f),cen=u.clone().multiplyScalar(k.cx).addScaledVector(v,k.cy).addScaledVector(ax,hp.dot(ax)),dp=hp.clone().sub(cen);let da=Math.atan2(dp.dot(v),dp.dot(u));while(da<a0)da+=2*Math.PI;
  const S=radSnap(m,k.R),ok=S&&Math.abs(S.R-k.R)<=Math.max(.06,.0003*k.R),Rv=ok?S.R:k.R;
  radShow(cen.divideScalar(f),k.R/f,da,u,v,a0,a1,`<span style="font-size:20px;font-weight:700;color:#d61f1f">R ${Rv.toFixed(1)} mm</span> (Ø ${(2*Rv).toFixed(1)} mm)`,k.R/f);return true}
+function flatFace(h){const m=h.object,g=m.geometry,I=g.index,P=g.attributes.position,fi=h.faceIndex;if(!I||fi==null)return true;if(!g.userData.swr){faceReg(m,fi,1);const me=fm.pop();me&&me.parent&&me.parent.remove(me)}const R=g.userData.swr;if(!R)return true;
+ const a=new THREE.Vector3(),b=new THREE.Vector3(),c=new THREE.Vector3(),tn=t=>{a.fromBufferAttribute(P,I.getX(3*t));b.fromBufferAttribute(P,I.getX(3*t+1)).sub(a);c.fromBufferAttribute(P,I.getX(3*t+2)).sub(a);return new THREE.Vector3().crossVectors(b,c)},n0=tn(fi).normalize(),r0=R[fi];
+ for(let t=0;t<R.length;t++)if(R[t]==r0){const n=tn(t);if(n.lengthSq()>1e-20&&n.normalize().dot(n0)<.9995)return false}return true}
 let RLAST=null;function radMeasure(h){const f=F/sc;if(rmode=='3'){(pts.length>=3||RCL.length>=3)&&clrM();const p=h.point.clone(),d=new THREE.Mesh(new THREE.SphereGeometry(.009,12,8),new THREE.MeshBasicMaterial({color:0xff1a1a,depthTest:false}));d.position.copy(p);d.renderOrder=41;d.userData.mk=1;gz.add(d);dirty=true;pts.push({v:p});
   if(pts.length<3){$('#mres').innerHTML=`<b>${pts.length}. nokta</b> alındı. Kavis çizgisi üzerinde <b>${pts.length+1}. noktaya</b> dokunun.`;return}
   const[a,b,c]=pts.map(x=>x.v),ab=b.clone().sub(a),ac=c.clone().sub(a),n=new THREE.Vector3().crossVectors(ab,ac),n2=n.lengthSq();if(n2<1e-16){clrM();$('#mres').innerHTML='<span style="color:#b45309">⚠ Üç nokta bir doğru üzerinde, yarıçap hesaplanamadı. Yeniden deneyin.</span>';return}
@@ -730,7 +733,7 @@ addEventListener('pointerup',e=>{if(drag){drag=false;ctl.enabled=true;applyCut(t
  if(meas){const c=a.length?cutHit(a,hs[0]):null,w2=pts.length==1;
   if(!w2&&EG.visible){const b=edgePick(e);if(b){if(EHV){scene.remove(EHV);EHV=null}edgeShow(b);return}}/* kenar: yalnız kendi ölçüsü; yüzey seçiliyken ikinci dokunuş yüzey arar */
   if(c){if(w2||radSection(c)===false)addPt(c)}
-  else if(hs[0]){const h=hs[0];if(w2)addPt(h);else if(cylFace(h)){if(!pts.length&&rmode!='3'&&h.face)pts.push({v:h.point.clone(),n:h.face.normal.clone().transformDirection(h.object.matrixWorld).normalize(),k:h.object.userData.k})}else{clrM();addPt(h)}}
+  else if(hs[0]){const h=hs[0];/* mesafe yalnız iki düz yüzey arasında; eğri yüzey → yalnız yarıçap */if(flatFace(h)){if(!w2)clrM();addPt(h)}else cylFace(h)}
   else{clrM();RLAST=null}return}
  if(cur!='3d')return;if(hs[0]){const k=hs[0].object.userData.k;select(stage.classList.contains('side')&&!noteSide?(sel.includes(k)&&sel.length==1?[]:[k]):sel.includes(k)?sel.filter(x=>x!=k):[...sel,k],{tap:true})}else if(sel.length)select([],{tap:true});else if(stage.classList.contains('lej')&&lejT=='lt'&&ltHalf){stage.classList.remove('lej');hl()}});
 /* ---- kalem ve detay resmi ---- */
