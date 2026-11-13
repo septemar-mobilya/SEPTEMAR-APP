@@ -13,6 +13,7 @@ Option Explicit
 
 Private gSeen As Object      ' dosya|konf -> ham yuz/kenar verisi (parca koordinatinda)
 Private gMU As Object
+Private gAtlanan As Long
 
 Private Function JS(ByVal s As String) As String
     Dim i As Long, c As Long, o As String
@@ -75,8 +76,9 @@ Private Function ParcaKenarlari(ByVal pd As Object) As Collection
                 If Not cv Is Nothing Then
                     If cv.IsCircle Then
                         p = cv.CircleParams    ' cx,cy,cz, ax,ay,az, R
+                        sp = Empty: ep = Empty: mp = Empty
                         Set cpd = Nothing
-                        Set cpd = e.GetCurveParams2        ' kenarin KIRPILMIS (gercek) baslangic/bitis parametreleri
+                        Set cpd = e.GetCurveParams2        ' kenarin KIRPILMIS baslangic/bitis parametreleri
                         If Not cpd Is Nothing Then
                             t0 = cpd.StartParam
                             t1 = cpd.EndParam
@@ -86,6 +88,24 @@ Private Function ParcaKenarlari(ByVal pd As Object) As Collection
                         sp = cv.Evaluate2(t0, 0)
                         ep = cv.Evaluate2(t1, 0)
                         mp = cv.Evaluate2((t0 + t1) / 2#, 0)
+                        ' baslangic/bitis noktalarini kenarin kose noktalarindan al (daha guvenilir)
+                        Dim vs As Object, ve As Object, pv As Variant
+                        Set vs = Nothing: Set ve = Nothing
+                        Set vs = e.GetStartVertex
+                        Set ve = e.GetEndVertex
+                        If Not vs Is Nothing Then
+                            pv = vs.GetPoint
+                            sp = Array(pv(0), pv(1), pv(2))
+                        End If
+                        If Not ve Is Nothing Then
+                            pv = ve.GetPoint
+                            ep = Array(pv(0), pv(1), pv(2))
+                        End If
+                        ' orta nokta daire uzerinde degilse bu kenari atla (guvenlik)
+                        Dim dm As Double
+                        If IsEmpty(mp) Or IsEmpty(sp) Or IsEmpty(ep) Then gAtlanan = gAtlanan + 1: GoTo SonrakiKenar
+                        dm = Sqr((mp(0) - p(0)) ^ 2 + (mp(1) - p(1)) ^ 2 + (mp(2) - p(2)) ^ 2)
+                        If Abs(dm - p(6)) > 0.01 * p(6) Then gAtlanan = gAtlanan + 1: GoTo SonrakiKenar
                         key = N(p(0)) & "|" & N(p(1)) & "|" & N(p(2)) & "|" & N(p(6)) & "|" & N(sp(0)) & "|" & N(sp(1)) & "|" & N(sp(2)) & "|" & N(ep(0)) & "|" & N(ep(1)) & "|" & N(ep(2))
                         If Not seen.Exists(key) Then
                             seen.Add key, 1
@@ -93,6 +113,7 @@ Private Function ParcaKenarlari(ByVal pd As Object) As Collection
                         End If
                     End If
                 End If
+SonrakiKenar:
             Next e
         End If
     Next b
@@ -139,6 +160,8 @@ Private Function ParcaYuzleri(ByVal pd As Object, ByVal xf As Object) As String
     ParcaYuzleri = r
 End Function
 
+Public Const SURUM As String = "r2.2"
+
 Sub main()
     Dim swApp As Object, md As Object, comps As Variant, c As Object
     Dim pd As Object, key As String, i As Long, ilk As Boolean
@@ -161,7 +184,7 @@ Sub main()
     comps = md.GetComponents(False)
     If IsEmpty(comps) Then MsgBox "Montajda bilesen yok.", vbExclamation: Exit Sub
 
-    sb = "{""v"":2,""montaj"":""" & JS(md.GetTitle) & """,""birim"":""mm"",""parcalar"":[" & vbLf
+    sb = "{""v"":2,""makro"":""" & SURUM & """,""montaj"":""" & JS(md.GetTitle) & """,""birim"":""mm"",""parcalar"":[" & vbLf
     ilk = True
     For i = LBound(comps) To UBound(comps)
         Set c = comps(i)
@@ -214,5 +237,5 @@ Sub main()
     Set ts = fso.CreateTextFile(yol, True, False)
     ts.Write sb
     ts.Close
-    MsgBox "Tamam." & vbCrLf & sayi & " bilesen, " & kenarSay & " dairesel kenar." & vbCrLf & yol, vbInformation, "SEPTEMAR RADIUS CIKAR"
+    MsgBox "Tamam (" & SURUM & ")." & vbCrLf & sayi & " bilesen, " & kenarSay & " dairesel kenar." & vbCrLf & "Atlanan (okunamayan) kenar: " & gAtlanan & vbCrLf & yol, vbInformation, "SEPTEMAR RADIUS CIKAR"
 End Sub
