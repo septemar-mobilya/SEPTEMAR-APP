@@ -212,7 +212,7 @@ const stage=$('#stage'),scene=new THREE.Scene();scene.background=new THREE.Color
 const cam=new THREE.PerspectiveCamera(40,1,.001,100);cam.position.set(1.2,.8,1.6);
 const ren=new THREE.WebGLRenderer({antialias:true,stencil:true});ren.localClippingEnabled=true;ren.setPixelRatio(Math.min(devicePixelRatio,1.5));stage.prepend(ren.domElement);
 scene.add(new THREE.HemisphereLight(0xffffff,0x8892a0,1.2));const dl=new THREE.DirectionalLight(0xffffff,1.6);dl.position.set(2,3,2);scene.add(dl);
-const ctl=new OrbitControls(cam,ren.domElement);ctl.enableDamping=true;ctl.zoomToCursor=false;ren.domElement.addEventListener('wheel',()=>{ctl.zoomToCursor=true},true);ren.domElement.addEventListener('pointerdown',e=>{if(e.pointerType!='mouse')ctl.zoomToCursor=false},true);if(ctl.mouseButtons)ctl.mouseButtons.MIDDLE=THREE.MOUSE.ROTATE;
+const ctl=new OrbitControls(cam,ren.domElement);ctl.enableDamping=true;ctl.zoomToCursor=false;ren.domElement.addEventListener('wheel',()=>{ctl.zoomToCursor=true;ctl.zoomSpeed=1},true);ren.domElement.addEventListener('pointerdown',e=>{if(e.pointerType!='mouse'){ctl.zoomToCursor=false;ctl.zoomSpeed=.45/* parmakla yakınlaştırma yavaş */}},true);if(ctl.mouseButtons)ctl.mouseButtons.MIDDLE=THREE.MOUSE.ROTATE;
 let dirty=true,lastR=0;
 var ltHalf=false,ltFull=false,ltKey='';const fitSz=()=>{ltKey='';try{lejHalf()}catch{}dirty=true;const w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)return;ren.setSize(w,h);cam.aspect=w/h;cam.updateProjectionMatrix()};new ResizeObserver(fitSz).observe(stage);
 let noteSide=false,zbx=false,data={},parts={},sel=[],F=1,sc=1,BB=new THREE.Box3(),paint=false,dur={},allMeshes=[],cur='',mode='rot',tool=null,meas=false,pts=[],exv=0,TH={};try{dur=JSON.parse(localStorage.durum||'{}')}catch{}
@@ -561,7 +561,7 @@ function radEdge(m,hp){const T=radTopo(m),{vid,vp,tn,em}=T,W=m.matrixWorld,wv=id
  const E=eig3(C);if(E[0].l>.02*E[2].l)return null;const nz=E[0].v.clone().normalize(),u=new THREE.Vector3().crossVectors(nz,Math.abs(nz.y)<.9?new THREE.Vector3(0,1,0):new THREE.Vector3(1,0,0)).normalize(),v=new THREE.Vector3().crossVectors(nz,u),
   P2=P3.map(p=>{const d=p.clone().sub(o);return[d.dot(u),d.dot(v)]}),r=arcAt(P2,j);if(!r||r.n<4||!isFinite(r.R))return null;
  const cen=o.clone().addScaledVector(u,r.cx).addScaledVector(v,r.cy),hd=hp.clone().sub(o),dotA=Math.atan2(hd.dot(v)-r.cy,hd.dot(u)-r.cx);return{R:r.R,cen,u,v,a0:r.a0,a1:r.a1,dotA,n:r.n}}
-const rHint=()=>{const r=$('#mres');if(r)r.innerHTML='<b>Yay</b> kenarına dokunun → yarıçap. <b>Düz</b> kenara dokunun → uzunluk. Ardından <b>ikinci</b> bir yere dokunun → aradaki mesafe.'};
+const rHint=()=>{const r=$('#mres');if(r)r.innerHTML='<b>Yay</b> kenarına dokunun → yarıçap. <b>Düz</b> kenara dokunun → uzunluk. <b>Yüzeye</b> dokunun, sonra ikinci yüzeye → aradaki mesafe.'};
 let RADJ=null;
 function radSnap(m,Rm){/* SolidWorks'ten gelen gerçek R listesi: parça adına göre eşleştir, ölçüye en yakın yarıçapı ver */
  if(!RADJ)return null;const nz=x=>String(x||'').replace(/\//g,'_').toLowerCase(),k=nz(m.userData.k||m.name);let best=null,bl=0;for(const n in RADJ){const q=nz(n.split('/').pop());if(q.length>bl&&(k==q||k.endsWith('_'+q)||k.endsWith(q))){best=RADJ[n];bl=q.length}}
@@ -706,7 +706,7 @@ addEventListener('pointerup',e=>{if(drag){drag=false;ctl.enabled=true;applyCut(t
  if(tool=='cut'&&!meas&&!noteAdd){if(!showPl)return;const h=hs[0];if(h&&h.face){const n=h.face.normal.clone().transformDirection(h.object.matrixWorld);if(n.dot(rc.ray.direction)>0)n.negate();const i=[n.x,n.y,n.z].map(Math.abs).reduce((m,v,k,A)=>v>A[m]?k:m,0),q=pl[i];pl.forEach(o=>o.on=false);q.on=true;q.s=n.getComponent(i)>0?-1:1;q.v=h.point.getComponent(i);ap=i;applyCut(true);popUI()}return}
  if(tool=='view'){const h=hs[0];if(h&&h.face){const n=h.face.normal.clone().transformDirection(h.object.matrixWorld);if(n.dot(rc.ray.direction)>0)n.negate();const d=Math.max(cam.position.distanceTo(ctl.target),1);if(Math.abs(n.y)>.99)n.z+=.001;ctl.target.set(0,0,0);cam.position.copy(n.normalize().multiplyScalar(d))}return}
  if(meas){const c=a.length?cutHit(a,hs[0]):null,w2=pts.length==1;
-  if(EG.visible){const b=edgePick(e);if(b){if(EHV){scene.remove(EHV);EHV=null}const d=b.d,en={ent:1,point:d.line?b.q.clone():d.cs.clone(),d:d.line?d.pts[1].clone().sub(d.pts[0]).normalize():null,k:d.n};if(w2)addPt(en);else{edgeShow(b);pts.push({v:en.point,n:null,d:en.d,k:en.k})}return}}
+  if(!w2&&EG.visible){const b=edgePick(e);if(b){if(EHV){scene.remove(EHV);EHV=null}edgeShow(b);return}}/* kenar: yalnız kendi ölçüsü; yüzey seçiliyken ikinci dokunuş yüzey arar */
   if(c){if(w2||radSection(c)===false)addPt(c)}
   else if(hs[0]){const h=hs[0];if(w2)addPt(h);else if(radMeasure(h)){if(!pts.length&&rmode!='3'&&h.face)pts.push({v:h.point.clone(),n:h.face.normal.clone().transformDirection(h.object.matrixWorld).normalize(),k:h.object.userData.k})}else{clrM();addPt(h)}}
   else{clrM();RLAST=null}return}
