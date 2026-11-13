@@ -11,12 +11,14 @@ Attribute VB_Name = "SEPTEMAR_RADIUS_CIKAR"
 '==============================================================================
 Option Explicit
 
-Private Const SURUM As String = "r2.2"
+Private Const SURUM As String = "r2.4"
 
 Private gSeen As Object      ' dosya|konf -> ham yuz/kenar verisi (parca koordinatinda)
 Private gMU As Object
 Private gAtlanan As Long
 Private gYuz As Object
+Private gDbg As String
+Private gDbgN As Long
 
 Private Function JS(ByVal s As String) As String
     Dim i As Long, c As Long, o As String
@@ -112,6 +114,10 @@ Private Function ParcaKenarlari(ByVal pd As Object) As Collection
                         key = N(p(0)) & "|" & N(p(1)) & "|" & N(p(2)) & "|" & N(p(6)) & "|" & N(sp(0)) & "|" & N(sp(1)) & "|" & N(sp(2)) & "|" & N(ep(0)) & "|" & N(ep(1)) & "|" & N(ep(2))
                         If Not seen.Exists(key) Then
                             seen.Add key, 1
+                            If gDbgN < 60 Then
+                                gDbgN = gDbgN + 1
+                                gDbg = gDbg & "R=" & N(p(6)) & " c=" & N(p(0)) & "," & N(p(1)) & "," & N(p(2)) & " ax=" & N(p(3)) & "," & N(p(4)) & "," & N(p(5)) & " t0=" & N(t0) & " t1=" & N(t1) & " S=" & N(sp(0)) & "," & N(sp(1)) & "," & N(sp(2)) & " M=" & N(mp(0)) & "," & N(mp(1)) & "," & N(mp(2)) & " E=" & N(ep(0)) & "," & N(ep(1)) & "," & N(ep(2)) & " vs=" & IIf(vs Is Nothing, "yok", "var") & " ve=" & IIf(ve Is Nothing, "yok", "var") & vbLf
+                            End If
                             res.Add Array(p(6), p(0), p(1), p(2), p(3), p(4), p(5), sp(0), sp(1), sp(2), mp(0), mp(1), mp(2), ep(0), ep(1), ep(2))
                         End If
                     End If
@@ -250,5 +256,9 @@ Sub main()
     Set ts = fso.CreateTextFile(yol, True, False)
     ts.Write sb
     ts.Close
+    Dim ts2 As Object
+    Set ts2 = fso.CreateTextFile(Left$(yol, InStrRev(yol, ".") - 1) & "_debug.txt", True, False)
+    ts2.Write "SURUM " & SURUM & vbLf & "Atlanan: " & gAtlanan & vbLf & gDbg
+    ts2.Close
     MsgBox "Tamam (" & SURUM & ")." & vbCrLf & sayi & " bilesen, " & kenarSay & " dairesel kenar." & vbCrLf & "Atlanan (okunamayan) kenar: " & gAtlanan & vbCrLf & yol, vbInformation, "SEPTEMAR RADIUS CIKAR"
 End Sub
